@@ -8,6 +8,9 @@ import {
   SingleProduct,
   NewParts,
   Usedparts,
+  ProductUnderCategory,
+  Contact,
+  Login,
 } from "../containers";
 
 // public routes
@@ -17,7 +20,9 @@ const UnAuthorizedPage = () => <UnAuthorized />;
 const SingleProductPage = () => <SingleProduct />;
 const NewPartsPage = () => <NewParts />;
 const UsedPartsPage = () => <Usedparts />;
-// protected pages
+const ProductUnderCategoryPage = () => <ProductUnderCategory />;
+const ContactPage = () => <Contact />;
+const LoginPage = () => <Login />;
 
 // export
 export {
@@ -27,4 +32,7 @@ export {
   SingleProductPage,
   NewPartsPage,
   UsedPartsPage,
+  ProductUnderCategoryPage,
+  ContactPage,
+  LoginPage,
 };

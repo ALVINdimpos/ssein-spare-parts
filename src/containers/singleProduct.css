@@ -57,8 +57,7 @@
   .producat_des {
     margin: 2rem 0;
     width: 100%;
-    font-size: 1.5rem;
-    line-height: 1.56;
+
     color: var(--Darkgrayish);
   }
   .dicscount_price {

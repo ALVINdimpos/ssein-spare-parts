@@ -5,3 +5,6 @@ export { default as Nav } from "./Nav";
 export { default as SingleProduct } from "./SingleProduct";
 export { default as NewParts } from "./NewParts";
 export { default as Usedparts } from "./Usedparts";
+export { default as ProductUnderCategory } from "./ProductUnderCategory";
+export { default as Contact } from "./Contact";
+export { default as Login } from "./Login";

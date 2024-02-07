@@ -1,55 +1,59 @@
+import { Link } from "react-router-dom";
 import "./Nav.css"; // Make sure to adjust the import path if necessary
 
 const Header = () => {
   return (
     <>
-      <header className="bg-white shadow-lg h-24 md:flex md:justify-between md:items-center sticky top-0 z-50">
-        <div className="flex-shrink-0 flex items-center justify-center px-4 lg:px-6 xl:px-8">
-          <a href="/">
+      <header className="sticky top-0 z-50 h-24 bg-white shadow-lg md:flex md:justify-between md:items-center">
+        <div className="flex items-center justify-center flex-shrink-0 px-4 lg:px-6 xl:px-8">
+          {/* <a href="/">
             <img
               className="h-12 md:h-16"
               src="https://i.ibb.co/W6ZXdqN/2021-10-26-16h20-21.png"
               alt=""
             />
-          </a>
+          </a> */}
         </div>
-        <nav className="header-links contents font-semibold text-base md:flex md:items-center md:space-x-4 lg:text-lg">
-          <ul className="flex items-center ml-4 xl:ml-8 mr-auto md:ml-0">
+        <nav className="text-base font-semibold header-links contents md:flex md:items-center md:space-x-4 lg:text-lg">
+          <ul className="flex items-center ml-4 mr-auto xl:ml-8 md:ml-0">
             <li className="p-3 xl:p-6 active">
-              <a href="/">
+              <Link to="/">
                 <span>Home</span>
-              </a>
+              </Link>
             </li>
             <li className="p-3 xl:p-6">
-              <a href="/">
+              <Link to="/Used-parts">
                 <span>Used Parts</span>
-              </a>
+              </Link>
             </li>
             <li className="p-3 xl:p-6">
-              <a href="/">
+              <Link to="/New-parts">
                 <span>New Parts</span>
-              </a>
+              </Link>
             </li>
-            <li className="p-3 xl:p-6">
+            {/* <li className="p-3 xl:p-6">
               <a href="/">
                 <span>Tyres and Mag</span>
               </a>
-            </li>
-            <li className="p-3 xl:p-6">
+            </li> */}
+            {/* <li className="p-3 xl:p-6">
               <a href="/">
                 <span>services</span>
               </a>
-            </li>
+            </li> */}
             <li className="p-3 xl:p-6">
-              <a href="/">
+              <Link to="/Contact-us">
                 <span>Contact</span>
-              </a>
+              </Link>
             </li>
           </ul>
-          <div className="flex items-center px-4 lg:px-6 xl:px-8 mt-4 md:mt-0">
-            <button className="bg-red-500 hover:bg-gray-700 text-white font-bold px-4 xl:px-6 py-2 xl:py-3 rounded">
+          <div className="flex items-center px-4 mt-4 lg:px-6 xl:px-8 md:mt-0">
+            <Link
+              to="/login"
+              className="px-4 py-2 font-bold text-white rounded bg-primary xl:px-6 xl:py-3"
+            >
               login
-            </button>
+            </Link>
           </div>
         </nav>
       </header>

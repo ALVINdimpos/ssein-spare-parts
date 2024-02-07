@@ -1,13 +1,12 @@
 import Nav from "./Nav";
 import Footer from "./Footer";
-
-const Usedparts = () => {
+const ProductUnderCategory = () => {
   return (
     <div>
       <Nav />
       <section className="max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12 ">
         <div className="container mx-auto">
-          <h1 className="mb-4 text-3xl font-semibold">Our Best Used Parts</h1>
+          <h1 className="mb-4 text-3xl font-semibold">Our Best Products</h1>
           <p className="mb-8 text-gray-600">
             Here are some of our best products. We have a wide range of products
             to choose from.
@@ -105,4 +104,4 @@ const Usedparts = () => {
   );
 };
 
-export default Usedparts;
+export default ProductUnderCategory;

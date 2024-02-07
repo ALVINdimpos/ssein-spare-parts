@@ -97,7 +97,6 @@ h1 {
 
 :where(.css-dev-only-do-not-override-dkbvqv).ant-btn-primary {
   color: #fff;
-  background: #194277 !important;
   box-shadow: 0 2px 0 rgba(5, 145, 255, 0.1);
 }
 
@@ -115,8 +114,9 @@ button,
 [type='button'],
 [type='reset'],
 [type='submit'] {
-  background-color: #194277;
   background-image: none;
+ background-color: #DB2512;
+ 
 }
 
 :where(.css-dev-only-do-not-override-zl9ks2).ant-btn-primary:not(:disabled):not(.ant-btn-disabled):hover {
