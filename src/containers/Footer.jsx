@@ -9,8 +9,9 @@ const Footer = () => {
         </div>
         <div className="flex flex-col mt-8 md:flex-row md:justify-between">
           <p className="w-full text-gray-400 md:w-2/3">
-            To ensure that all Wikipedia content is verifiable, anyone may
-            question an uncited claim. If your work has been tagged
+            Duis bibendum rhoncus felis, sit amet pretium libero ornare ut.
+            Pellentesque a ullamcorper enim. Duis bibendum rhoncus felis, sit
+            amet pretium libero ornare ut. Pellentesque a ullamcorper enim.
           </p>
           <div className="pt-6 w-44 md:pt-0">
             <Link
@@ -41,6 +42,12 @@ const Footer = () => {
               className="hidden text-gray-600 uppercase cursor-pointer md:block hover:text-white"
             >
               Used Parts
+            </Link>
+            <Link
+              to="/Body-parts"
+              className="hidden text-gray-600 uppercase cursor-pointer md:block hover:text-white"
+            >
+              Body parts
             </Link>
             <Link
               to="/Contact-us"

@@ -31,11 +31,11 @@ const Header = () => {
                 <span>New Parts</span>
               </Link>
             </li>
-            {/* <li className="p-3 xl:p-6">
-              <a href="/">
-                <span>Tyres and Mag</span>
+            <Link className="p-3 xl:p-6">
+              <a to="/Body-parts">
+                <span>Body parts</span>
               </a>
-            </li> */}
+            </Link>
             {/* <li className="p-3 xl:p-6">
               <a href="/">
                 <span>services</span>

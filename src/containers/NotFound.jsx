@@ -24,9 +24,6 @@ const NotFound = () => {
           >
             Go back home
           </button>
-          <button href="#" className="text-sm font-semibold text-gray-900">
-            Contact support <span aria-hidden="true">&rarr;</span>
-          </button>
         </div>
       </div>
     </main>
