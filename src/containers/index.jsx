@@ -8,3 +8,6 @@ export { default as Usedparts } from "./Usedparts";
 export { default as ProductUnderCategory } from "./ProductUnderCategory";
 export { default as Contact } from "./Contact";
 export { default as Login } from "./Login";
+export { default as Corolla } from "./Corolla";
+export { default as Yaris } from "./Yaris";
+export { default as ToyotaCamryHybrid } from "./ToyotaCamryHybrid";

@@ -1,12 +1,14 @@
-const BestProducts = () => {
-  // Array for Toyota Parts
-  const parts = [
+import Nav from "./Nav";
+import Footer from "./Footer";
+
+const Yaris = () => {
+  // Array of Yaris parts
+  const YarisParts = [
     {
       id: 1,
       name: "Air & Fuel Delivery",
       imageUrl:
         "https://cdn.revolutionparts.com/assets/categories/fuel-system.webp",
-      //add react details please
       details: "Description for Air & Fuel Delivery part",
     },
     {
@@ -83,16 +85,18 @@ const BestProducts = () => {
         "https://cdn.revolutionparts.com/assets/categories/emission-system.webp",
       details: "Description for Emission System part",
     },
-  ];
-
-  // Array for Toyota Accessories
-  const accessories = [
     {
-      id: 19,
-      name: "Interior",
+      id: 13,
+      name: "Engine",
+      imageUrl: "https://cdn.revolutionparts.com/assets/categories/engine.webp",
+      details: "Description for Engine part",
+    },
+    {
+      id: 14,
+      name: "Exhaust",
       imageUrl:
-        "https://cdn.revolutionparts.com/assets/categories/interior.webp",
-      description: "Description for Interior part",
+        "https://cdn.revolutionparts.com/assets/categories/exhaust-system.webp",
+      details: "Description for Exhaust part",
     },
     {
       id: 15,
@@ -102,18 +106,52 @@ const BestProducts = () => {
       details: "Description for Exterior part",
     },
     {
-      id: 6,
-      name: "Cargo Management",
+      id: 16,
+      name: "Front Drive Axle",
       imageUrl:
-        "https://cdn.revolutionparts.com/assets/categories/cargo-management.webp",
-      details: "Description for Cargo Management part",
+        "https://cdn.revolutionparts.com/assets/categories/front-drive-axle.webp",
+      details: "Description for Front Drive Axle part",
     },
     {
-      id: 11,
-      name: "Electronics",
+      id: 17,
+      name: "Fuel System",
       imageUrl:
-        "https://cdn.revolutionparts.com/assets/categories/electronics.webp",
-      details: "Description for Electronics part",
+        "https://cdn.revolutionparts.com/assets/categories/fuel-system.webp",
+      details: "Description for Fuel System part",
+    },
+    {
+      id: 18,
+      name: "HVAC",
+      imageUrl: "https://cdn.revolutionparts.com/assets/categories/hvac.webp",
+      details: "Description for HVAC part",
+    },
+    {
+      id: 18,
+      name: "Ignition",
+      imageUrl:
+        "https://cdn.revolutionparts.com/assets/categories/security.webp",
+      details: "Description for HVAC part",
+    },
+    {
+      id: 19,
+      name: "Interior",
+      imageUrl:
+        "https://cdn.revolutionparts.com/assets/categories/interior.webp",
+      details: "Description for Interior part",
+    },
+    {
+      id: 20,
+      name: "Maintenance & Lubrication",
+      imageUrl:
+        "https://cdn.revolutionparts.com/assets/categories/maintenance-and-lubrication.webp",
+      details: "Description for Maintenance & Lubrication part",
+    },
+    {
+      id: 21,
+      name: "Manual Transmission",
+      imageUrl:
+        "https://cdn.revolutionparts.com/assets/categories/manual-transmission.webp",
+      details: "Description for Manual Transmission part",
     },
     {
       id: 22,
@@ -123,33 +161,60 @@ const BestProducts = () => {
       details: "Description for Performance part",
     },
     {
-      id: 28,
-      name: "Wheels",
-      imageUrl: "https://cdn.revolutionparts.com/assets/categories/wheels.webp",
-      details: "Description for Wheels part",
-    },
-    {
       id: 23,
       name: "Serviceable Components",
       imageUrl:
         "https://cdn.revolutionparts.com/assets/categories/serviceable-components.webp",
       details: "Description for Serviceable Components part",
     },
+    {
+      id: 24,
+      name: "Steering",
+      imageUrl:
+        "https://cdn.revolutionparts.com/assets/categories/steering.webp",
+      details: "Description for Steering part",
+    },
+    {
+      id: 25,
+      name: "Suspension",
+      imageUrl:
+        "https://cdn.revolutionparts.com/assets/categories/front-suspension.webp",
+      details: "Description for Suspension part",
+    },
+    {
+      id: 26,
+      name: "Transmission",
+      imageUrl:
+        "https://cdn.revolutionparts.com/assets/categories/manual-transmission.webp",
+      details: "Description for Transmission part",
+    },
+    {
+      id: 27,
+      name: "Vehicles, Equipment, Tools, & Supplies",
+      imageUrl:
+        "https://cdn.revolutionparts.com/assets/categories/default.webp",
+      details: "Description for Vehicles, Equipment, Tools, & Supplies part",
+    },
+    {
+      id: 28,
+      name: "Wheels",
+      imageUrl: "https://cdn.revolutionparts.com/assets/categories/wheels.webp",
+      details: "Description for Wheels part",
+    },
   ];
 
   return (
     <div>
-      {/* Section for Toyota Parts */}
+      <Nav />
       <section className="max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
         <div className="container mx-auto">
-          <h1 className="mb-4 text-3xl font-semibold">Popular Toyota Parts</h1>
-          <p className="w-2/3 mb-8 text-gray-600">
-            Checkout the most bought & viewed parts for vehicles like yours.
-            Select a part below to get started or checkout our most popular
-            accessories.
+          <h1 className="mb-4 text-3xl font-semibold">Our Best Yaris Parts</h1>
+          <p className="mb-8 text-gray-600">
+            Here are some of our best products. We have a wide range of products
+            to choose from.
           </p>
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {parts.map((part) => (
+            {YarisParts.map((part) => (
               <div key={part.id} className="p-6 bg-white rounded-lg shadow-md">
                 <img
                   className="object-contain w-full h-40 mb-4 rounded"
@@ -162,37 +227,9 @@ const BestProducts = () => {
           </div>
         </div>
       </section>
-
-      {/* Section for Toyota Accessories */}
-      <section className="max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
-        <div className="container mx-auto">
-          <h1 className="mb-4 text-3xl font-semibold">
-            Popular Toyota Accessories
-          </h1>
-          <p className="w-2/3 mb-8 text-gray-600">
-            Everyone loves to accessorize their vehicle. So we have pulled
-            together our most viewed accessories to make your parts-shopping
-            experience as quick and easy as possible.
-          </p>
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {accessories.map((accessory) => (
-              <div
-                key={accessory.id}
-                className="p-6 bg-white rounded-lg shadow-md"
-              >
-                <img
-                  className="object-contain w-full h-40 mb-4 rounded"
-                  src={accessory.imageUrl}
-                  alt={`Product ${accessory.id}`}
-                />
-                <h3 className="mb-2 text-xl font-semibold">{accessory.name}</h3>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <Footer />
     </div>
   );
 };
 
-export default BestProducts;
+export default Yaris;

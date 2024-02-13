@@ -11,6 +11,9 @@ import {
   ProductUnderCategory,
   Contact,
   Login,
+  Corolla,
+  Yaris,
+  ToyotaCamryHybrid,
 } from "../containers";
 
 // public routes
@@ -23,6 +26,9 @@ const UsedPartsPage = () => <Usedparts />;
 const ProductUnderCategoryPage = () => <ProductUnderCategory />;
 const ContactPage = () => <Contact />;
 const LoginPage = () => <Login />;
+const CorollaPage = () => <Corolla />;
+const YarisPage = () => <Yaris />;
+const ToyotaCamryHybridPage = () => <ToyotaCamryHybrid />;
 
 // export
 export {
@@ -35,4 +41,7 @@ export {
   ProductUnderCategoryPage,
   ContactPage,
   LoginPage,
+  CorollaPage,
+  YarisPage,
+  ToyotaCamryHybridPage,
 };
