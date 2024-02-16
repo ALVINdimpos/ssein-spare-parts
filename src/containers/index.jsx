@@ -11,3 +11,5 @@ export { default as Login } from "./Login";
 export { default as Corolla } from "./Corolla";
 export { default as Yaris } from "./Yaris";
 export { default as ToyotaCamryHybrid } from "./ToyotaCamryHybrid";
+export { default as Rav4 } from "./Rav4";
+export { default as Rav4Hybrid } from "./Rav4Hybrid";

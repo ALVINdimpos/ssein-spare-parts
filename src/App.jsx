@@ -1,11 +1,26 @@
 import { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
 import { getNetworkStatus, notification } from "./utils";
 
 import { publicRoutes } from "./routes";
+
+const ScrollToTop = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  return null;
+};
 
 const App = () => {
   const [isOnline, setIsOnline] = useState(getNetworkStatus());
@@ -43,12 +58,11 @@ const App = () => {
 
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
-        {publicRoutes.map((route) => {
-          return (
-            <Route key={route.path} path={route.path} element={route.element} />
-          );
-        })}
+        {publicRoutes.map((route) => (
+          <Route key={route.path} path={route.path} element={route.element} />
+        ))}
       </Routes>
     </Router>
   );

@@ -1,8 +1,36 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { heroPic } from "../assets";
 
 const HeroSection = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("shopByVehicle");
+  const [selectedInputs, setSelectedInputs] = useState({
+    year: "",
+    make: "",
+    model: "",
+    engine: "",
+  });
+
+  useEffect(() => {
+    const allInputsSelected =
+      selectedInputs.year &&
+      selectedInputs.make &&
+      selectedInputs.model &&
+      selectedInputs.engine;
+
+    if (allInputsSelected) {
+      // Navigate to the relevant page based on the selected model
+      navigate(`/${selectedInputs.model}`);
+    }
+  }, [selectedInputs, navigate]);
+
+  const handleInputChange = (field, value) => {
+    setSelectedInputs((prevSelectedInputs) => ({
+      ...prevSelectedInputs,
+      [field]: value,
+    }));
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -13,7 +41,11 @@ const HeroSection = () => {
               <label htmlFor="year" className="mr-2">
                 Year:
               </label>
-              <select id="year" className="">
+              <select
+                id="year"
+                className=""
+                onChange={(e) => handleInputChange("year", e.target.value)}
+              >
                 <option selected></option>
                 <option value="2020">2020</option>
                 <option value="2021">2021</option>
@@ -28,40 +60,40 @@ const HeroSection = () => {
 
             <div className="flex items-center px-4 py-2 border border-gray-300 rounded-md appearance-none focus:outline-none focus:border-blue-500">
               <label>Make:</label>
-              <select className="input-dropdown">
+              <select
+                className="input-dropdown"
+                onChange={(e) => handleInputChange("make", e.target.value)}
+              >
                 <option selected></option>
                 <option value="Toyota">Toyota</option>
-                <option value="Honda">Honda</option>
-                <option value="Toyota">Toyota</option>
-                <option value="Honda">Honda</option>
-                <option value="Toyota">Toyota</option>
-                <option value="Honda">Honda</option>
               </select>
             </div>
 
             <div className="flex items-center px-4 py-2 border border-gray-300 rounded-md appearance-none focus:outline-none focus:border-blue-500">
               <label>Model:</label>
-              <select className="input-dropdown">
+              <select
+                className="input-dropdown"
+                onChange={(e) => handleInputChange("model", e.target.value)}
+              >
                 <option selected></option>
                 <option value="Corolla">Corolla</option>
-                <option value="Civic">Civic</option>
-                <option value="Corolla">Corolla</option>
-                <option value="Civic">Civic</option>
-              </select>
-            </div>
-
-            <div className="flex items-center px-4 py-2 border border-gray-300 rounded-md appearance-none focus:outline-none focus:border-blue-500">
-              <label>Trim:</label>
-              <select className="input-dropdown">
-                <option selected></option>
-                <option value="LE">LE</option>
-                <option value="SE">SE</option>
+                <option value="Yaris">Yaris</option>
+                <option value="Rav4">Rav4</option>
+                <option value="Rav4-hybrid">Rav4-hybrid</option>
+                <option value="Camry">Camry</option>
+                <option value="Camry-hybrid">Camry-hybrid</option>
+                <option value="Vigo"> Vigo</option>
+                <option value="Highlander">Highlander</option>
+                <option value="Highlander-hybrid">Highlander-hybrid</option>
               </select>
             </div>
 
             <div className="flex items-center px-4 py-2 border border-gray-300 rounded-md appearance-none focus:outline-none focus:border-blue-500">
               <label>Engine:</label>
-              <select className="input-dropdown">
+              <select
+                className="input-dropdown"
+                onChange={(e) => handleInputChange("engine", e.target.value)}
+              >
                 <option selected></option>
                 <option value="1.8L">1.8L</option>
                 <option value="2.0L">2.0L</option>
@@ -79,7 +111,7 @@ const HeroSection = () => {
               </label>
               <input
                 type="text"
-                className="w-2/3 px-2 py-1 mr-2 border border-gray-300 rounded-md appearance-none  focus:outline-none focus:border-blue-500"
+                className="w-2/3 px-2 py-1 mr-2 border border-gray-300 rounded-md appearance-none focus:outline-none focus:border-blue-500"
               />
               <button className="px-4 text-white transition duration-200 ease-in-out bg-red-600 rounded-sm ">
                 Find Part
@@ -97,7 +129,7 @@ const HeroSection = () => {
               </label>
               <input
                 type="text"
-                className="w-2/3 px-2 py-1 border border-gray-300 rounded-md appearance-none  focus:outline-none focus:border-blue-500"
+                className="w-2/3 px-2 py-1 border border-gray-300 rounded-md appearance-none focus:outline-none focus:border-blue-500"
               />
               <button className="px-4 text-white transition duration-200 ease-in-out bg-red-600 rounded-sm ">
                 Find Part
@@ -115,11 +147,13 @@ const HeroSection = () => {
       <div className="grid max-w-screen-xl h-[100vh] px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
         <div className="mr-auto place-self-center lg:col-span-7">
           <h1 className="max-w-2xl mb-4 text-4xl font-extrabold leading-none tracking-tight md:text-5xl xl:text-6xl dark:text-black">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit
+            We are your one-stop shop for all your Toyota original spare parts
+            needs.
           </h1>
           <p className="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
-            Duis bibendum rhoncus felis, sit amet pretium libero ornare ut.
-            Pellentesque a ullamcorper enim.
+            With our extensive inventory and commitment to quality, we make it
+            easy for you to find and order the parts you need to keep your
+            Toyota running smoothly.
           </p>
 
           <div className="flex mb-4 space-x-4">

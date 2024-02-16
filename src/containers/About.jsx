@@ -36,7 +36,7 @@ const About = () => {
             <h2 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
               About us
             </h2>
-            <p className="mt-6 text-lg leading-8 text-gray-300">
+            <p className="mt-6 text-lg leading-8 text-gray-300" id="About-us">
               As a leading supplier of original new and used spare parts, our
               focus lies in providing top-notch components tailored for hybrid
               cars. Situated in Canada, we diligently source high-quality parts

@@ -14,6 +14,8 @@ import {
   Corolla,
   Yaris,
   ToyotaCamryHybrid,
+  Rav4,
+  Rav4Hybrid,
 } from "../containers";
 
 // public routes
@@ -29,6 +31,8 @@ const LoginPage = () => <Login />;
 const CorollaPage = () => <Corolla />;
 const YarisPage = () => <Yaris />;
 const ToyotaCamryHybridPage = () => <ToyotaCamryHybrid />;
+const Rav4Page = () => <Rav4 />;
+const Rav4HybridPage = () => <Rav4Hybrid />;
 
 // export
 export {
@@ -44,4 +48,6 @@ export {
   CorollaPage,
   YarisPage,
   ToyotaCamryHybridPage,
+  Rav4Page,
+  Rav4HybridPage,
 };

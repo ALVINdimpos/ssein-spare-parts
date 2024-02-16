@@ -11,6 +11,8 @@ import {
   CorollaPage,
   YarisPage,
   ToyotaCamryHybridPage,
+  Rav4Page,
+  Rav4HybridPage,
 } from "../pages";
 
 // Public Routes
@@ -27,6 +29,8 @@ const publicRoutes = [
   { path: "/corolla", element: <CorollaPage /> },
   { path: "/yaris", element: <YarisPage /> },
   { path: "/toyota-camry-hybrid", element: <ToyotaCamryHybridPage /> },
+  { path: "/rav4", element: <Rav4Page /> },
+  { path: "/rav4-hybrid", element: <Rav4HybridPage /> },
 ];
 
 // Protected Routes
