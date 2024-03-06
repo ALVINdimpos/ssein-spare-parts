@@ -1,8 +1,8 @@
 import re
 from bs4 import BeautifulSoup
 import requests
-from database import Session
-from database.models import Trim, Engine, Car, TrimCar
+from app.db import Session
+from app.db.models import Trim, Engine, Car, TrimCar
 
 
 def find_or_create(mod, obj, sess):

@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
-from database import Base
+from app.db import Base
+from .car import part_sub_cat_fitment, acc_sub_cat_fitment
 
 
 class Category(Base):
@@ -19,6 +20,7 @@ class Subcategory(Base):
     category_id = Column(Integer, ForeignKey('parts_categories.id', ondelete='CASCADE'))
     category = relationship('Category', back_populates='subcategories', cascade='all')
     parts = relationship('Part', back_populates='subcategory', cascade='all')
+    fits = relationship('TrimEngineAndCar', secondary=part_sub_cat_fitment, back_populates='parts_subcategories')
 
 
 class ACategory(Base):
@@ -37,3 +39,4 @@ class ASubcategory(Base):
     category_id = Column(Integer, ForeignKey('acc_categories.id', ondelete='CASCADE'))
     category = relationship('ACategory', back_populates='subcategories', cascade='all')
     accessories = relationship('Accessory', back_populates='subcategory', cascade='all')
+    fits = relationship('TrimEngineAndCar', secondary=acc_sub_cat_fitment, back_populates='acc_subcategories')

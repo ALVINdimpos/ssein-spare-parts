@@ -13,6 +13,10 @@ typing-extensions = "==4.10.0"
 psycopg2 = "*"
 beautifulsoup4 = "*"
 requests = "*"
+fastapi = "*"
+uvicorn = "*"
+pydantic = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

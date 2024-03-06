@@ -1,11 +1,30 @@
 from database import Base, engine, Session
-from database.models import Category, Subcategory
+from database.models import Part, Accessory
+from sqlalchemy import Index
 
 # Create tables in the database
 Base.metadata.create_all(bind=engine)
 
 # Create a session to interact with the database
 session = Session()
+
+# indices = [
+#     Index('idx_part_num', Part.part_num),
+#     Index('idx_part_name', Part.name),
+#     Index('idx_part_other_names', Part.other_names),
+#     Index('idx_description', Part.description),
+#     Index('idx_replaces', Part.replaces),
+#     Index('idx_accessory_num', Accessory.part_num),
+#     Index('idx_accessory_name', Accessory.name),
+#     Index('idx_accessory_other_names', Accessory.other_names),
+#     Index('idx_accessory_description', Accessory.description),
+#     Index('idx_accessory_replaces', Accessory.replaces)
+# ]
+#
+# for index in indices:
+#     index.create(engine)
+#
+# session.commit()
 
 # Example usage:
 # Create a category

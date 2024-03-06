@@ -1,6 +1,6 @@
 # from bs4 import BeautifulSoup
-# from database import Session
-# from database.models import Car
+# from app.db import Session
+# from app.api.models import Car
 # import requests
 #
 # session = Session()

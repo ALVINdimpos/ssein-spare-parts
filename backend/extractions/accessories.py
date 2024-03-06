@@ -1,8 +1,7 @@
 from bs4 import BeautifulSoup
-from database import Session
-from database.models import Accessory, Car, ASubcategory, ACategory, Trim, TrimCar, TrimEngineAndCar, Engine
+from app.db import Session
+from app.db.models import Accessory, Car, ASubcategory, ACategory, Trim, TrimCar, TrimEngineAndCar, Engine
 import requests
-import json
 
 
 def find_or_create(mod, obj, sess):
