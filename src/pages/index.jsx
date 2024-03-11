@@ -12,10 +12,9 @@ import {
   Contact,
   Login,
   Corolla,
-  Yaris,
-  ToyotaCamryHybrid,
-  Rav4,
-  Rav4Hybrid,
+  ProductList,
+  PartsList,
+  PartDetail,
 } from "../containers";
 
 // public routes
@@ -29,10 +28,9 @@ const ProductUnderCategoryPage = () => <ProductUnderCategory />;
 const ContactPage = () => <Contact />;
 const LoginPage = () => <Login />;
 const CorollaPage = () => <Corolla />;
-const YarisPage = () => <Yaris />;
-const ToyotaCamryHybridPage = () => <ToyotaCamryHybrid />;
-const Rav4Page = () => <Rav4 />;
-const Rav4HybridPage = () => <Rav4Hybrid />;
+const ProductListPage = () => <ProductList />;
+const PartsListPage = () => <PartsList />;
+const PartDetailPage = () => <PartDetail />;
 
 // export
 export {
@@ -46,8 +44,7 @@ export {
   ContactPage,
   LoginPage,
   CorollaPage,
-  YarisPage,
-  ToyotaCamryHybridPage,
-  Rav4Page,
-  Rav4HybridPage,
+  ProductListPage,
+  PartsListPage,
+  PartDetailPage,
 };

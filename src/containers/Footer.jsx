@@ -12,10 +12,10 @@ const Footer = () => {
         <div className="flex flex-col mt-8 md:flex-row md:justify-between">
           <p className="w-full text-gray-400 md:w-2/3">
             At ssein Spare parts , we understand the importance of using genuine
-            Toyota parts for optimal performance and reliability. That's why we
-            offer a wide range of original Toyota spare parts for every model
-            and year. Whether you're a car owner, mechanic, or car enthusiast,
-            we have you covered.
+            Toyota parts for performance and reliability. That's why we offer a
+            wide range of original Toyota spare parts for every model and year.
+            Whether you're a car owner, mechanic, or car enthusiast, we have you
+            covered.
           </p>
           <div className="pt-6 w-44 md:pt-0">
             <Link

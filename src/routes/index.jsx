@@ -9,10 +9,9 @@ import {
   ContactPage,
   LoginPage,
   CorollaPage,
-  YarisPage,
-  ToyotaCamryHybridPage,
-  Rav4Page,
-  Rav4HybridPage,
+  ProductListPage,
+  PartsListPage,
+  PartDetailPage,
 } from "../pages";
 
 // Public Routes
@@ -26,11 +25,13 @@ const publicRoutes = [
   { path: "/product-under-category", element: <ProductUnderCategoryPage /> },
   { path: "/contact-us", element: <ContactPage /> },
   { path: "/login", element: <LoginPage /> },
-  { path: "/corolla", element: <CorollaPage /> },
-  { path: "/yaris", element: <YarisPage /> },
-  { path: "/toyota-camry-hybrid", element: <ToyotaCamryHybridPage /> },
-  { path: "/rav4", element: <Rav4Page /> },
-  { path: "/rav4-hybrid", element: <Rav4HybridPage /> },
+  { path: "/corolla/:year/:make/:model/:engine", element: <CorollaPage /> },
+  { path: "/product-list", element: <ProductListPage /> },
+  {
+    path: "/parts-list/:year/:make/:model/:trim/:engine/:subCategory",
+    element: <PartsListPage />,
+  },
+  { path: "/part-detail/:id", element: <PartDetailPage /> },
 ];
 
 // Protected Routes

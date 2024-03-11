@@ -5,13 +5,18 @@ import { heroPic } from "../assets";
 const HeroSection = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("shopByVehicle");
+  const [models, setModels] = useState([]);
+  const [years, setYears] = useState([]);
+  const [trimEngine, setTrimEngine] = useState([]);
+  // fetch model
+  // fetch years
+  // trip and engine
   const [selectedInputs, setSelectedInputs] = useState({
     year: "",
     make: "",
     model: "",
     engine: "",
   });
-
   useEffect(() => {
     const allInputsSelected =
       selectedInputs.year &&
@@ -21,43 +26,58 @@ const HeroSection = () => {
 
     if (allInputsSelected) {
       // Navigate to the relevant page based on the selected model
-      navigate(`/${selectedInputs.model}`);
+      navigate(
+        `/corolla/${selectedInputs.year}/${selectedInputs.make}/${selectedInputs.model}/${selectedInputs.engine}`,
+      );
     }
   }, [selectedInputs, navigate]);
+  useEffect(() => {
+    fetch("https://parts.kagaba.tech/cars/", {
+      method: "GET",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setModels(data);
+      })
+      .catch((error) => console.log(error));
+  }, []);
+  useEffect(() => {
+    fetch(`https://parts.kagaba.tech/cars/?model=${selectedInputs.model}`, {
+      method: "GET",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setYears(data);
+      })
+      .catch((error) => console.log(error));
+  }, [selectedInputs.model]);
 
+  useEffect(() => {
+    fetch(
+      `https://parts.kagaba.tech/cars/?model=${selectedInputs.model}&year=${selectedInputs.year}`,
+      {
+        method: "GET",
+      },
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        setTrimEngine(data);
+      })
+
+      .catch((error) => console.log(error));
+  }, [selectedInputs.model, selectedInputs.year]);
   const handleInputChange = (field, value) => {
     setSelectedInputs((prevSelectedInputs) => ({
       ...prevSelectedInputs,
       [field]: value,
     }));
   };
-
+  console.log(selectedInputs);
   const renderTabContent = () => {
     switch (activeTab) {
       case "shopByVehicle":
         return (
           <div className="relative flex gap-2 p-2 bg-white rounded-md shadow-sm h-30">
-            <div className="flex items-center px-4 py-2 border border-gray-300 rounded-md appearance-none focus:outline-none focus:border-blue-500">
-              <label htmlFor="year" className="mr-2">
-                Year:
-              </label>
-              <select
-                id="year"
-                className=""
-                onChange={(e) => handleInputChange("year", e.target.value)}
-              >
-                <option selected></option>
-                <option value="2020">2020</option>
-                <option value="2021">2021</option>
-                <option value="2020">2020</option>
-                <option value="2021">2021</option>
-                <option value="2020">2020</option>
-                <option value="2021">2021</option>
-                <option value="2020">2020</option>
-                <option value="2021">2021</option>
-              </select>
-            </div>
-
             <div className="flex items-center px-4 py-2 border border-gray-300 rounded-md appearance-none focus:outline-none focus:border-blue-500">
               <label>Make:</label>
               <select
@@ -68,7 +88,6 @@ const HeroSection = () => {
                 <option value="Toyota">Toyota</option>
               </select>
             </div>
-
             <div className="flex items-center px-4 py-2 border border-gray-300 rounded-md appearance-none focus:outline-none focus:border-blue-500">
               <label>Model:</label>
               <select
@@ -76,15 +95,28 @@ const HeroSection = () => {
                 onChange={(e) => handleInputChange("model", e.target.value)}
               >
                 <option selected></option>
-                <option value="Corolla">Corolla</option>
-                <option value="Yaris">Yaris</option>
-                <option value="Rav4">Rav4</option>
-                <option value="Rav4-hybrid">Rav4-hybrid</option>
-                <option value="Camry">Camry</option>
-                <option value="Camry-hybrid">Camry-hybrid</option>
-                <option value="Vigo"> Vigo</option>
-                <option value="Highlander">Highlander</option>
-                <option value="Highlander-hybrid">Highlander-hybrid</option>
+                {models?.data?.models?.map((model) => (
+                  <option key={model.id} value={model}>
+                    {model}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex items-center px-4 py-2 border border-gray-300 rounded-md appearance-none focus:outline-none focus:border-blue-500">
+              <label htmlFor="year" className="mr-2">
+                Year:
+              </label>
+              <select
+                id="year"
+                className=""
+                onChange={(e) => handleInputChange("year", e.target.value)}
+              >
+                <option selected></option>
+                {years?.data?.years?.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -95,9 +127,11 @@ const HeroSection = () => {
                 onChange={(e) => handleInputChange("engine", e.target.value)}
               >
                 <option selected></option>
-                <option value="1.8L">1.8L</option>
-                <option value="2.0L">2.0L</option>
-                <option selected></option>
+                {trimEngine?.data?.trims_and_engines?.map((engine) => (
+                  <option key={engine.id} value={engine}>
+                    {engine}
+                  </option>
+                ))}
               </select>
             </div>
           </div>

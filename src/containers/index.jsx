@@ -13,3 +13,7 @@ export { default as Yaris } from "./Yaris";
 export { default as ToyotaCamryHybrid } from "./ToyotaCamryHybrid";
 export { default as Rav4 } from "./Rav4";
 export { default as Rav4Hybrid } from "./Rav4Hybrid";
+export { default as Camry } from "./Camry";
+export { default as ProductList } from "./ProductList";
+export { default as PartsList } from "./PartsList";
+export { default as PartDetail } from "./PartDetail";

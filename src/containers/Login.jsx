@@ -23,7 +23,7 @@ const Login = () => {
             <div className="mb-7">
               <h3 className="text-2xl font-semibold text-gray-800">Sign In </h3>
               <p className="text-gray-400">
-                Don't have an account?{" "}
+                Don't have an account?
                 <a href="#" className="text-sm text-black hover:text-gray-900">
                   Sign Up
                 </a>

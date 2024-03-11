@@ -3,7 +3,9 @@ import Footer from "./Footer";
 import "./singleProduct.css";
 import { FaWhatsapp } from "react-icons/fa";
 import { FaPhoneVolume } from "react-icons/fa6";
+import { useNavigate } from "react-router-dom";
 const SingleProduct = () => {
+  const navigate = useNavigate();
   const handleWhatsApp = () => {
     window.open("https://api.whatsapp.com/send?phone=62814142579980");
   };
@@ -68,7 +70,10 @@ const SingleProduct = () => {
                   </div>
                 </div>
                 <div>
-                  <button className="w-full px-4 py-2 font-bold text-white rounded bg-primary xl:px-6 xl:py-3">
+                  <button
+                    className="w-full px-4 py-2 font-bold text-white rounded bg-primary xl:px-6 xl:py-3"
+                    onClick={() => navigate("/contact-us")}
+                  >
                     Make Inquiry
                   </button>
                 </div>

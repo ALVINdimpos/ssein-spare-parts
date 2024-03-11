@@ -1,7 +1,9 @@
 import Nav from "./Nav";
 import Footer from "./Footer";
 import YarisParts from "../helpers/YarisParts";
+import { useNavigate } from "react-router-dom";
 const Yaris = () => {
+  const navigate = useNavigate();
   return (
     <div>
       <Nav />
@@ -14,7 +16,11 @@ const Yaris = () => {
           </p>
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {YarisParts.map((part) => (
-              <div key={part.id} className="p-6 bg-white rounded-lg shadow-md">
+              <div
+                key={part.id}
+                className="p-6 bg-white rounded-lg shadow-md cursor-pointer"
+                onClick={() => navigate(`/single-product/${part.id}`)}
+              >
                 <img
                   className="object-contain w-full h-40 mb-4 rounded"
                   src={part.imageUrl}
