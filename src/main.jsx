@@ -1,15 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
-import { Provider } from "react-redux";
-
-import { store } from "./states/store";
-import "./index.css";
-
+import { MaterialTailwindControllerProvider } from "./dashboard/context";
+import "../public/css/tailwind.css";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <Provider store={store}>
+    <MaterialTailwindControllerProvider>
       <App />
-    </Provider>
+    </MaterialTailwindControllerProvider>
   </React.StrictMode>,
 );

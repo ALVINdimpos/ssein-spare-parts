@@ -9,7 +9,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 
 import { getNetworkStatus, notification } from "./utils";
-
+import { Dashboard } from "./dashboard/layouts";
 import { publicRoutes } from "./routes";
 
 const ScrollToTop = () => {
@@ -63,6 +63,7 @@ const App = () => {
         {publicRoutes.map((route) => (
           <Route key={route.path} path={route.path} element={route.element} />
         ))}
+        <Route path="/dashboard/*" element={<Dashboard />} />
       </Routes>
     </Router>
   );

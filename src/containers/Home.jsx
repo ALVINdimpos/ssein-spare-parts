@@ -2,7 +2,6 @@
 import React from "react";
 import Nav from "./Nav";
 import HeroSection from "./Hero";
-import CategorySection from "./Category";
 import Footer from "./Footer";
 import BestProducts from "./Product";
 import About from "./About";
@@ -11,7 +10,7 @@ const Home = () => {
     <div>
       <Nav />
       <HeroSection />
-      <CategorySection />
+      {/* <CategorySection /> */}
       <BestProducts />
       <About />
       <Footer />
