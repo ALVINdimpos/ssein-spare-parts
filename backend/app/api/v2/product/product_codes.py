@@ -23,13 +23,16 @@ not_found = HTTPException(
 
 
 def latex_to_pdf(latex_content):
-    destination = '/tmp/'
+    destination = './'
     with open(f'{destination}prod-doc.tex', 'w') as file:
         file.write(latex_content)
     exit_code = subprocess.call(
         ['pdflatex', '-interaction=nonstopmode', '-output-format=pdf',
          f'-output-directory={destination}', f'{destination}prod-doc.tex'],
         shell=False)
+    os.remove(f'{destination}prod-doc.tex')
+    os.remove(f'{destination}prod-doc.aux')
+    os.remove(f'{destination}prod-doc.log')
     if exit_code != 0:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

@@ -37,6 +37,10 @@ class User(BaseModel):
     password: Union[str, None]
 
 
+class UserRes(User):
+    id: int
+
+
 class ProductDocument(BaseModel):
     num: str
     name: str

@@ -16,6 +16,7 @@ unauthorized_user = HTTPException(
 
 def make_user(user: User) -> dict:
     return {
+        "id": user.id,
         "email": user.email,
         "name": user.name,
         "role": user.role,

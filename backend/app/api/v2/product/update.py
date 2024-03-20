@@ -71,7 +71,7 @@ async def update_product(
         product.sold_date = update.sold_date
     if update.context:
         product.context = update.context
-    if product.is_sold:
+    if product.is_sold is not None:
         product.is_sold = True
 
     db.commit()
