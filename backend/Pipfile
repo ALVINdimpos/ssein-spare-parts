@@ -17,6 +17,15 @@ fastapi = "*"
 uvicorn = "*"
 pydantic = "*"
 python-dotenv = "*"
+minio = "*"
+python-jose = {extras = ["cryptography"], version = "*"}
+passlib = {extras = ["bcrypt"], version = "*"}
+email-validator = "*"
+python-multipart = "*"
+jinja2 = "*"
+qrcode = "*"
+pdflatex = "*"
+pylatex = "*"
 
 [dev-packages]
 

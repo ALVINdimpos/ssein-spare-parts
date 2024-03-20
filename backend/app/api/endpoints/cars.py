@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query
 from app.db import get_db
-from app.db.models import Car, Engine, TrimCar
+from app.db.models import Car, TrimCar
 from app.api.endpoints import Res
 from sqlalchemy.orm import Session
 from fastapi import Depends

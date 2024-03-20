@@ -1,6 +1,10 @@
 import logging.config
 from app.db import init_db
 from app import app
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 # Initialize database
 init_db()
@@ -14,4 +18,4 @@ if __name__ == '__main__':
     # Start the FastAPI application server
     import uvicorn
 
-    uvicorn.run(app, host='0.0.0.0', port=8000)
+    uvicorn.run(app, host=os.getenv('HOST'), port=int(os.getenv('PORT', 8000)))
