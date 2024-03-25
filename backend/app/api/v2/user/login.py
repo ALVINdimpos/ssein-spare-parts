@@ -13,7 +13,6 @@ import os
 
 load_dotenv()
 
-
 SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 1440))
@@ -60,5 +59,10 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: 
     if not user:
         raise incorrect_credentials
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(data={"sub": user.email}, expires_delta=access_token_expires)
+    access_token = create_access_token(
+        data={
+            "email": user.email,
+            "user_name": user.name,
+            "role": user.role},
+        expires_delta=access_token_expires)
     return Token(access_token=access_token, token_type="bearer")

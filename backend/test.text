@@ -1,0 +1,359 @@
+curl -X 'POST' \
+  'https://parts.kagaba.tech/products/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdXBlcmFkbWluQHNzZWluLmNvbSIsImV4cCI6MTcxMTQ5NTAyOX0.-ZZpT6NSjMssYOHHwC4vxdeewlC3HNqjEEH94GbRA0U' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "num": "P001",
+  "description": "High-Quality Widget",
+  "selling_price": 100,
+  "purchase_price": 50,
+  "tax": 5,
+  "other_expenses": 10,
+  "discount": 5,
+  "is_sold": false,
+  "sold_date": "2024-01-15T10:00:00.000Z",
+  "context": "Profitable widget"
+}'
+
+curl -X 'POST' \
+  'https://parts.kagaba.tech/products/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdXBlcmFkbWluQHNzZWluLmNvbSIsImV4cCI6MTcxMTQ5NTAyOX0.-ZZpT6NSjMssYOHHwC4vxdeewlC3HNqjEEH94GbRA0U' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "num": "P002",
+  "description": "Eco-friendly Gadget",
+  "selling_price": 80,
+  "purchase_price": 60,
+  "tax": 4,
+  "other_expenses": 8,
+  "discount": 0,
+  "is_sold": false,
+  "sold_date": "2024-02-20T10:00:00.000Z",
+  "context": "Sustainable gadget with moderate profit"
+}'
+
+curl -X 'POST' \
+  'https://parts.kagaba.tech/products/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdXBlcmFkbWluQHNzZWluLmNvbSIsImV4cCI6MTcxMTQ5NTAyOX0.-ZZpT6NSjMssYOHHwC4vxdeewlC3HNqjEEH94GbRA0U' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "num": "P003",
+  "description": "Compact Toolset",
+  "selling_price": 150,
+  "purchase_price": 70,
+  "tax": 7,
+  "other_expenses": 15,
+  "discount": 10,
+  "is_sold": false,
+  "sold_date": "2024-03-05T10:00:00.000Z",
+  "context": "High margin toolset"
+}'
+
+curl -X 'POST' \
+  'https://parts.kagaba.tech/products/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdXBlcmFkbWluQHNzZWluLmNvbSIsImV4cCI6MTcxMTQ5NTAyOX0.-ZZpT6NSjMssYOHHwC4vxdeewlC3HNqjEEH94GbRA0U' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "num": "P004",
+  "description": "Advanced Toolkit",
+  "selling_price": 200,
+  "purchase_price": 100,
+  "tax": 10,
+  "other_expenses": 20,
+  "discount": 15,
+  "is_sold": false,
+  "sold_date": "2024-04-10T10:00:00.000Z",
+  "context": "Advanced toolkit with good profit"
+}'
+
+curl -X 'POST' \
+  'https://parts.kagaba.tech/products/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdXBlcmFkbWluQHNzZWluLmNvbSIsImV4cCI6MTcxMTQ5NTAyOX0.-ZZpT6NSjMssYOHHwC4vxdeewlC3HNqjEEH94GbRA0U' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "num": "P005",
+  "description": "Stylish Accessory",
+  "selling_price": 50,
+  "purchase_price": 25,
+  "tax": 2,
+  "other_expenses": 5,
+  "discount": 3,
+  "is_sold": false,
+  "sold_date": "2024-05-15T10:00:00.000Z",
+  "context": "Low-cost accessory with high demand"
+}'
+
+curl -X 'POST' \
+  'https://parts.kagaba.tech/products/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdXBlcmFkbWluQHNzZWluLmNvbSIsImV4cCI6MTcxMTQ5NTAyOX0.-ZZpT6NSjMssYOHHwC4vxdeewlC3HNqjEEH94GbRA0U' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "num": "P006",
+  "description": "Portable Charger",
+  "selling_price": 120,
+  "purchase_price": 80,
+  "tax": 6,
+  "other_expenses": 10,
+  "discount": 10,
+  "is_sold": false,
+  "sold_date": "2024-06-20T10:00:00.000Z",
+  "context": "High-demand electronics"
+}'
+
+curl -X 'POST' \
+  'https://parts.kagaba.tech/products/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdXBlcmFkbWluQHNzZWluLmNvbSIsImV4cCI6MTcxMTQ5NTAyOX0.-ZZpT6NSjMssYOHHwC4vxdeewlC3HNqjEEH94GbRA0U' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "num": "P007",
+  "description": "Wireless Earbuds",
+  "selling_price": 160,
+  "purchase_price": 90,
+  "tax": 8,
+  "other_expenses": 12,
+  "discount": 15,
+  "is_sold": false,
+  "sold_date": "2024-07-25T10:00:00.000Z",
+  "context": "Popular audio device with solid margin"
+}'
+
+curl -X 'POST' \
+  'https://parts.kagaba.tech/products/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdXBlcmFkbWluQHNzZWluLmNvbSIsImV4cCI6MTcxMTQ5NTAyOX0.-ZZpT6NSjMssYOHHwC4vxdeewlC3HNqjEEH94GbRA0U' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "num": "P008",
+  "description": "Smart Watch",
+  "selling_price": 250,
+  "purchase_price": 150,
+  "tax": 12,
+  "other_expenses": 18,
+  "discount": 20,
+  "is_sold": false,
+  "sold_date": "2024-08-30T10:00:00.000Z",
+  "context": "High-tech gadget with premium pricing"
+}'
+
+curl -X 'POST' \
+  'https://parts.kagaba.tech/products/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdXBlcmFkbWluQHNzZWluLmNvbSIsImV4cCI6MTcxMTQ5NTAyOX0.-ZZpT6NSjMssYOHHwC4vxdeewlC3HNqjEEH94GbRA0U' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "num": "P009",
+  "description": "Ergonomic Keyboard",
+  "selling_price": 100,
+  "purchase_price": 50,
+  "tax": 5,
+  "other_expenses": 10,
+  "discount": 10,
+  "is_sold": false,
+  "sold_date": "2024-09-15T10:00:00.000Z",
+  "context": "Office essential with high usability"
+}'
+
+curl -X 'POST' \
+  'https://parts.kagaba.tech/products/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdXBlcmFkbWluQHNzZWluLmNvbSIsImV4cCI6MTcxMTQ5NTAyOX0.-ZZpT6NSjMssYOHHwC4vxdeewlC3HNqjEEH94GbRA0U' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "num": "P010",
+  "description": "Innovative Lamp",
+  "selling_price": 70,
+  "purchase_price": 35,
+  "tax": 3,
+  "other_expenses": 7,
+  "discount": 5,
+  "is_sold": false,
+  "sold_date": "2024-10-20T10:00:00.000Z",
+  "context": "Energy-saving lighting solution"
+}'
+
+curl -X 'POST' \
+  'https://parts.kagaba.tech/products/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdXBlcmFkbWluQHNzZWluLmNvbSIsImV4cCI6MTcxMTQ5NTAyOX0.-ZZpT6NSjMssYOHHwC4vxdeewlC3HNqjEEH94GbRA0U' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "num": "P011",
+  "description": "Innovative Alarm Clock",
+  "selling_price": 40,
+  "purchase_price": 50,
+  "tax": 4,
+  "other_expenses": 10,
+  "discount": 0,
+  "is_sold": false,
+  "sold_date": "2024-11-05T10:00:00.000Z",
+  "context": "Loss on high-tech features"
+}'
+
+curl -X 'POST' \
+  'https://parts.kagaba.tech/products/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdXBlcmFkbWluQHNzZWluLmNvbSIsImV4cCI6MTcxMTQ5NTAyOX0.-ZZpT6NSjMssYOHHwC4vxdeewlC3HNqjEEH94GbRA0U' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "num": "P012",
+  "description": "Solar-powered Fan",
+  "selling_price": 85,
+  "purchase_price": 100,
+  "tax": 8,
+  "other_expenses": 12,
+  "discount": 5,
+  "is_sold": false,
+  "sold_date": "2024-12-10T10:00:00.000Z",
+  "context": "Eco-friendly but at a loss"
+}'
+
+curl -X 'POST' \
+  'https://parts.kagaba.tech/products/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdXBlcmFkbWluQHNzZWluLmNvbSIsImV4cCI6MTcxMTQ5NTAyOX0.-ZZpT6NSjMssYOHHwC4vxdeewlC3HNqjEEH94GbRA0U' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "num": "P013",
+  "description": "Bluetooth Speaker",
+  "selling_price": 60,
+  "purchase_price": 80,
+  "tax": 5,
+  "other_expenses": 15,
+  "discount": 10,
+  "is_sold": false,
+  "sold_date": "2024-01-20T10:00:00.000Z",
+  "context": "Popular but underpriced"
+}'
+
+curl -X 'POST' \
+  'https://parts.kagaba.tech/products/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdXBlcmFkbWluQHNzZWluLmNvbSIsImV4cCI6MTcxMTQ5NTAyOX0.-ZZpT6NSjMssYOHHwC4vxdeewlC3HNqjEEH94GbRA0U' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "num": "P014",
+  "description": "Futuristic Mouse",
+  "selling_price": 45,
+  "purchase_price": 55,
+  "tax": 3,
+  "other_expenses": 10,
+  "discount": 5,
+  "is_sold": false,
+  "sold_date": "2024-02-15T10:00:00.000Z",
+  "context": "Tech novelty with challenging cost structure"
+}'
+
+curl -X 'POST' \
+  'https://parts.kagaba.tech/products/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdXBlcmFkbWluQHNzZWluLmNvbSIsImV4cCI6MTcxMTQ5NTAyOX0.-ZZpT6NSjMssYOHHwC4vxdeewlC3HNqjEEH94GbRA0U' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "num": "P015",
+  "description": "Smart Thermostat",
+  "selling_price": 90,
+  "purchase_price": 110,
+  "tax": 7,
+  "other_expenses": 20,
+  "discount": 10,
+  "is_sold": false,
+  "sold_date": "2024-03-10T10:00:00.000Z",
+  "context": "Innovative climate control at a loss"
+}'
+
+curl -X 'POST' \
+  'https://parts.kagaba.tech/products/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdXBlcmFkbWluQHNzZWluLmNvbSIsImV4cCI6MTcxMTQ5NTAyOX0.-ZZpT6NSjMssYOHHwC4vxdeewlC3HNqjEEH94GbRA0U' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "num": "P016",
+  "description": "Ergonomic Gaming Chair",
+  "selling_price": 180,
+  "purchase_price": 220,
+  "tax": 18,
+  "other_expenses": 30,
+  "discount": 20,
+  "is_sold": false,
+  "sold_date": "2024-04-25 20:53:37.992",
+  "context": "High-end gaming chair not meeting cost expectations"
+}'
+
+curl -X 'POST' \
+  'https://parts.kagaba.tech/products/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdXBlcmFkbWluQHNzZWluLmNvbSIsImV4cCI6MTcxMTQ5NTAyOX0.-ZZpT6NSjMssYOHHwC4vxdeewlC3HNqjEEH94GbRA0U' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "num": "P017",
+  "description": "Compact Digital Camera",
+  "selling_price": 150,
+  "purchase_price": 200,
+  "tax": 15,
+  "other_expenses": 25,
+  "discount": 10,
+  "is_sold": false,
+  "sold_date": "2024-05-30 20:53:37.992",
+  "context": "High-quality camera facing tough market competition"
+}'
+
+curl -X 'POST' \
+  'https://parts.kagaba.tech/products/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdXBlcmFkbWluQHNzZWluLmNvbSIsImV4cCI6MTcxMTQ5NTAyOX0.-ZZpT6NSjMssYOHHwC4vxdeewlC3HNqjEEH94GbRA0U' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "num": "P018",
+  "description": "Multifunction Printer",
+  "selling_price": 90,
+  "purchase_price": 120,
+  "tax": 9,
+  "other_expenses": 15,
+  "discount": 5,
+  "is_sold": false,
+  "sold_date": "2024-06-15 20:53:37.992",
+  "context": "Struggling to compete with digital alternatives"
+}'
+
+curl -X 'POST' \
+  'https://parts.kagaba.tech/products/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdXBlcmFkbWluQHNzZWluLmNvbSIsImV4cCI6MTcxMTQ5NTAyOX0.-ZZpT6NSjMssYOHHwC4vxdeewlC3HNqjEEH94GbRA0U' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "num": "P019",
+  "description": "Vintage Record Player",
+  "selling_price": 250,
+  "purchase_price": 300,
+  "tax": 25,
+  "other_expenses": 40,
+  "discount": 30,
+  "is_sold": false,
+  "sold_date": "2024-07-20 20:53:37.992",
+  "context": "Niche market appeal but with production challenges"
+}'
+
+curl -X 'POST' \
+  'https://parts.kagaba.tech/products/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdXBlcmFkbWluQHNzZWluLmNvbSIsImV4cCI6MTcxMTQ5NTAyOX0.-ZZpT6NSjMssYOHHwC4vxdeewlC3HNqjEEH94GbRA0U' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "num": "P020",
+  "description": "Artificial Intelligence Home Assistant",
+  "selling_price": 100,
+  "purchase_price": 150,
+  "tax": 10,
+  "other_expenses": 20,
+  "discount": 15,
+  "is_sold": false,
+  "sold_date": "2024-08-25 20:53:37.992",
+  "context": "Advanced tech not yet embraced by market"
+}'

@@ -65,7 +65,6 @@ async def get_product_document(
     if not product:
         raise not_found
     product_document = ProductDocument(
-        name=product.name,
         description=product.description,
         selling_price=product.selling_price,
         num=product.num,

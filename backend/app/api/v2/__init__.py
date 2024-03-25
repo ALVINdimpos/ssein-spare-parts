@@ -2,7 +2,18 @@ from datetime import datetime
 from enum import Enum
 from pydantic import BaseModel, EmailStr
 from app.db.models import Product
-from typing import Optional, Union
+from typing import Union
+import uuid
+
+
+def generate_short_unique_id():
+    # Generate a UUID
+    generated_uuid = uuid.uuid4()
+
+    # Convert the UUID to string and take the first part
+    short_id = str(generated_uuid).split('-')[0]
+
+    return short_id.upper()
 
 
 class Res(BaseModel):
@@ -43,7 +54,6 @@ class UserRes(User):
 
 class ProductDocument(BaseModel):
     num: str
-    name: str
     description: str
     selling_price: float
     discount: float
@@ -53,7 +63,6 @@ class ProductDocument(BaseModel):
 
 class ProductModel(BaseModel):
     num: str
-    name: str
     description: str
     selling_price: float
     purchase_price: float
@@ -72,7 +81,6 @@ class ProductResModel(ProductModel):
 def make_product(product: Product) -> ProductResModel:
     return ProductResModel(
         id=product.id,
-        name=product.name,
         description=product.description,
         selling_price=product.selling_price,
         purchase_price=product.purchase_price,

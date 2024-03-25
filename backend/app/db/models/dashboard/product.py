@@ -7,7 +7,6 @@ class Product(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     num = Column(String)
-    name = Column(String)
     description = Column(String)
     selling_price = Column(Numeric, default=0)
     purchase_price = Column(Numeric, default=0)

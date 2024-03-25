@@ -5,6 +5,7 @@ from fastapi import Depends, APIRouter, Body, status
 from typing import Annotated
 from app.db.models import Product
 from app.db import get_db
+from app.api.v2 import generate_short_unique_id
 
 router = APIRouter()
 
@@ -13,6 +14,7 @@ router = APIRouter()
 async def create_product(
         product: Annotated[ProductModel, Body()],
         db: Session = Depends(get_db)) -> Res:
+    product.num = generate_short_unique_id()
     product = Product(**product.dict())
     db.add(product)
     db.commit()

@@ -12,7 +12,6 @@ router = APIRouter()
 
 class UpdateProduct(BaseModel):
     num: str | None = None
-    name: str | None = None
     description: str | None = None
     selling_price: float | None = None
     purchase_price: float | None = None
@@ -27,7 +26,6 @@ class UpdateProduct(BaseModel):
     def not_none_validator(cls, values: dict) -> dict:
         keys = set(values.keys())
         attributes = (
-            'name',
             'num',
             'description',
             'selling_price',
@@ -51,8 +49,6 @@ async def update_product(
         product_id: int = Path(title="Product ID", description="The id of the product to be updated"),
         db: Session = Depends(get_db)) -> Res:
     product = db.query(Product).filter_by(id=product_id).first()
-    if update.name:
-        product.name = update.name
     if update.num:
         product.num = update.num
     if update.description:
