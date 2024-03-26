@@ -44,7 +44,7 @@ const Contact = () => {
                       Our Location
                     </h4>
                     <p className="text-base text-body-color dark:text-dark-6">
-                      Gatsata - Nyarugenge - Kigali
+                      Gatsata - Gasabo - Kigali
                     </p>
                   </div>
                 </div>
