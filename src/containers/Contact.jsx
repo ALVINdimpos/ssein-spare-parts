@@ -44,7 +44,7 @@ const Contact = () => {
                       Our Location
                     </h4>
                     <p className="text-base text-body-color dark:text-dark-6">
-                      99 S.t Jomblo Park Pekanbaru 28292. Indonesia
+                      Gatsata - Nyarugenge - Kigali
                     </p>
                   </div>
                 </div>
