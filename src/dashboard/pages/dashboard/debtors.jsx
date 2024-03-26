@@ -1,0 +1,441 @@
+/* eslint-disable no-unused-vars */
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Typography,
+  Button,
+} from "@material-tailwind/react";
+import axios from "axios";
+import { FaEdit } from "react-icons/fa";
+import { MdAutoDelete } from "react-icons/md";
+import { MdOutlineVisibility } from "react-icons/md";
+import { IoMdAddCircle } from "react-icons/io";
+import { IoIosCloseCircle } from "react-icons/io";
+import Loader from "react-js-loader";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+export function DebtorTable() {
+  // const [debtorData, setDebtorData] = useState([]);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [viewDebtors, setViewDebtors] = useState(false);
+  const [editDebtors, setEditDebtors] = useState(false);
+  const [debtorsData, setDebtorData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [debtorsPerPage] = useState(5);
+
+  const [newDebtorData, setNewDebtorData] = useState({
+    name: "",
+    contact_info: "",
+    amount: 0,
+    due_date: "",
+    context: "",
+    payment_status: "Pending",
+    scope: "debtors",
+  });
+
+  // Event handler to update the new debtor data as the user types
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewDebtorData({ ...newDebtorData, [name]: value });
+  };
+  // Add useEffect hook to fetch data when the component mounts
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(
+          "https://parts.kagaba.tech/management/?scope=debtors",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+              Accept: "application/json",
+            },
+          },
+        );
+        const { data } = response.data;
+        if (data && data.records) {
+          setDebtorData(data?.records);
+          setLoading(false);
+        }
+      } catch (error) {
+        setLoading(false);
+        toast.error("Error fetching creditor data");
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleAddDebtor = async () => {
+    try {
+      setLoading(true);
+      await axios.post("https://parts.kagaba.tech/management/", newDebtorData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+      setLoading(false);
+      toast.success("Debtor added successfully");
+      window.location.reload();
+      setShowAddForm(false);
+    } catch (error) {
+      setLoading(false);
+      console.error("Error adding debtor:", error);
+      toast.error("Error adding debtor");
+    }
+  };
+
+  const handleDeleteDebtor = async (id) => {
+    try {
+      await axios.delete(`YOUR_API_ENDPOINT_HERE/${id}`);
+      toast.success("Debtor deleted successfully");
+      window.location.reload();
+    } catch (error) {
+      console.error("Error deleting debtor:", error);
+      toast.error("Error deleting debtor");
+    }
+  };
+  const handleEditDebtor = (id) => {
+    window.location.reload();
+  };
+  const handleViewDebtor = (id) => {
+    window.location.reload();
+  };
+  const getPaymentStatusColor = (status) => {
+    switch (status) {
+      case "Paid":
+        return "text-green-600";
+      case "Pending":
+        return "text-yellow-600";
+      case "Outstanding":
+        return "text-red-600";
+      default:
+        return "text-blue-gray-600";
+    }
+  };
+
+  // Filter the debtor data based on the search query
+  const filteredDebtors = debtorsData?.filter((debtor) => {
+    if (
+      debtor &&
+      debtor.name &&
+      debtor.contact_info &&
+      debtor.due_date &&
+      debtor.payment_status
+    ) {
+      return (
+        debtor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        debtor.contact_info.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        debtor.due_date.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        debtor.payment_status.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    return false; // Return false for undefined or missing properties
+  });
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const indexOfLastDebtor = currentPage * debtorsPerPage;
+  const indexOfFirstDebtor = indexOfLastDebtor - debtorsPerPage;
+  const currentDebtors = filteredDebtors?.slice(
+    indexOfFirstDebtor,
+    indexOfLastDebtor,
+  );
+
+  return (
+    <div className="flex flex-col gap-12 mt-12 mb-8">
+      <Card>
+        <CardHeader variant="black" color="gray" className="p-6 mb-8">
+          <div className="flex items-center justify-between">
+            <Typography variant="h6" color="white">
+              Debtor Table
+            </Typography>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                placeholder="Search Debtors..."
+                className="px-3 py-2 text-black border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <Button
+                onClick={() => setShowAddForm(true)}
+                color="indigo"
+                buttonType="filled"
+                size="regular"
+                rounded={false}
+                block={false}
+                iconOnly={false}
+                ripple="light"
+                className="flex items-center gap-2"
+              >
+                <IoMdAddCircle className="text-xl" />
+                <span className="text-base font-medium">Add New Debtor</span>
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        <CardBody className="px-0 pt-0 pb-2 overflow-x-scroll">
+          <table className="w-full min-w-[640px] table-auto">
+            <thead>
+              <tr>
+                {[
+                  "ID",
+                  "Name",
+                  "Contact Info",
+                  "Debt Amount",
+                  "Due Date",
+                  "Payment Status",
+                  "Context",
+                  "Action",
+                ].map((el) => (
+                  <th
+                    key={el}
+                    className="px-5 py-3 text-left border-b border-blue-gray-50"
+                  >
+                    <Typography
+                      variant="small"
+                      className="text-[11px] font-bold uppercase text-blue-gray-400"
+                    >
+                      {el}
+                    </Typography>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {currentDebtors?.map(
+                (
+                  {
+                    id,
+                    name,
+                    contact_info,
+                    amount,
+                    due_date,
+                    payment_status,
+                    context,
+                  },
+                  key,
+                ) => {
+                  const className = `py-3 px-5 ${
+                    key === currentDebtors?.length - 1
+                      ? ""
+                      : "border-b border-blue-gray-50"
+                  }`;
+
+                  return (
+                    <tr key={id}>
+                      <td className={className}>
+                        <div className="flex items-center gap-4">
+                          <div>
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-semibold"
+                            >
+                              {id}
+                            </Typography>
+                          </div>
+                        </div>
+                      </td>
+                      <td className={className}>
+                        <div className="flex items-center gap-4">
+                          <div>
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-semibold"
+                            >
+                              {name}
+                            </Typography>
+                          </div>
+                        </div>
+                      </td>
+                      <td className={className}>
+                        <Typography className="text-xs font-semibold text-blue-gray-600">
+                          {contact_info}
+                        </Typography>
+                      </td>
+                      <td className={className}>
+                        <Typography className="text-xs font-semibold text-blue-gray-600">
+                          {amount} RWF
+                        </Typography>
+                      </td>
+                      <td className={className}>
+                        <Typography className="text-xs font-semibold text-blue-gray-600">
+                          {due_date}
+                        </Typography>
+                      </td>
+                      <td className={className}>
+                        <Typography className="text-xs font-semibold text-blue-gray-600">
+                          {context}
+                        </Typography>
+                      </td>
+                      <td className={className}>
+                        <Typography
+                          className={`text-xs font-semibold ${getPaymentStatusColor(payment_status)}`}
+                        >
+                          {payment_status}
+                        </Typography>
+                      </td>
+
+                      <td className={className}>
+                        <div className="flex">
+                          <FaEdit
+                            className="text-blue-500 cursor-pointer material-icons"
+                            onClick={() => handleEditDebtor(id)}
+                          />
+                          <MdAutoDelete
+                            className="ml-2 text-red-500 cursor-pointer material-icons"
+                            onClick={() => handleDeleteDebtor(id)}
+                          />
+                          <MdOutlineVisibility
+                            className="ml-2 text-green-500 cursor-pointer material-icons"
+                            onClick={() => handleViewDebtor(id)}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                },
+              )}
+            </tbody>
+          </table>
+        </CardBody>
+      </Card>
+      <div className="flex justify-center mt-4">
+        <ul className="flex space-x-2">
+          {Array.from(
+            { length: Math.ceil(debtorsData.length / debtorsPerPage) },
+            (_, i) => (
+              <li key={i}>
+                <Button
+                  className={`px-3 py-1 rounded-md ${currentPage === i + 1 ? "bg-black" : "bg-gray-200"} focus:outline-none`}
+                  onClick={() => paginate(i + 1)}
+                >
+                  {i + 1}
+                </Button>
+              </li>
+            ),
+          )}
+        </ul>
+      </div>
+      {showAddForm && (
+        <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full bg-black bg-opacity-60">
+          {/* Add Debtor Form */}
+          <div className="p-8 bg-white rounded-md shadow-lg">
+            <div className="flex items-center justify-between mb-4">
+              <Typography variant="h6" color="gray">
+                Add New Debtor
+              </Typography>
+              <button onClick={() => setShowAddForm(false)}>
+                <IoIosCloseCircle className="text-xl text-gray-500 hover:text-gray-700" />
+              </button>
+            </div>
+            {/* Add Debtor form */}
+            <div className="mb-4">
+              <label className="block mb-1 text-sm text-gray-600">
+                Debtor Name
+              </label>
+              <input
+                type="text"
+                placeholder="Name"
+                name="name"
+                value={newDebtorData.name}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block mb-1 text-sm text-gray-600">
+                Contact Information
+              </label>
+              <input
+                type="text"
+                placeholder="Contact Info"
+                name="contact_info"
+                value={newDebtorData.contact_info}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block mb-1 text-sm text-gray-600">
+                  Debt Amount
+                </label>
+                <input
+                  type="number"
+                  placeholder="Amount"
+                  name="amount"
+                  value={newDebtorData.amount}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block mb-1 text-sm text-gray-600">
+                  Due Date
+                </label>
+                <input
+                  type="date"
+                  name="due_date"
+                  value={newDebtorData.due_date}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+            </div>
+            <div className="mb-4">
+              <label className="block mb-1 text-sm text-gray-600">
+                Context
+              </label>
+              <textarea
+                placeholder="Context"
+                name="context"
+                value={newDebtorData.context}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+            {errorMessage && (
+              <div
+                className="px-4 py-3 text-red-700 bg-red-100 border-l-4 border-red-500"
+                role="alert"
+              >
+                <p className="font-bold">{errorMessage}</p>
+              </div>
+            )}
+            <Button
+              color="black"
+              onClick={handleAddDebtor}
+              className="w-full"
+              disabled={loading}
+              type="submit"
+              buttonType="filled"
+              size="regular"
+              rounded={true}
+              block={false}
+              iconOnly={false}
+              ripple="light"
+            >
+              {loading ? <Loader /> : "Add Debtor"}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      <ToastContainer />
+    </div>
+  );
+}
+
+export default DebtorTable;

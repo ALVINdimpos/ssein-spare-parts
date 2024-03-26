@@ -2,20 +2,21 @@ import {
   Card,
   CardHeader,
   CardBody,
-  CardFooter,
   Typography,
 } from "@material-tailwind/react";
 import PropTypes from "prop-types";
 
-export function StatisticsCard({ color, icon, title, value, footer }) {
+export function StatisticsCard({ color, icon, title, value }) {
+  const cardColor = title === "Loss" ? "red" : color;
+
   return (
     <Card className="border shadow-sm border-blue-gray-100">
       <CardHeader
         variant="black"
-        color={color}
+        color={cardColor}
         floated={false}
         shadow={false}
-        className="absolute grid w-12 h-12 m-4 place-items-center "
+        className="absolute grid w-12 h-12 m-4 place-items-center"
       >
         {icon}
       </CardHeader>
@@ -24,14 +25,11 @@ export function StatisticsCard({ color, icon, title, value, footer }) {
           {title}
         </Typography>
         <Typography variant="h4" color="blue-gray">
-          {value}
+          {title === "Users" || title === "Tax Documents"
+            ? value
+            : `${value} RWF`}
         </Typography>
       </CardBody>
-      {footer && (
-        <CardFooter className="p-4 border-t border-blue-gray-50">
-          {footer}
-        </CardFooter>
-      )}
     </Card>
   );
 }

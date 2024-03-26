@@ -72,7 +72,6 @@ const HeroSection = () => {
       [field]: value,
     }));
   };
-  console.log(selectedInputs);
   const renderTabContent = () => {
     switch (activeTab) {
       case "shopByVehicle":

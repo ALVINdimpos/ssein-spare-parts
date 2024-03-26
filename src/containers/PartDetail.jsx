@@ -1,16 +1,14 @@
-/* eslint-disable no-unused-vars */
-// Inside your React component (e.g., PartDetail.js)
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Nav from "./Nav";
 import Footer from "./Footer";
 import { useParams } from "react-router-dom";
 
 const PartDetail = () => {
   const { id } = useParams();
-  console.log(id);
   const [partData, setPartData] = useState([]);
   const [fitments, setFitments] = useState();
   const [loading, setLoading] = useState(false);
+  const [showInquiryForm, setShowInquiryForm] = useState(false); // Step 1
 
   useEffect(() => {
     fetch(`https://parts.kagaba.tech/parts/${id}?scope=parts`, {
@@ -22,12 +20,16 @@ const PartDetail = () => {
         setFitments(data?.data?.fitments);
         setLoading(true);
       })
-
       .catch((error) => {
         console.log(error);
         setLoading(false);
       });
   }, [id]);
+
+  const toggleInquiryForm = () => {
+    setShowInquiryForm(!showInquiryForm); // Step 2
+  };
+
   return (
     <div>
       <Nav />
@@ -92,10 +94,67 @@ const PartDetail = () => {
                   ))}
                 </div>
               </div>
-              {/* <div className="flex items-center justify-between">
-                                <span className="font-semibold text-green-600">{partData.data.part.price}</span>
-                                <span className="text-gray-500">{partData.data.part.condition}</span>
-                            </div> */}
+              <button
+                onClick={toggleInquiryForm}
+                className="px-4 py-2 font-bold text-white rounded bg-primary hover:bg-primary-700"
+              >
+                Make Inquiry
+              </button>
+              {showInquiryForm && (
+                <form>
+                  <div className="mb-4">
+                    <label
+                      htmlFor="name"
+                      className="block mb-2 font-semibold text-gray-700"
+                    >
+                      Your Name
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      className="w-full px-3 py-2 border rounded"
+                      placeholder="Enter your name"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label
+                      htmlFor="email"
+                      className="block mb-2 font-semibold text-gray-700"
+                    >
+                      Your Email
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      className="w-full px-3 py-2 border rounded"
+                      placeholder="Enter your email"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label
+                      htmlFor="message"
+                      className="block mb-2 font-semibold text-gray-700"
+                    >
+                      Message
+                    </label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      rows="4"
+                      className="w-full px-3 py-2 border rounded"
+                      placeholder="Enter your message"
+                    ></textarea>
+                  </div>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 font-bold text-white rounded bg-primary hover:bg-primary"
+                  >
+                    Submit Inquiry
+                  </button>
+                </form>
+              )}
             </div>
           </div>
         </div>

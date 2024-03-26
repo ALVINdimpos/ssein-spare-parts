@@ -1,3 +1,7 @@
 export { Home as Home } from "./home.jsx";
 export { Notifications as Notifications } from "./notifications.jsx";
 export { Tables as Tables } from "./tables.jsx";
+export { UserTables as UserTables } from "./user-table.jsx";
+export { default as Reports } from "./report.jsx";
+export { DebtorTable as DebtorTable } from "./debtors.jsx";
+export { CreditorTable as CreditorTable } from "./creditors.jsx";

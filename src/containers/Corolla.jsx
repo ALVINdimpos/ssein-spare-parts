@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 /* eslint-disable no-unused-vars */
 // Inside Corolla.js
 import React, { useState } from "react";
@@ -95,11 +96,11 @@ const Corolla = () => {
                 <h2 className="mb-4 text-lg font-semibold">
                   {category.category}
                 </h2>
-                <ul>
+                <ul className="cursor-pointer">
                   {category.sub_categories.map((subCategory, subIndex) => (
                     <li
                       key={subIndex}
-                      className="text-gray-700"
+                      className="text-gray-700 cursor-pointer hover:text-blue-500"
                       onClick={() => handleSubCategoryClick(subCategory)}
                     >
                       {subCategory}
