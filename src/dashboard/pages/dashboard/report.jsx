@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import {
   LineChart,
   Line,
@@ -15,6 +14,7 @@ import {
   Typography,
   CardBody,
 } from "@material-tailwind/react";
+import { useState, useEffect } from "react";
 
 const Reports = () => {
   const [reportData, setReportData] = useState(null);
@@ -47,12 +47,20 @@ const Reports = () => {
 
   const { profit_graph, loss_graph } = reportData;
 
-  const mergedData = profit_graph.map((item, index) => ({
-    month: getMonthName(item.date.split("-")[1]), // Extracting and converting month to name
-    year: item.date.split("-")[0], // Extracting year from date
-    profit: parseFloat(item.amount),
-    loss: parseFloat(loss_graph[index].amount),
-  }));
+  const mergedData = profit_graph.map((item, index) => {
+    const profit = parseFloat(item.amount);
+    const loss = parseFloat(loss_graph[index].amount);
+    const month = getMonthName(item.date.split("-")[1]); // Extracting and converting month to name
+    const year = item.date.split("-")[0]; // Extracting year from date
+    const type = Math.abs(profit) >= Math.abs(loss) ? "Profit" : "Loss"; // Selecting profit if its absolute value is greater or equal to loss
+    const amount = type === "Profit" ? profit : loss; // Selecting the amount based on the type (profit or loss)
+    return {
+      month,
+      year,
+      amount,
+      type,
+    };
+  });
 
   return (
     <div className="flex flex-col gap-12 mt-12 mb-8">
@@ -77,15 +85,9 @@ const Reports = () => {
                 <Legend />
                 <Line
                   type="monotone"
-                  dataKey="profit"
+                  dataKey="amount"
                   stroke="#3B82F6"
-                  name="Profit"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="loss"
-                  stroke="#EF4444"
-                  name="Loss"
+                  name="Profit/Loss"
                 />
               </LineChart>
             </ResponsiveContainer>

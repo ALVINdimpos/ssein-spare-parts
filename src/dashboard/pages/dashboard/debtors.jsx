@@ -20,7 +20,7 @@ import "react-toastify/dist/ReactToastify.css";
 export function DebtorTable() {
   // const [debtorData, setDebtorData] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [viewDebtors, setViewDebtors] = useState(false);
+  const [editDebtorId, setEditDebtorId] = useState(0);
   const [editDebtors, setEditDebtors] = useState(false);
   const [debtorsData, setDebtorData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -65,7 +65,7 @@ export function DebtorTable() {
         }
       } catch (error) {
         setLoading(false);
-        toast.error("Error fetching creditor data");
+        toast.error("Error fetching debtor data");
       }
     };
 
@@ -95,7 +95,12 @@ export function DebtorTable() {
 
   const handleDeleteDebtor = async (id) => {
     try {
-      await axios.delete(`YOUR_API_ENDPOINT_HERE/${id}`);
+      await axios.delete(`https://parts.kagaba.tech/management/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          Accept: "application/json",
+        },
+      });
       toast.success("Debtor deleted successfully");
       window.location.reload();
     } catch (error) {
@@ -104,7 +109,32 @@ export function DebtorTable() {
     }
   };
   const handleEditDebtor = (id) => {
-    window.location.reload();
+    setEditDebtors(true);
+    setEditDebtorId(id);
+  };
+  const handleEditDebtorSubmit = async () => {
+    try {
+      setLoading(true);
+      await axios.patch(
+        `https://parts.kagaba.tech/management/${editDebtorId}`,
+        { payment_status: newDebtorData.payment_status },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            "Access-Control-Allow-Origin": "*",
+          },
+        },
+      );
+      setLoading(false);
+      toast.success("Debtor status updated successfully");
+      window.location.reload();
+      setEditDebtors(false);
+    } catch (error) {
+      setLoading(false);
+      console.error("Error updating debtor status:", error);
+      toast.error("Error updating debtor status");
+    }
   };
   const handleViewDebtor = (id) => {
     window.location.reload();
@@ -432,7 +462,60 @@ export function DebtorTable() {
           </div>
         </div>
       )}
-
+      {editDebtors && (
+        <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full bg-black bg-opacity-60">
+          {/* Edit Debtors Form */}
+          <div className="p-8 bg-white rounded-md shadow-lg">
+            <div className="flex items-center justify-between gap-4 mb-4">
+              <Typography variant="h6" color="gray">
+                Change Debtors Status
+              </Typography>
+              <button onClick={() => setEditDebtors(false)}>
+                <IoIosCloseCircle className="text-xl text-gray-500 hover:text-gray-700" />
+              </button>
+            </div>
+            {/* Form fields and submit button */}
+            <div className="mb-4">
+              <label className="block mb-1 text-sm text-gray-600">
+                Payment Status
+              </label>
+              <select
+                name="payment_status"
+                value={newDebtorData.payment_status}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+              >
+                <option value="pending">Pending</option>
+                <option value="paid">Paid</option>
+                <option value="outstanding">Outstanding</option>
+              </select>
+            </div>
+            {errorMessage && (
+              <div
+                className="px-4 py-3 text-red-700 bg-red-100 border-l-4 border-red-500"
+                role="alert"
+              >
+                <p className="font-bold">{errorMessage}</p>
+              </div>
+            )}
+            <Button
+              color="black"
+              onClick={handleEditDebtorSubmit}
+              className="w-full"
+              disabled={loading}
+              type="submit"
+              buttonType="filled"
+              size="regular"
+              rounded={true}
+              block={false}
+              iconOnly={false}
+              ripple="light"
+            >
+              {loading ? <Loader /> : "Update Status"}
+            </Button>
+          </div>
+        </div>
+      )}
       <ToastContainer />
     </div>
   );

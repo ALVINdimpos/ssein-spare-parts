@@ -1,13 +1,14 @@
-/* eslint-disable react/no-unescaped-entities */
 import { useState } from "react";
 import axios from "axios";
 import Loader from "react-js-loader";
+
 const Login = () => {
   const [showPassword, setShowPassword] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false); // State to track loading
+
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
   };
@@ -15,6 +16,7 @@ const Login = () => {
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true); // Set loading to true when form is submitted
@@ -34,12 +36,12 @@ const Login = () => {
       // Redirect to the dashboard or any other page
       window.location.href = "/dashboard/home"; // Change the URL as needed
     } catch (error) {
-      console.error("Login failed:", error.response.data);
       setErrorMessage("Invalid email or password. Please try again.");
     } finally {
       setLoading(false); // Set loading to false after the request is completed
     }
   };
+  console.log(errorMessage);
   return (
     <div>
       <div className="absolute top-0 bottom-0 left-0 w-full h-full overflow-hidden leading-5 bg-black-900 bg-gradient-to-b from-gray-900 via-gray-900 to-black-800"></div>
@@ -114,7 +116,12 @@ const Login = () => {
                 </div>
                 <div>
                   {errorMessage && (
-                    <div className="text-red-500">{errorMessage}</div>
+                    <div
+                      className="px-4 py-3 mb-4 text-red-700 bg-red-100 border-l-4 border-red-500"
+                      role="alert"
+                    >
+                      <p className="font-bold">{errorMessage}</p>
+                    </div>
                   )}
                   <div>
                     <button

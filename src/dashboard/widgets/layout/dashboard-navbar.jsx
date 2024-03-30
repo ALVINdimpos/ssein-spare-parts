@@ -11,7 +11,9 @@ import {
 } from "@material-tailwind/react";
 import { BellIcon, Bars3Icon } from "@heroicons/react/24/solid";
 import { useMaterialTailwindController, setOpenSidenav } from "../../context";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
+
 export function DashboardNavbar() {
   const [controller, dispatch] = useMaterialTailwindController();
   const { fixedNavbar, openSidenav } = controller;
@@ -20,6 +22,15 @@ export function DashboardNavbar() {
 
   // State for notification dropdown
   const [showNotifications, setShowNotifications] = useState(false);
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      const decodedToken = jwtDecode(accessToken);
+      setUserData(decodedToken);
+    }
+  }, []);
 
   return (
     <Navbar
@@ -80,23 +91,47 @@ export function DashboardNavbar() {
                 </MenuList>
               </Menu>
             )}
-            {/* Avatar for user icon */}
-            <Menu>
-              <MenuHandler>
-                <img
-                  src="https://www.w3schools.com/howto/img_avatar.png"
-                  className="w-10 h-10 rounded-full cursor-pointer"
-                />
-              </MenuHandler>
-              <MenuList>
-                <MenuItem>
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-black">Neil Sims</span>
+            {/* Display user data */}
+            {userData && (
+              <Menu>
+                <MenuHandler>
+                  <div className="flex items-center space-x-2 cursor-pointer">
+                    <img
+                      src="https://www.w3schools.com/howto/img_avatar.png"
+                      className="w-10 h-10 rounded-full"
+                      alt="user-avatar"
+                    />
+                    <Typography variant="body" color="black">
+                      {userData.user_name}
+                    </Typography>
                   </div>
-                </MenuItem>
-                <MenuItem>Sign out</MenuItem>
-              </MenuList>
-            </Menu>
+                </MenuHandler>
+                <MenuList>
+                  <MenuItem>
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-black">
+                        {userData.user_name}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        {userData.email}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        Role: {userData.role}
+                      </span>
+                    </div>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      localStorage.removeItem("accessToken");
+                      setUserData(null);
+                      window.location.href = "/login";
+                    }}
+                  >
+                    Sign out
+                  </MenuItem>
+                </MenuList>
+              </Menu>
+            )}
           </div>
         </div>
       </div>
