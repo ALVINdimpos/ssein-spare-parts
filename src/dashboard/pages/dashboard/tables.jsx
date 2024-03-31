@@ -17,12 +17,14 @@ import { IoIosCloseCircle } from "react-icons/io";
 import { FaQrcode } from "react-icons/fa";
 import axios from "axios";
 import Loader from "react-js-loader";
+import { jwtDecode } from "jwt-decode";
 
 export function Tables() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [viewProduct, setViewProduct] = useState(false);
   const [editProduct, setEditProduct] = useState(false);
   const [product, setProduct] = useState("");
+  const [userRole, setUserRole] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [productTableData, setProductTableData] = useState([]);
   const [productData, setProductData] = useState({
@@ -43,7 +45,13 @@ export function Tables() {
   const handleAddProduct = () => {
     setShowAddForm(!showAddForm);
   };
-
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      const decodedToken = jwtDecode(accessToken);
+      setUserRole(decodedToken.role);
+    }
+  }, []);
   const handleEditProduct = (id) => {
     setEditProduct(true);
     setEditingProductId(id);
@@ -54,7 +62,7 @@ export function Tables() {
     setViewProduct(true);
     setProduct(`https://parts.kagaba.tech/products/qrcode/${id}`);
   };
-
+  const isAgent = userRole === "agent";
   // Filter the product table data based on the search query
   const filteredProductData = productTableData?.filter((product) => {
     if (product && product.num) {
@@ -348,10 +356,12 @@ export function Tables() {
                             className="text-blue-500 cursor-pointer material-icons"
                             onClick={() => handleEditProduct(id)}
                           />
-                          <MdAutoDelete
-                            className="ml-2 text-red-500 cursor-pointer material-icons"
-                            onClick={() => handleDeleteProduct(id)}
-                          />
+                          {!isAgent && (
+                            <MdAutoDelete
+                              className="ml-2 text-red-500 cursor-pointer material-icons"
+                              onClick={() => handleDeleteProduct(id)}
+                            />
+                          )}
                           <FaQrcode
                             className="ml-2 text-green-500 cursor-pointer material-icons"
                             onClick={() => handleViewProduct(id)}

@@ -40,6 +40,7 @@ export function Home() {
     };
     fetchData();
   }, []);
+  const isAgent = userRole === "agent";
   // Calculate the sum of profit and loss
   const totalProfit = parseFloat(data.profit) || 0;
   const totalLoss = parseFloat(data.loss) || 0;
@@ -60,6 +61,15 @@ export function Home() {
   // Statistics data for agent users
   const statisticsData = [];
   if (userRole === "agent") {
+    statisticsData.push({
+      title: "Sold Today",
+      value: data.sold_today || 0,
+      icon: <RiExchangeDollarLine />,
+      color: "gray",
+    });
+  }
+  // Statistics data for superadmin users
+  if (userRole === "superadmin") {
     statisticsData.push(
       {
         title: "Stock",
@@ -73,17 +83,6 @@ export function Home() {
         icon: <IoDocumentTextOutline />,
         color: "gray",
       },
-      {
-        title: "Sold Today",
-        value: data.sold_today || 0,
-        icon: <RiExchangeDollarLine />,
-        color: "gray",
-      },
-    );
-  }
-  // Statistics data for superadmin users
-  if (userRole === "superadmin") {
-    statisticsData.push(
       {
         title: "Stock",
         value: data.stock || 0,
@@ -114,12 +113,16 @@ export function Home() {
   return (
     <div className="mt-12">
       <div className="grid mb-12 gap-y-10 gap-x-8 md:grid-cols-2 xl:grid-cols-4">
-        <StatisticsCard
-          color={color}
-          icon={icon}
-          title={`${profitOrLoss} / Loss`}
-          value={total}
-        />
+        {!isAgent && (
+          <span className="">
+            <StatisticsCard
+              color={color}
+              icon={icon}
+              title={`${profitOrLoss} / Loss`}
+              value={total}
+            />
+          </span>
+        )}
         {statisticsData.map((item, index) => (
           <StatisticsCard
             key={index}
