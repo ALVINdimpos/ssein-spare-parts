@@ -16,7 +16,7 @@ import { IoIosCloseCircle } from "react-icons/io";
 import Loader from "react-js-loader";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { jwtDecode } from "jwt-decode";
 export function DebtorTable() {
   // const [debtorData, setDebtorData] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -27,6 +27,7 @@ export function DebtorTable() {
   const [errorMessage, setErrorMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [userRole, setUserRole] = useState(null);
   const [debtorsPerPage] = useState(5);
 
   const [newDebtorData, setNewDebtorData] = useState({
@@ -44,6 +45,14 @@ export function DebtorTable() {
     const { name, value } = e.target;
     setNewDebtorData({ ...newDebtorData, [name]: value });
   };
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      const decodedToken = jwtDecode(accessToken);
+      setUserRole(decodedToken.role);
+    }
+  }, []);
+  const isAgent = userRole === "agent";
   // Add useEffect hook to fetch data when the component mounts
   useEffect(() => {
     const fetchData = async () => {
@@ -323,10 +332,12 @@ export function DebtorTable() {
                             className="text-blue-500 cursor-pointer material-icons"
                             onClick={() => handleEditDebtor(id)}
                           />
-                          <MdAutoDelete
-                            className="ml-2 text-red-500 cursor-pointer material-icons"
-                            onClick={() => handleDeleteDebtor(id)}
-                          />
+                          {!isAgent && (
+                            <MdAutoDelete
+                              className="ml-2 text-red-500 cursor-pointer material-icons"
+                              onClick={() => handleDeleteDebtor(id)}
+                            />
+                          )}
                           <MdOutlineVisibility
                             className="ml-2 text-green-500 cursor-pointer material-icons"
                             onClick={() => handleViewDebtor(id)}
