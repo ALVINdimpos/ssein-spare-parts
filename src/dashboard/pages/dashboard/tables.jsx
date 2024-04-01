@@ -27,6 +27,7 @@ export function Tables() {
   const [userRole, setUserRole] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [productTableData, setProductTableData] = useState([]);
+  const [isSoldFilter, setIsSoldFilter] = useState("all");
   const [productData, setProductData] = useState({
     number: "",
     description: "",
@@ -63,13 +64,29 @@ export function Tables() {
     setProduct(`https://parts.kagaba.tech/products/qrcode/${id}`);
   };
   const isAgent = userRole === "agent";
-  // Filter the product table data based on the search query
+  // Update the filteredProductData variable to filter based on the search query and isSoldFilter
   const filteredProductData = productTableData?.filter((product) => {
-    if (product && product.num) {
-      return product.num.toLowerCase().includes(searchQuery.toLowerCase());
+    const numMatchesSearch =
+      product && product.num.toLowerCase().includes(searchQuery.toLowerCase());
+    const descriptionMatchesSearch =
+      product &&
+      product.description.toLowerCase().includes(searchQuery.toLowerCase());
+
+    let matchesSearch = false;
+    if (numMatchesSearch || descriptionMatchesSearch) {
+      matchesSearch = true;
     }
-    return false; // Return false for undefined or missing properties
+
+    if (isSoldFilter === "all") {
+      return matchesSearch;
+    } else if (isSoldFilter === "sold") {
+      return matchesSearch && product.is_sold;
+    } else if (isSoldFilter === "inStock") {
+      return matchesSearch && !product.is_sold;
+    }
+    return false;
   });
+
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const indexOfLastProduct = currentPage * productsPerPage;
@@ -207,6 +224,22 @@ export function Tables() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
+              <select
+                value={isSoldFilter}
+                onChange={(e) => setIsSoldFilter(e.target.value)}
+                className="px-3 py-2 text-black border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                style={{
+                  appearance: "none",
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M7.293 11.293a1 1 0 011.414 0L10 12.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414zM7 7a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1z' clip-rule='evenodd' /%3E%3C/svg%3E")`,
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "right 0.5rem center",
+                  paddingRight: "2.5rem", // Adjust according to the width of the arrow icon
+                }}
+              >
+                <option value="all">All</option>
+                <option value="sold">Sold</option>
+                <option value="inStock">In Stock</option>
+              </select>
               <Button
                 onClick={handleAddProduct}
                 color="indigo"
@@ -225,155 +258,159 @@ export function Tables() {
           </div>
         </CardHeader>
         <CardBody className="px-0 pt-0 pb-2 overflow-x-scroll">
-          <table className="w-full min-w-[640px] table-auto">
-            <thead>
-              <tr>
-                {[
-                  "Id",
-                  "Product Number",
-                  "Description",
-                  "Selling Price",
-                  "Purchase Price",
-                  "Tax",
-                  "Other Expenses",
-                  "Discount",
-                  "Context",
-                  "Status",
-                  "Action",
-                ].map((el) => (
-                  <th
-                    key={el}
-                    className="px-5 py-3 text-left border-b border-blue-gray-50"
-                  >
-                    <Typography
-                      variant="small"
-                      className="text-[11px] font-bold uppercase text-blue-gray-400"
+          {filteredProductData.length === 0 ? (
+            <div className="py-4 text-center">No results found.</div>
+          ) : (
+            <table className="w-full min-w-[640px] table-auto">
+              <thead>
+                <tr>
+                  {[
+                    "Id",
+                    "Product Number",
+                    "Description",
+                    "Selling Price",
+                    "Purchase Price",
+                    "Tax",
+                    "Other Expenses",
+                    "Discount",
+                    "Context",
+                    "Status",
+                    "Action",
+                  ].map((el) => (
+                    <th
+                      key={el}
+                      className="px-5 py-3 text-left border-b border-blue-gray-50"
                     >
-                      {el}
-                    </Typography>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {currentProducts.map(
-                (
-                  {
-                    id,
-                    num,
-                    description,
-                    selling_price,
-                    purchase_price,
-                    tax,
-                    other_expenses,
-                    discount,
-                    context,
-                    is_sold,
-                  },
-                  key,
-                ) => {
-                  const className = `py-3 px-5 ${
-                    key === currentProducts.length - 1
-                      ? ""
-                      : "border-b border-blue-gray-50"
-                  }`;
+                      <Typography
+                        variant="small"
+                        className="text-[11px] font-bold uppercase text-blue-gray-400"
+                      >
+                        {el}
+                      </Typography>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {currentProducts.map(
+                  (
+                    {
+                      id,
+                      num,
+                      description,
+                      selling_price,
+                      purchase_price,
+                      tax,
+                      other_expenses,
+                      discount,
+                      context,
+                      is_sold,
+                    },
+                    key,
+                  ) => {
+                    const className = `py-3 px-5 ${
+                      key === currentProducts.length - 1
+                        ? ""
+                        : "border-b border-blue-gray-50"
+                    }`;
 
-                  return (
-                    <tr key={id}>
-                      <td className={className}>
-                        <div className="flex items-center gap-4">
-                          <div>
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-semibold"
-                            >
-                              {id}
-                            </Typography>
+                    return (
+                      <tr key={id}>
+                        <td className={className}>
+                          <div className="flex items-center gap-4">
+                            <div>
+                              <Typography
+                                variant="small"
+                                color="blue-gray"
+                                className="font-semibold"
+                              >
+                                {id}
+                              </Typography>
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className={className}>
-                        <div className="flex items-center gap-4">
-                          <div>
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-semibold"
-                            >
-                              {num}
-                            </Typography>
+                        </td>
+                        <td className={className}>
+                          <div className="flex items-center gap-4">
+                            <div>
+                              <Typography
+                                variant="small"
+                                color="blue-gray"
+                                className="font-semibold"
+                              >
+                                {num}
+                              </Typography>
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className={className}>
-                        <Typography className="text-xs font-semibold text-blue-gray-600">
-                          {description}
-                        </Typography>
-                      </td>
-                      <td className={className}>
-                        <Typography className="text-xs font-semibold text-blue-gray-600">
-                          {selling_price} RWF
-                        </Typography>
-                      </td>
-                      <td className={className}>
-                        <Typography className="text-xs font-semibold text-blue-gray-600">
-                          {purchase_price} RWF
-                        </Typography>
-                      </td>
-                      <td className={className}>
-                        <Typography className="text-xs font-semibold text-blue-gray-600">
-                          {tax} RWF
-                        </Typography>
-                      </td>
-                      <td className={className}>
-                        <Typography className="text-xs font-semibold text-blue-gray-600">
-                          {other_expenses} RWF
-                        </Typography>
-                      </td>
-                      <td className={className}>
-                        <Typography className="text-xs font-semibold text-blue-gray-600">
-                          {discount} RWF
-                        </Typography>
-                      </td>
-                      <td className={className}>
-                        <Typography className="text-xs font-semibold text-blue-gray-600">
-                          {context}
-                        </Typography>
-                      </td>
-                      <td className={className}>
-                        <Typography className="text-xs font-semibold text-blue-gray-600">
-                          {is_sold ? (
-                            <span className="text-red-500">Sold</span>
-                          ) : (
-                            <span className="text-green-500">In Stock</span>
-                          )}
-                        </Typography>
-                      </td>
-                      <td className={className}>
-                        <div className="flex">
-                          <FaEdit
-                            className="text-blue-500 cursor-pointer material-icons"
-                            onClick={() => handleEditProduct(id)}
-                          />
-                          {!isAgent && (
-                            <MdAutoDelete
-                              className="ml-2 text-red-500 cursor-pointer material-icons"
-                              onClick={() => handleDeleteProduct(id)}
+                        </td>
+                        <td className={className}>
+                          <Typography className="text-xs font-semibold text-blue-gray-600">
+                            {description}
+                          </Typography>
+                        </td>
+                        <td className={className}>
+                          <Typography className="text-xs font-semibold text-blue-gray-600">
+                            {selling_price} RWF
+                          </Typography>
+                        </td>
+                        <td className={className}>
+                          <Typography className="text-xs font-semibold text-blue-gray-600">
+                            {purchase_price} RWF
+                          </Typography>
+                        </td>
+                        <td className={className}>
+                          <Typography className="text-xs font-semibold text-blue-gray-600">
+                            {tax} RWF
+                          </Typography>
+                        </td>
+                        <td className={className}>
+                          <Typography className="text-xs font-semibold text-blue-gray-600">
+                            {other_expenses} RWF
+                          </Typography>
+                        </td>
+                        <td className={className}>
+                          <Typography className="text-xs font-semibold text-blue-gray-600">
+                            {discount} RWF
+                          </Typography>
+                        </td>
+                        <td className={className}>
+                          <Typography className="text-xs font-semibold text-blue-gray-600">
+                            {context}
+                          </Typography>
+                        </td>
+                        <td className={className}>
+                          <Typography className="text-xs font-semibold text-blue-gray-600">
+                            {is_sold ? (
+                              <span className="text-red-500">Sold</span>
+                            ) : (
+                              <span className="text-green-500">In Stock</span>
+                            )}
+                          </Typography>
+                        </td>
+                        <td className={className}>
+                          <div className="flex">
+                            <FaEdit
+                              className="text-blue-500 cursor-pointer material-icons"
+                              onClick={() => handleEditProduct(id)}
                             />
-                          )}
-                          <FaQrcode
-                            className="ml-2 text-green-500 cursor-pointer material-icons"
-                            onClick={() => handleViewProduct(id)}
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                },
-              )}
-            </tbody>
-          </table>
+                            {!isAgent && (
+                              <MdAutoDelete
+                                className="ml-2 text-red-500 cursor-pointer material-icons"
+                                onClick={() => handleDeleteProduct(id)}
+                              />
+                            )}
+                            <FaQrcode
+                              className="ml-2 text-green-500 cursor-pointer material-icons"
+                              onClick={() => handleViewProduct(id)}
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  },
+                )}
+              </tbody>
+            </table>
+          )}
         </CardBody>
       </Card>
 

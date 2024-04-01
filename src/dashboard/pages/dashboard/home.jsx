@@ -72,19 +72,7 @@ export function Home() {
   if (userRole === "superadmin") {
     statisticsData.push(
       {
-        title: "Stock",
-        value: data.stock || 0,
-        icon: <AiOutlineStock />,
-        color: "gray",
-      },
-      {
-        title: "Tax Documents",
-        value: data.tax_docs || 0,
-        icon: <IoDocumentTextOutline />,
-        color: "gray",
-      },
-      {
-        title: "Stock",
+        title: "In Stock",
         value: data.stock || 0,
         icon: <AiOutlineStock />,
         color: "gray",

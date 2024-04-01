@@ -200,91 +200,95 @@ export function UserTables() {
           </div>
         </CardHeader>
         <CardBody className="px-0 pt-0 pb-2 overflow-x-scroll">
-          <table className="w-full min-w-[640px] table-auto">
-            <thead>
-              <tr>
-                {["Id", "Name", "Email", "Role", "Action"].map((el) => (
-                  <th
-                    key={el}
-                    className="px-5 py-3 text-left border-b border-blue-gray-50"
-                  >
-                    <Typography
-                      variant="small"
-                      className="text-[11px] font-bold uppercase text-blue-gray-400"
+          {filteredUserData.length === 0 ? (
+            <div className="py-4 text-center">No results found.</div>
+          ) : (
+            <table className="w-full min-w-[640px] table-auto">
+              <thead>
+                <tr>
+                  {["Id", "Name", "Email", "Role", "Action"].map((el) => (
+                    <th
+                      key={el}
+                      className="px-5 py-3 text-left border-b border-blue-gray-50"
                     >
-                      {el}
-                    </Typography>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {currentUsers?.map(({ id, name, email, role }, key) => {
-                const className = `py-3 px-5 ${
-                  key === currentUsers?.length - 1
-                    ? ""
-                    : "border-b border-blue-gray-50"
-                }`;
+                      <Typography
+                        variant="small"
+                        className="text-[11px] font-bold uppercase text-blue-gray-400"
+                      >
+                        {el}
+                      </Typography>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {currentUsers?.map(({ id, name, email, role }, key) => {
+                  const className = `py-3 px-5 ${
+                    key === currentUsers?.length - 1
+                      ? ""
+                      : "border-b border-blue-gray-50"
+                  }`;
 
-                return (
-                  <tr key={id}>
-                    <td className={className}>
-                      <div className="flex items-center gap-4">
-                        <div>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-semibold"
-                          >
-                            {id}
-                          </Typography>
+                  return (
+                    <tr key={id}>
+                      <td className={className}>
+                        <div className="flex items-center gap-4">
+                          <div>
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-semibold"
+                            >
+                              {id}
+                            </Typography>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className={className}>
-                      <div className="flex items-center gap-4">
-                        <div>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-semibold"
-                          >
-                            {name}
-                          </Typography>
+                      </td>
+                      <td className={className}>
+                        <div className="flex items-center gap-4">
+                          <div>
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-semibold"
+                            >
+                              {name}
+                            </Typography>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className={className}>
-                      <Typography className="text-xs font-semibold text-blue-gray-600">
-                        {email}
-                      </Typography>
-                    </td>
-                    <td className={className}>
-                      <Typography className="text-xs font-semibold text-blue-gray-600">
-                        {role}
-                      </Typography>
-                    </td>
-                    <td className={className}>
-                      <div className="flex">
-                        <FaEdit
-                          className="text-blue-500 cursor-pointer material-icons"
-                          onClick={() => handleEditUser(id)}
-                        />
-                        <MdAutoDelete
-                          className="ml-2 text-red-500 cursor-pointer material-icons"
-                          onClick={() => handleDeleteUser(id)}
-                        />
-                        {/* <MdOutlineVisibility
+                      </td>
+                      <td className={className}>
+                        <Typography className="text-xs font-semibold text-blue-gray-600">
+                          {email}
+                        </Typography>
+                      </td>
+                      <td className={className}>
+                        <Typography className="text-xs font-semibold text-blue-gray-600">
+                          {role}
+                        </Typography>
+                      </td>
+                      <td className={className}>
+                        <div className="flex">
+                          <FaEdit
+                            className="text-blue-500 cursor-pointer material-icons"
+                            onClick={() => handleEditUser(id)}
+                          />
+                          <MdAutoDelete
+                            className="ml-2 text-red-500 cursor-pointer material-icons"
+                            onClick={() => handleDeleteUser(id)}
+                          />
+                          {/* <MdOutlineVisibility
                                                         className="ml-2 text-green-500 cursor-pointer material-icons"
                                                         onClick={() => handleViewUser(id)}
                                                     /> */}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
         </CardBody>
       </Card>
       <div className="flex justify-center mt-4">
