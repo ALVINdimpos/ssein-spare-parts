@@ -7,6 +7,7 @@ import { IoDocumentTextOutline } from "react-icons/io5";
 import { RiExchangeDollarLine } from "react-icons/ri";
 import { FaMoneyBillWave } from "react-icons/fa";
 import { RiMoneyDollarCircleLine } from "react-icons/ri";
+import { FaUserAstronaut } from "react-icons/fa";
 import { jwtDecode } from "jwt-decode";
 
 export function Home() {
@@ -24,15 +25,12 @@ export function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          "https://parts.kagaba.tech/metrics/metrics",
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
+        const response = await axios.get("https://parts.kagaba.tech/metrics/", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
-        );
+        });
         setData(response?.data?.data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -73,7 +71,7 @@ export function Home() {
     statisticsData.push(
       {
         title: "In Stock",
-        value: data.stock || 0,
+        value: parseFloat(data.stock) || 0,
         icon: <AiOutlineStock />,
         color: "gray",
       },
@@ -85,14 +83,14 @@ export function Home() {
       },
       {
         title: "Sold Today",
-        value: data.sold_today || 0,
+        value: parseFloat(data.sold_today) || 0,
         icon: <RiExchangeDollarLine />,
         color: "gray",
       },
       {
         title: "Users",
         value: data.users || 0,
-        icon: <IoDocumentTextOutline />,
+        icon: <FaUserAstronaut />,
         color: "gray",
       },
     );

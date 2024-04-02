@@ -8,11 +8,15 @@ import {
   Reports,
   DebtorTable,
   CreditorTable,
+  QueriesTable,
+  InquiriesTable,
 } from "./pages/dashboard";
 import { AiOutlineShopping } from "react-icons/ai";
 import { BiSolidReport } from "react-icons/bi";
 import { FaMoneyCheckAlt } from "react-icons/fa";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
+import { MdOutlineQuestionAnswer } from "react-icons/md";
+import { LuMailQuestion } from "react-icons/lu";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -58,6 +62,18 @@ export const routes = (userRole) => {
           name: "Creditors",
           path: "/creditors",
           element: <CreditorTable />,
+        },
+        {
+          icon: <MdOutlineQuestionAnswer {...icon} />,
+          name: "queries",
+          path: "/queries",
+          element: <QueriesTable />,
+        },
+        {
+          icon: <LuMailQuestion {...icon} />,
+          name: " Product inquiries",
+          path: "/inquiries",
+          element: <InquiriesTable />,
         },
         {
           icon: <InformationCircleIcon {...icon} />,

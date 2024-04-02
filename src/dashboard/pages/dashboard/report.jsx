@@ -47,9 +47,9 @@ const Reports = () => {
 
   const { profit_graph, loss_graph } = reportData;
 
-  const mergedData = profit_graph.map((item, index) => {
+  const mergedData = profit_graph?.map((item, index) => {
     const profit = parseFloat(item.amount);
-    const loss = parseFloat(loss_graph[index].amount);
+    const loss = loss_graph[index] ? parseFloat(loss_graph[index].amount) : 0; // Providing default value for loss if loss_graph is empty
     const month = getMonthName(item.date.split("-")[1]); // Extracting and converting month to name
     const year = item.date.split("-")[0]; // Extracting year from date
     const type = Math.abs(profit) >= Math.abs(loss) ? "Profit" : "Loss"; // Selecting profit if its absolute value is greater or equal to loss

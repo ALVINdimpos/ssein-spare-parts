@@ -5,3 +5,5 @@ export { UserTables as UserTables } from "./user-table.jsx";
 export { default as Reports } from "./report.jsx";
 export { DebtorTable as DebtorTable } from "./debtors.jsx";
 export { CreditorTable as CreditorTable } from "./creditors.jsx";
+export { QueriesTable as QueriesTable } from "./queries.jsx";
+export { InquiriesTable as InquiriesTable } from "./inquiry.jsx";

@@ -1,0 +1,98 @@
+export const queriesData = [
+  {
+    id: 1,
+    name: "John Doe",
+    email: "johndoe@example.com",
+    phone: "123-456-7890",
+    message:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae urna vitae odio gravida ultrices.",
+    date: "2020-01-01",
+    read: true,
+  },
+  {
+    id: 2,
+    name: "Alice Smith",
+    email: "alicesmith@example.com",
+    phone: "987-654-3210",
+    message: "Ut hendrerit est id quam suscipit, ac varius leo commodo.",
+    date: "2020-01-02",
+    read: false,
+  },
+  {
+    id: 3,
+    name: "Bob Johnson",
+    email: "bjohnson@example.com",
+    phone: "555-555-5555",
+    message:
+      "Integer non dui sit amet dolor eleifend sollicitudin vel ac lorem.",
+    date: "2020-01-03",
+    read: true,
+  },
+  {
+    id: 4,
+    name: "Emily Brown",
+    email: "ebrown@example.com",
+    phone: "111-222-3333",
+    message: "Praesent efficitur nulla nec accumsan condimentum.",
+    date: "2020-01-04",
+    read: false,
+  },
+  {
+    id: 5,
+    name: "Michael Wilson",
+    email: "mwilson@example.com",
+    phone: "444-444-4444",
+    message:
+      "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Aenean eu tellus nec arcu tempor suscipit.",
+    date: "2020-01-05",
+    read: true,
+  },
+  {
+    id: 5,
+    name: "Sophia Garcia",
+    email: "sgarcia@example.com",
+    phone: "777-777-7777",
+    message: "Fusce vel enim eu nisi vestibulum ultricies.",
+    date: "2020-01-06",
+    read: false,
+  },
+  {
+    id: 6,
+    name: "William Martinez",
+    email: "wmartinez@example.com",
+    phone: "666-666-6666",
+    message: "Suspendisse in velit et purus finibus malesuada.",
+    date: "2020-01-07",
+    read: true,
+  },
+  {
+    id: 7,
+    name: "Olivia Rodriguez",
+    email: "orodriguez@example.com",
+    phone: "888-888-8888",
+    message: "Nulla facilisi. Nulla eget nisi nec magna fermentum fringilla.",
+    date: "2020-01-08",
+    read: false,
+  },
+  {
+    id: 8,
+    name: "James Lee",
+    email: "jlee@example.com",
+    phone: "999-999-9999",
+    message: "Proin nec ante condimentum, vehicula arcu et, molestie libero.",
+    date: "2020-01-09",
+    read: true,
+  },
+  {
+    id: 9,
+    name: "Emma Nguyen",
+    email: "enguuyen@example.com",
+    phone: "123-123-1234",
+    message:
+      "Curabitur euismod felis et lacus aliquam, id bibendum ipsum auctor.",
+    date: "2020-01-10",
+    read: false,
+  },
+];
+
+export default queriesData;

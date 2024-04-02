@@ -17,7 +17,7 @@ import { IoIosCloseCircle } from "react-icons/io";
 import Loader from "react-js-loader";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { format } from "date-fns";
 export function CreditorTable() {
   // const [debtorData, setDebtorData] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -223,131 +223,135 @@ export function CreditorTable() {
           </div>
         </CardHeader>
         <CardBody className="px-0 pt-0 pb-2 overflow-x-scroll">
-          <table className="w-full min-w-[640px] table-auto">
-            <thead>
-              <tr>
-                {[
-                  "ID",
-                  "Name",
-                  "Contact Info",
-                  "Debt Amount",
-                  "Due Date",
-                  "Context",
-                  "Payment Status",
-                  "Action",
-                ].map((el) => (
-                  <th
-                    key={el}
-                    className="px-5 py-3 text-left border-b border-blue-gray-50"
-                  >
-                    <Typography
-                      variant="small"
-                      className="text-[11px] font-bold uppercase text-blue-gray-400"
+          {filteredCreditors.length === 0 ? (
+            <div className="py-4 text-center">No results found.</div>
+          ) : (
+            <table className="w-full min-w-[640px] table-auto">
+              <thead>
+                <tr>
+                  {[
+                    "ID",
+                    "Name",
+                    "Contact Info",
+                    "Debt Amount",
+                    "Due Date",
+                    "Context",
+                    "Payment Status",
+                    "Action",
+                  ].map((el) => (
+                    <th
+                      key={el}
+                      className="px-5 py-3 text-left border-b border-blue-gray-50"
                     >
-                      {el}
-                    </Typography>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {currentCreditors?.map(
-                (
-                  {
-                    id,
-                    name,
-                    contact_info,
-                    amount,
-                    due_date,
-                    context,
-                    payment_status,
+                      <Typography
+                        variant="small"
+                        className="text-[11px] font-bold uppercase text-blue-gray-400"
+                      >
+                        {el}
+                      </Typography>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {currentCreditors?.map(
+                  (
+                    {
+                      id,
+                      name,
+                      contact_info,
+                      amount,
+                      due_date,
+                      context,
+                      payment_status,
+                    },
+                    key,
+                  ) => {
+                    const className = `py-3 px-5 ${
+                      key === currentCreditors?.length - 1
+                        ? ""
+                        : "border-b border-blue-gray-50"
+                    }`;
+
+                    return (
+                      <tr key={id}>
+                        <td className={className}>
+                          <div className="flex items-center gap-4">
+                            <div>
+                              <Typography
+                                variant="small"
+                                color="blue-gray"
+                                className="font-semibold"
+                              >
+                                {id}
+                              </Typography>
+                            </div>
+                          </div>
+                        </td>
+                        <td className={className}>
+                          <div className="flex items-center gap-4">
+                            <div>
+                              <Typography
+                                variant="small"
+                                color="blue-gray"
+                                className="font-semibold"
+                              >
+                                {name}
+                              </Typography>
+                            </div>
+                          </div>
+                        </td>
+                        <td className={className}>
+                          <Typography className="text-xs font-semibold text-blue-gray-600">
+                            {contact_info}
+                          </Typography>
+                        </td>
+                        <td className={className}>
+                          <Typography className="text-xs font-semibold text-blue-gray-600">
+                            {amount} RWF
+                          </Typography>
+                        </td>
+                        <td className={className}>
+                          <Typography className="text-xs font-semibold text-blue-gray-600">
+                            {format(new Date(due_date), "dd-MM-yyyy")}
+                          </Typography>
+                        </td>
+                        <td className={className}>
+                          <Typography className="text-xs font-semibold text-blue-gray-600">
+                            {context}
+                          </Typography>
+                        </td>
+                        <td className={className}>
+                          <Typography
+                            className={`text-xs font-semibold ${getPaymentStatusColor(payment_status)}`}
+                          >
+                            {payment_status}
+                          </Typography>
+                        </td>
+
+                        <td className={className}>
+                          <div className="flex">
+                            <FaEdit
+                              className="text-blue-500 cursor-pointer material-icons"
+                              onClick={() => handleEditCreditors(id)}
+                            />
+                            <MdAutoDelete
+                              className="ml-2 text-red-500 cursor-pointer material-icons"
+                              onClick={() => handleDeleteCreditors(id)}
+                            />
+                            <MdOutlineVisibility
+                              className="ml-2 text-green-500 cursor-pointer material-icons"
+                              onClick={() => handleViewDebtor(id)}
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    );
                   },
-                  key,
-                ) => {
-                  const className = `py-3 px-5 ${
-                    key === currentCreditors?.length - 1
-                      ? ""
-                      : "border-b border-blue-gray-50"
-                  }`;
-
-                  return (
-                    <tr key={id}>
-                      <td className={className}>
-                        <div className="flex items-center gap-4">
-                          <div>
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-semibold"
-                            >
-                              {id}
-                            </Typography>
-                          </div>
-                        </div>
-                      </td>
-                      <td className={className}>
-                        <div className="flex items-center gap-4">
-                          <div>
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-semibold"
-                            >
-                              {name}
-                            </Typography>
-                          </div>
-                        </div>
-                      </td>
-                      <td className={className}>
-                        <Typography className="text-xs font-semibold text-blue-gray-600">
-                          {contact_info}
-                        </Typography>
-                      </td>
-                      <td className={className}>
-                        <Typography className="text-xs font-semibold text-blue-gray-600">
-                          {amount} RWF
-                        </Typography>
-                      </td>
-                      <td className={className}>
-                        <Typography className="text-xs font-semibold text-blue-gray-600">
-                          {due_date}
-                        </Typography>
-                      </td>
-                      <td className={className}>
-                        <Typography className="text-xs font-semibold text-blue-gray-600">
-                          {context}
-                        </Typography>
-                      </td>
-                      <td className={className}>
-                        <Typography
-                          className={`text-xs font-semibold ${getPaymentStatusColor(payment_status)}`}
-                        >
-                          {payment_status}
-                        </Typography>
-                      </td>
-
-                      <td className={className}>
-                        <div className="flex">
-                          <FaEdit
-                            className="text-blue-500 cursor-pointer material-icons"
-                            onClick={() => handleEditCreditors(id)}
-                          />
-                          <MdAutoDelete
-                            className="ml-2 text-red-500 cursor-pointer material-icons"
-                            onClick={() => handleDeleteCreditors(id)}
-                          />
-                          <MdOutlineVisibility
-                            className="ml-2 text-green-500 cursor-pointer material-icons"
-                            onClick={() => handleViewDebtor(id)}
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                },
-              )}
-            </tbody>
-          </table>
+                )}
+              </tbody>
+            </table>
+          )}
         </CardBody>
       </Card>
       <div className="flex justify-center mt-4">

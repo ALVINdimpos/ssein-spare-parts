@@ -14,6 +14,7 @@ import { FaEdit } from "react-icons/fa";
 import { MdAutoDelete } from "react-icons/md";
 import { IoMdAddCircle } from "react-icons/io";
 import { IoIosCloseCircle } from "react-icons/io";
+import { AiOutlineTransaction } from "react-icons/ai";
 import { FaQrcode } from "react-icons/fa";
 import axios from "axios";
 import Loader from "react-js-loader";
@@ -23,25 +24,30 @@ export function Tables() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [viewProduct, setViewProduct] = useState(false);
   const [editProduct, setEditProduct] = useState(false);
+  const [sellProduct, setSellProduct] = useState(false);
   const [product, setProduct] = useState("");
+  const [singleProduct, setSingleProduct] = useState({});
   const [userRole, setUserRole] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [productTableData, setProductTableData] = useState([]);
   const [isSoldFilter, setIsSoldFilter] = useState("all");
   const [productData, setProductData] = useState({
-    number: "",
+    num: "",
     description: "",
-    price: 0,
-    cost: 0,
+    selling_price: 0,
+    purchase_price: 0,
     tax: 0,
+    other_expenses: 0,
+    discount: 0,
     context: "",
-    otherExpenses: 0,
+    sold_date: "",
+    is_sold: false,
   });
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [editingProductId, setEditingProductId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [productsPerPage] = useState(5); // Number of products to display per page
+  const [productsPerPage] = useState(15); // Number of products to display per page
 
   const handleAddProduct = () => {
     setShowAddForm(!showAddForm);
@@ -53,12 +59,21 @@ export function Tables() {
       setUserRole(decodedToken.role);
     }
   }, []);
-  const handleEditProduct = (id) => {
-    setEditProduct(true);
+  const handleSellProducts = async (id) => {
+    const getProductResponse = await axios.get(
+      `https://parts.kagaba.tech/products/${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      },
+    );
+    setSingleProduct(getProductResponse?.data?.data?.product);
+    setSellProduct(true);
     setEditingProductId(id);
     // Other logic for editing product...
   };
-
   const handleViewProduct = async (id) => {
     setViewProduct(true);
     setProduct(`https://parts.kagaba.tech/products/qrcode/${id}`);
@@ -100,20 +115,26 @@ export function Tables() {
     e.preventDefault();
     setLoading(true);
     try {
-      const { number, description, price, cost, tax, otherExpenses } =
-        productData;
+      const {
+        num,
+        description,
+        selling_price,
+        purchase_price,
+        tax,
+        other_expenses,
+      } = productData;
 
       const requestData = {
-        num: number,
+        num,
         description,
-        selling_price: price,
-        purchase_price: cost,
+        selling_price,
+        purchase_price,
         tax,
         discount: 0,
         is_sold: false,
         sold_date: Date.now(),
         context: "",
-        other_expenses: otherExpenses,
+        other_expenses,
       };
       const response = await axios.post(
         "https://parts.kagaba.tech/products/",
@@ -134,7 +155,67 @@ export function Tables() {
       setLoading(false);
     }
   };
+  const handleViewEditProduct = async (id) => {
+    const getProductResponse = await axios.get(
+      `https://parts.kagaba.tech/products/${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      },
+    );
+    setSingleProduct(getProductResponse?.data?.data?.product);
+    setEditProduct(true);
+    setEditingProductId(id);
+  };
+  const handleEditProduct = async (id) => {
+    setLoading(true);
+    try {
+      const {
+        num,
+        description,
+        selling_price,
+        purchase_price,
+        tax,
+        other_expenses,
+      } = productData;
 
+      const requestData = {
+        num,
+        description,
+        selling_price,
+        purchase_price,
+        tax,
+        other_expenses,
+        is_sold: false,
+      };
+      const response = await axios.post(
+        `https://parts.kagaba.tech/products/${editingProductId}`,
+        requestData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        },
+      );
+      setEditProduct(false);
+      setProductData({
+        num: "",
+        description: "",
+        selling_price: 0,
+        purchase_price: 0,
+        tax: 0,
+        other_expenses: 0,
+      });
+      toast.success("Product updated successfully");
+      window.location.reload();
+    } catch (error) {
+      console.error("Error updating product:", error);
+      toast.error("Error updating product");
+    }
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -158,13 +239,15 @@ export function Tables() {
   const handleSellProduct = async () => {
     setLoading(true);
     try {
-      const { discount, context } = productData;
+      const { discount, context, selling_price } = productData;
       const requestData = {
         discount,
         context,
         is_sold: true,
+        selling_price,
         sold_date: Date.now(),
       };
+      // get product
       const response = await axios.post(
         `https://parts.kagaba.tech/products/${editingProductId}`,
         requestData,
@@ -249,7 +332,7 @@ export function Tables() {
                 block={false}
                 iconOnly={false}
                 ripple="light"
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 "
               >
                 <IoMdAddCircle className="text-xl" />
                 <span className="text-base font-medium">Add New Product</span>
@@ -276,6 +359,7 @@ export function Tables() {
                     "Context",
                     "Status",
                     "Action",
+                    "Action owner",
                   ].map((el) => (
                     <th
                       key={el}
@@ -305,6 +389,7 @@ export function Tables() {
                       discount,
                       context,
                       is_sold,
+                      actions,
                     },
                     key,
                   ) => {
@@ -386,12 +471,21 @@ export function Tables() {
                             )}
                           </Typography>
                         </td>
+
                         <td className={className}>
-                          <div className="flex">
-                            <FaEdit
-                              className="text-blue-500 cursor-pointer material-icons"
-                              onClick={() => handleEditProduct(id)}
-                            />
+                          <div className="flex justify-between gap-1">
+                            {!isAgent && (
+                              <FaEdit
+                                className="text-blue-500 cursor-pointer material-icons"
+                                onClick={() => handleViewEditProduct(id)}
+                              />
+                            )}
+                            {!is_sold && ( // Conditionally render the edit button
+                              <AiOutlineTransaction
+                                className="text-blue-500 cursor-pointer material-icons"
+                                onClick={() => handleSellProducts(id)}
+                              />
+                            )}
                             {!isAgent && (
                               <MdAutoDelete
                                 className="ml-2 text-red-500 cursor-pointer material-icons"
@@ -403,6 +497,13 @@ export function Tables() {
                               onClick={() => handleViewProduct(id)}
                             />
                           </div>
+                        </td>
+                        <td className={className}>
+                          <Typography className="text-xs font-semibold text-blue-gray-600">
+                            {actions
+                              .map((action) => action.user_name)
+                              .join(", ")}
+                          </Typography>
                         </td>
                       </tr>
                     );
@@ -454,9 +555,9 @@ export function Tables() {
                   type="text"
                   placeholder="Product Number"
                   required
-                  value={productData.number}
+                  value={productData.num}
                   onChange={(e) =>
-                    setProductData({ ...productData, number: e.target.value })
+                    setProductData({ ...productData, num: e.target.value })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                 />
@@ -482,15 +583,18 @@ export function Tables() {
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="block mb-1 text-sm text-gray-600">
-                    Price
+                    Selling Price
                   </label>
                   <input
                     type="number"
                     placeholder="Price"
                     required
-                    value={productData.price}
+                    value={productData.selling_price}
                     onChange={(e) =>
-                      setProductData({ ...productData, price: e.target.value })
+                      setProductData({
+                        ...productData,
+                        selling_price: e.target.value,
+                      })
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                   />
@@ -501,11 +605,14 @@ export function Tables() {
                   </label>
                   <input
                     type="number"
-                    placeholder="Cost"
+                    placeholder="purchase price"
                     required
-                    value={productData.cost}
+                    value={productData.purchase_price}
                     onChange={(e) =>
-                      setProductData({ ...productData, cost: e.target.value })
+                      setProductData({
+                        ...productData,
+                        purchase_price: e.target.value,
+                      })
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                   />
@@ -534,12 +641,12 @@ export function Tables() {
                   <input
                     type="text"
                     placeholder="number"
-                    value={productData.otherExpenses}
+                    value={productData.other_expenses}
                     required={true}
                     onChange={(e) =>
                       setProductData({
                         ...productData,
-                        otherExpenses: e.target.value,
+                        other_expenses: e.target.value,
                       })
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
@@ -608,71 +715,227 @@ export function Tables() {
         </div>
       )}
 
+      {sellProduct && (
+        <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full bg-black bg-opacity-60">
+          <div className="p-8 bg-white rounded-md shadow-lg">
+            <div className="flex flex-col items-center gap-4">
+              <div className="flex items-center justify-between w-full">
+                <Typography variant="h6" color="gray">
+                  Sell product
+                </Typography>
+                <button onClick={() => setSellProduct(false)}>
+                  <IoIosCloseCircle className="text-xl text-gray-500 hover:text-gray-700" />
+                </button>
+              </div>
+              {/* Edit product form */}
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div className="">
+                  <div>
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Discount
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="Discount"
+                      required
+                      defaultValue={singleProduct?.discount}
+                      onChange={(e) =>
+                        setProductData({
+                          ...productData,
+                          discount: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mt-2 mb-1 text-sm text-gray-600">
+                      Selling Price
+                    </label>
+                    <input
+                      type="text"
+                      placeholder={`Selling Price: ${singleProduct?.selling_price} RWF`}
+                      required
+                      onChange={(e) =>
+                        setProductData({
+                          ...productData,
+                          selling_price: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block mb-1 text-sm text-gray-600">
+                    Context
+                  </label>
+                  <textarea
+                    type="text"
+                    placeholder="Context"
+                    required
+                    value={productData.context}
+                    onChange={(e) =>
+                      setProductData({
+                        ...productData,
+                        context: e.target.value,
+                      })
+                    }
+                    className="w-full h-[108px] px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
+              </div>
+              <Button
+                color="black"
+                buttonType="filled"
+                size="regular"
+                rounded={true}
+                block={false}
+                iconOnly={false}
+                ripple="light"
+                className="w-full"
+                onClick={handleSellProduct}
+              >
+                {loading ? (
+                  <Loader type="spinner-default" bgColor={"#fff"} size={20} />
+                ) : (
+                  "Sell Product"
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* EDIT PRODUCT */}
       {editProduct && (
         <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full bg-black bg-opacity-60">
           <div className="p-8 bg-white rounded-md shadow-lg">
             <div className="flex flex-col items-center gap-4">
-              <div className="flex items-center justify-between w-full ">
+              <div className="flex items-center justify-between w-full">
                 <Typography variant="h6" color="gray">
-                  Sell product
+                  Edit Product
                 </Typography>
                 <button onClick={() => setEditProduct(false)}>
                   <IoIosCloseCircle className="text-xl text-gray-500 hover:text-gray-700" />
                 </button>
               </div>
               {/* Edit product form */}
-              <div>
-                <label className="block mb-1 text-sm text-gray-600">
-                  Discount
-                </label>
-                <input
-                  type="number"
-                  placeholder="Discount"
-                  required
-                  value={productData.discount}
-                  onChange={(e) =>
-                    setProductData({ ...productData, discount: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
-                />
-              </div>
-              <div>
-                <label className="block mb-1 text-sm text-gray-600">
-                  Context
-                </label>
-                <textarea
-                  type="text"
-                  placeholder="Context"
-                  required
-                  value={productData.context}
-                  onChange={(e) =>
-                    setProductData({ ...productData, context: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
-                />
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <label className="block mb-1 text-sm text-gray-600">
+                    Selling Price
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="Selling Price"
+                    required
+                    defaultValue={singleProduct?.selling_price}
+                    onChange={(e) =>
+                      setProductData({
+                        ...productData,
+                        selling_price: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-1 text-sm text-gray-600">
+                    Purchase Price
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Purchase Price"
+                    defaultValue={singleProduct?.purchase_price}
+                    required
+                    onChange={(e) =>
+                      setProductData({
+                        ...productData,
+                        purchase_price: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-1 text-sm text-gray-600">
+                    Tax
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Tax"
+                    required
+                    defaultValue={singleProduct?.tax}
+                    onChange={(e) =>
+                      setProductData({ ...productData, tax: e.target.value })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-1 text-sm text-gray-600">
+                    Other Expenses
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Other Expenses"
+                    required
+                    defaultValue={singleProduct?.other_expenses}
+                    onChange={(e) =>
+                      setProductData({
+                        ...productData,
+                        other_expenses: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block mb-1 text-sm text-gray-600">
+                    Description
+                  </label>
+                  <textarea
+                    type="text"
+                    placeholder="Description"
+                    required
+                    defaultValue={singleProduct?.description}
+                    onChange={(e) =>
+                      setProductData({
+                        ...productData,
+                        description: e.target.value,
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
+                <div className="flex justify-center">
+                  <Button
+                    color="black"
+                    buttonType="filled"
+                    size="regular"
+                    rounded={true}
+                    block={false}
+                    iconOnly={false}
+                    ripple="light"
+                    className="w-full h-[60px] mt-7"
+                    onClick={handleEditProduct}
+                  >
+                    {loading ? (
+                      <Loader
+                        type="spinner-default"
+                        bgColor={"#fff"}
+                        size={20}
+                      />
+                    ) : (
+                      "Edit Product"
+                    )}
+                  </Button>
+                </div>
               </div>
             </div>
-            <Button
-              color="black"
-              buttonType="filled"
-              size="regular"
-              rounded={true}
-              block={false}
-              iconOnly={false}
-              ripple="light"
-              className="w-full"
-              onClick={handleSellProduct}
-            >
-              {loading ? (
-                <Loader type="spinner-default" bgColor={"#fff"} size={20} />
-              ) : (
-                "Sell Product"
-              )}
-            </Button>
           </div>
         </div>
       )}
-
       <ToastContainer />
     </div>
   );

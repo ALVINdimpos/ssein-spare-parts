@@ -9,6 +9,10 @@ import PropTypes from "prop-types";
 export function StatisticsCard({ color, icon, title, value }) {
   const cardColor = title === "Loss" ? "red" : color;
 
+  // Format large numbers with thousands separators
+  const formattedValue =
+    typeof value === "number" ? value.toLocaleString() : value;
+
   return (
     <Card className="border shadow-sm border-blue-gray-100">
       <CardHeader
@@ -24,10 +28,10 @@ export function StatisticsCard({ color, icon, title, value }) {
         <Typography variant="small" className="font-normal text-blue-gray-600">
           {title}
         </Typography>
-        <Typography variant="h4" color="blue-gray">
+        <Typography variant="h4" color="blue-gray" className="mt-6">
           {title === "Users" || title === "Tax Documents"
-            ? value
-            : `${value} RWF`}
+            ? formattedValue
+            : `${formattedValue} RWF`}
         </Typography>
       </CardBody>
     </Card>
@@ -64,7 +68,7 @@ StatisticsCard.propTypes = {
   ]),
   icon: PropTypes.node.isRequired,
   title: PropTypes.node.isRequired,
-  value: PropTypes.node.isRequired,
+  value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   footer: PropTypes.node,
 };
 

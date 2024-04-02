@@ -41,7 +41,6 @@ const Login = () => {
       setLoading(false); // Set loading to false after the request is completed
     }
   };
-  console.log(errorMessage);
   return (
     <div>
       <div className="absolute top-0 bottom-0 left-0 w-full h-full overflow-hidden leading-5 bg-black-900 bg-gradient-to-b from-gray-900 via-gray-900 to-black-800"></div>

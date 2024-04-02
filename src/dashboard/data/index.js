@@ -4,3 +4,4 @@ export { userTableData as userTableData } from "./user-table-data";
 export { default as reportData } from "./report-data";
 export { debtorsData as debtorsData } from "./debtors-data";
 export { creditorsData as creditorsData } from "./creditors-data";
+export { queriesData as queriesData } from "./queries-data";
