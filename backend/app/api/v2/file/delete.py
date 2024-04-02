@@ -1,4 +1,4 @@
-from app.api.v2 import Res, Roles
+from app.api.v2 import Res
 from sqlalchemy.orm import Session
 from fastapi import Depends, APIRouter, HTTPException, status
 from app.core.minio import minio_client

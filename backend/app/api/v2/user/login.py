@@ -3,7 +3,7 @@ from app.core.hash import verify_password
 from fastapi import Depends, APIRouter, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from jose import jwt
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from app.db import get_db
 from app.db.models import User
 from typing import Annotated

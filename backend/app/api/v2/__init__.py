@@ -1,9 +1,14 @@
 from datetime import datetime
 from enum import Enum
+import requests
 from pydantic import BaseModel, EmailStr
 from app.db.models import Product
-from typing import Union
+from typing import Union, List
 import uuid
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 
 def generate_short_unique_id():
@@ -16,6 +21,12 @@ def generate_short_unique_id():
     return short_id.upper()
 
 
+class ActionTypes(Enum):
+    CREATE = "create"
+    UPDATE = "update"
+    DELETE = "delete"
+
+
 class Res(BaseModel):
     status: int
     message: str
@@ -25,6 +36,11 @@ class Res(BaseModel):
 class Roles(Enum):
     ADMIN = 'admin'
     AGENT = 'agent'
+
+
+class InquiryTypes(Enum):
+    CONTACT = 'contact'
+    PRODUCT = 'product'
 
 
 class FileScope(Enum):
@@ -76,6 +92,7 @@ class ProductModel(BaseModel):
 
 class ProductResModel(ProductModel):
     id: int
+    actions: Union[List, None]
 
 
 def make_product(product: Product) -> ProductResModel:
@@ -90,5 +107,23 @@ def make_product(product: Product) -> ProductResModel:
         discount=product.discount,
         is_sold=product.is_sold,
         sold_date=product.sold_date,
-        context=product.context
+        context=product.context,
+        actions=[{
+            'id': action.id,
+            'user_name': action.user.name,
+            'user_id': action.user_id,
+            'action_type': action.action_type,
+            'creates_at': action.created_at,
+        } for action in product.actions]
     )
+
+
+def send_email(subject: str, text: str, to: List[EmailStr]):
+    response = requests.post(f"https://api.mailgun.net/v3/{os.getenv('MAILGUN_SANDBOX')}/messages",
+                  auth=('api', os.getenv('MAILGUN_API_KEY')),
+                  data={'from': f'Ssein Group <noreply@{os.getenv("MAILGUN_SANDBOX")}>',
+                        'to': to,
+                        'subject': subject,
+                        'text': text})
+
+    print(response.__dict__)

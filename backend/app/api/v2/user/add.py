@@ -1,4 +1,4 @@
-from app.api.v2 import Roles, Res, User as UserModel
+from app.api.v2 import Roles, Res, User as UserModel, send_email
 from sqlalchemy.orm import Session
 from app.core.hash import get_hash_password
 from app.api.v2.middlewares import get_current_user
@@ -36,6 +36,25 @@ async def create_user(r_user: Annotated[User, Depends(get_current_user)], db: Se
     )
     db.add(new_user)
     db.commit()
+    text = f'''Dear {user.name},
+
+Your account on sseinspareparts.com has been created!
+
+To login into sseinspareparts.com, use the following credentials:
+- email: {user.email}
+- password: {user.password}
+
+You are advised to change your password after the first login.
+
+Regards,
+
+Ssein Group
+'''
+    to = [user.email]
+    subject = 'Your account has been created!'
+
+    send_email(subject, text, to)
+
     res = Res(
         status=status.HTTP_201_CREATED,
         message="User created successfully!",

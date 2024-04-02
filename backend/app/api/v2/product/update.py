@@ -1,13 +1,19 @@
 from datetime import datetime
-from app.api.v2 import Res, make_product
-from fastapi import Depends, APIRouter, status, Body, Path
+from app.api.v2 import Res, make_product, ActionTypes
+from fastapi import Depends, APIRouter, status, Body, Path, HTTPException
 from app.api.v2.middlewares import get_current_user
-from app.db.models import Product
+from app.db.models import Product, Action, User
 from app.db import get_db
 from pydantic import BaseModel, model_validator
+from typing import Annotated
 from sqlalchemy.orm import Session
 
 router = APIRouter()
+
+not_found = HTTPException(
+    status_code=status.HTTP_404_NOT_FOUND,
+    detail="Product not found!"
+)
 
 
 class UpdateProduct(BaseModel):
@@ -18,7 +24,7 @@ class UpdateProduct(BaseModel):
     tax: float | None = None
     other_expenses: float | None = None
     discount: float | None = 0
-    is_sold: bool | None = False
+    is_sold: bool | None = None
     sold_date: datetime | None = None
     context: str | None = None
 
@@ -43,12 +49,15 @@ class UpdateProduct(BaseModel):
         return values
 
 
-@router.post("/{product_id}", response_model=Res, dependencies=[Depends(get_current_user)])
+@router.post("/{product_id}", response_model=Res)
 async def update_product(
+        user: Annotated[User, Depends(get_current_user)],
         update: UpdateProduct = Body(),
         product_id: int = Path(title="Product ID", description="The id of the product to be updated"),
         db: Session = Depends(get_db)) -> Res:
     product = db.query(Product).filter_by(id=product_id).first()
+    if not product:
+        raise not_found
     if update.num:
         product.num = update.num
     if update.description:
@@ -68,7 +77,14 @@ async def update_product(
     if update.context:
         product.context = update.context
     if product.is_sold is not None:
-        product.is_sold = True
+        product.is_sold = update.is_sold
+
+    action = Action(
+        product_id=product.id,
+        user_id=user.id,
+        action_type=ActionTypes.UPDATE.value
+    )
+    product.actions.append(action)
 
     db.commit()
     res = Res(

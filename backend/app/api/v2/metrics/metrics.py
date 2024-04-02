@@ -1,16 +1,10 @@
 import datetime
-
 from app.api.v2 import Res, FileScope
-from fastapi import Depends, APIRouter, status, Body
-from app.api.v2.middlewares import get_current_user
-from app.db.models import User
+from fastapi import Depends, APIRouter, status
 from app.db import get_db
 from app.db.models import Product, User, File
-from app.core.hash import get_hash_password
-from pydantic import BaseModel, EmailStr, model_validator
-from typing import Annotated, Optional
 from sqlalchemy.orm import Session
-from sqlalchemy import func, and_, or_
+from sqlalchemy import func, and_
 
 router = APIRouter()
 
@@ -86,7 +80,7 @@ async def get_profit_loss_graph(db: Session = Depends(get_db)):
     return res
 
 
-@router.get("/metrics", response_model=Res)
+@router.get("/", response_model=Res)
 async def get_metrics(db: Session = Depends(get_db)) -> Res:
     stock = db.query(
         func.sum(Product.selling_price).label('instock')
@@ -109,7 +103,8 @@ async def get_metrics(db: Session = Depends(get_db)) -> Res:
                 - Product.tax
                 - Product.other_expenses
                 - Product.discount
-        ) >= 0
+        ) >= 0,
+        Product.is_sold == True
     )).first()
 
     loss = db.query(
@@ -129,7 +124,8 @@ async def get_metrics(db: Session = Depends(get_db)) -> Res:
                 - Product.tax
                 - Product.other_expenses
                 - Product.discount
-        ) < 0
+        ) < 0,
+        Product.is_sold == True
     )).first()
 
     users = db.query(

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from app.api.v2.middlewares import get_current_user
 from .endpoints import cars, categories, parts
-from .v2 import user, file, product, metrics, debtmanagement
+from .v2 import user, file, product, metrics, debtmanagement, inquiry
 
 
 api_router = APIRouter()
@@ -14,3 +14,4 @@ api_router.include_router(product.router, prefix="/products", tags=["Products"])
 api_router.include_router(metrics.router, prefix="/metrics", tags=["Metrics"], dependencies=[Depends(get_current_user)])
 api_router.include_router(debtmanagement.router, prefix="/management",
                           tags=["Debt Management"], dependencies=[Depends(get_current_user)])
+api_router.include_router(inquiry.router, prefix='/inquiry', tags=['Inquiries'])
