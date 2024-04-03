@@ -278,6 +278,13 @@ export function Tables() {
   };
   const handleDeleteProduct = async (id) => {
     try {
+      // Show a confirmation dialog before deleting the product
+      const confirmed = window.confirm(
+        "Are you sure you want to delete this product?",
+      );
+      if (!confirmed) {
+        return; // If user cancels, do not proceed with deletion
+      }
       const response = await axios.delete(
         `https://parts.kagaba.tech/products/${id}`,
         {
