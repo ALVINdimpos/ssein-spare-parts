@@ -539,6 +539,31 @@ export function Tables() {
           )}
         </CardBody>
       </Card>
+      <div className="flex items-center justify-between mt-6">
+        {/* Total products */}
+        <div>
+          <Typography
+            variant="small"
+            color="blue-gray"
+            className="font-semibold"
+          >
+            Total Products: {filteredProducts.length}
+          </Typography>
+        </div>
+
+        {/* Products count */}
+        <div className="flex items-center gap-4">
+          <div>
+            <Typography
+              variant="small"
+              color="blue-gray"
+              className="font-semibold"
+            >
+              Showing {currentProducts.length} of {filteredProducts.length}
+            </Typography>
+          </div>
+        </div>
+      </div>
 
       <div className="flex justify-center mt-4 mb-4">
         <ul className="flex flex-wrap gap-2">
