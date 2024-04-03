@@ -7,3 +7,4 @@ export { DebtorTable as DebtorTable } from "./debtors.jsx";
 export { CreditorTable as CreditorTable } from "./creditors.jsx";
 export { QueriesTable as QueriesTable } from "./queries.jsx";
 export { InquiriesTable as InquiriesTable } from "./inquiry.jsx";
+export { Profile as Profile } from "./profile.jsx";

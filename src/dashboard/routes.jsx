@@ -10,6 +10,7 @@ import {
   CreditorTable,
   QueriesTable,
   InquiriesTable,
+  Profile,
 } from "./pages/dashboard";
 import { AiOutlineShopping } from "react-icons/ai";
 import { BiSolidReport } from "react-icons/bi";
@@ -17,6 +18,7 @@ import { FaMoneyCheckAlt } from "react-icons/fa";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import { MdOutlineQuestionAnswer } from "react-icons/md";
 import { LuMailQuestion } from "react-icons/lu";
+import { ImProfile } from "react-icons/im";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -76,6 +78,12 @@ export const routes = (userRole) => {
           element: <InquiriesTable />,
         },
         {
+          icon: <ImProfile {...icon} />,
+          name: "Profile",
+          path: "/profile",
+          element: <Profile />,
+        },
+        {
           icon: <InformationCircleIcon {...icon} />,
           name: "notifications",
           path: "/notifications",
@@ -98,7 +106,8 @@ export const routes = (userRole) => {
         (page) =>
           page.name === "dashboard" ||
           page.name === "products" ||
-          page.name === "Debtors",
+          page.name === "Debtors" ||
+          page.name === "Profile",
       ),
     }));
 
