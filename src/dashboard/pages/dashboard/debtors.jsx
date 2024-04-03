@@ -194,8 +194,8 @@ export function DebtorTable() {
     <div className="flex flex-col gap-12 mt-12 mb-8">
       <Card>
         <CardHeader variant="black" color="gray" className="p-6 mb-8">
-          <div className="flex items-center justify-between">
-            <Typography variant="h6" color="white">
+          <div className="flex flex-col items-center justify-between md:flex-row">
+            <Typography variant="h6" color="white" className="mb-4 md:mb-0">
               Debtor Table
             </Typography>
             <div className="flex items-center gap-2">
@@ -218,11 +218,14 @@ export function DebtorTable() {
                 className="flex items-center gap-2"
               >
                 <IoMdAddCircle className="text-xl" />
-                <span className="text-base font-medium">Add New Debtor</span>
+                <span className="hidden text-base font-medium md:block">
+                  Add New Debtor
+                </span>
               </Button>
             </div>
           </div>
         </CardHeader>
+
         <CardBody className="px-0 pt-0 pb-2 overflow-x-scroll">
           {filteredDebtors.length === 0 ? (
             <div className="py-4 text-center">No results found.</div>

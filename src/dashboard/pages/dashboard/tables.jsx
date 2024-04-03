@@ -30,6 +30,7 @@ export function Tables() {
   const [userRole, setUserRole] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [productTableData, setProductTableData] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [isSoldFilter, setIsSoldFilter] = useState("all");
   const [productData, setProductData] = useState({
     num: "",
@@ -59,6 +60,57 @@ export function Tables() {
       setUserRole(decodedToken.role);
     }
   }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          "https://parts.kagaba.tech/products/",
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+          },
+        );
+        setProductTableData(response.data?.data?.products);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
+  useEffect(() => {
+    // Filter the product data based on search query and isSoldFilter
+    const filteredData = productTableData.filter((product) => {
+      const numMatchesSearch = product.num
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const descriptionMatchesSearch = product.description
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      let matchesSearch = numMatchesSearch || descriptionMatchesSearch;
+
+      if (isSoldFilter === "all") {
+        return matchesSearch;
+      } else if (isSoldFilter === "sold") {
+        return matchesSearch && product.is_sold;
+      } else if (isSoldFilter === "inStock") {
+        return matchesSearch && !product.is_sold;
+      }
+      return false;
+    });
+    setFilteredProducts(filteredData);
+  }, [productTableData, searchQuery, isSoldFilter]);
+
+  // Update the calculation of indexOfFirstProduct and indexOfLastProduct to use filteredProducts
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct,
+  );
+
   const handleSellProducts = async (id) => {
     const getProductResponse = await axios.get(
       `https://parts.kagaba.tech/products/${id}`,
@@ -79,37 +131,8 @@ export function Tables() {
     setProduct(`https://parts.kagaba.tech/products/qrcode/${id}`);
   };
   const isAgent = userRole === "agent";
-  // Update the filteredProductData variable to filter based on the search query and isSoldFilter
-  const filteredProductData = productTableData?.filter((product) => {
-    const numMatchesSearch =
-      product && product.num.toLowerCase().includes(searchQuery.toLowerCase());
-    const descriptionMatchesSearch =
-      product &&
-      product.description.toLowerCase().includes(searchQuery.toLowerCase());
-
-    let matchesSearch = false;
-    if (numMatchesSearch || descriptionMatchesSearch) {
-      matchesSearch = true;
-    }
-
-    if (isSoldFilter === "all") {
-      return matchesSearch;
-    } else if (isSoldFilter === "sold") {
-      return matchesSearch && product.is_sold;
-    } else if (isSoldFilter === "inStock") {
-      return matchesSearch && !product.is_sold;
-    }
-    return false;
-  });
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = filteredProductData.slice(
-    indexOfFirstProduct,
-    indexOfLastProduct,
-  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -216,26 +239,6 @@ export function Tables() {
       toast.error("Error updating product");
     }
   };
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          "https://parts.kagaba.tech/products/",
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
-          },
-        );
-        setProductTableData(response.data?.data?.products);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchData();
-  }, []);
-
   const handleSellProduct = async () => {
     setLoading(true);
     try {
@@ -290,33 +293,49 @@ export function Tables() {
       toast.error("Deleting product failed:", error);
     }
   };
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1); // Reset pagination to first page when search query changes
+  };
 
+  const handleSoldFilterChange = (e) => {
+    setIsSoldFilter(e.target.value);
+    setCurrentPage(1); // Reset pagination to first page when filter changes
+  };
+
+  const handlePagination = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
   return (
-    <div className="flex flex-col gap-12 mt-12 mb-8">
+    <div className="flex flex-col mt-12 mb-8 overflow-x-auto">
       <Card>
-        <CardHeader variant="black" color="gray" className="p-6 mb-8">
-          <div className="flex items-center justify-between">
-            <Typography variant="h6" color="white">
+        <CardHeader variant="black" color="gray" className="p-4 mb-8 md:p-6">
+          <div className="flex flex-col items-center justify-between md:flex-row">
+            <Typography
+              variant="h6"
+              color="white"
+              className="mb-2 md:mb-0 md:mr-4"
+            >
               Product Table
             </Typography>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col items-center gap-2 md:flex-row">
               <input
                 type="text"
                 placeholder="Search product..."
                 className="px-3 py-2 text-black border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearchChange}
               />
               <select
                 value={isSoldFilter}
-                onChange={(e) => setIsSoldFilter(e.target.value)}
+                onChange={handleSoldFilterChange}
                 className="px-3 py-2 text-black border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                 style={{
                   appearance: "none",
                   backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M7.293 11.293a1 1 0 011.414 0L10 12.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414zM7 7a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1z' clip-rule='evenodd' /%3E%3C/svg%3E")`,
                   backgroundRepeat: "no-repeat",
                   backgroundPosition: "right 0.5rem center",
-                  paddingRight: "2.5rem", // Adjust according to the width of the arrow icon
+                  paddingRight: "2.5rem",
                 }}
               >
                 <option value="all">All</option>
@@ -332,7 +351,7 @@ export function Tables() {
                 block={false}
                 iconOnly={false}
                 ripple="light"
-                className="flex items-center gap-2 "
+                className="flex items-center gap-2 mt-2 md:mt-0"
               >
                 <IoMdAddCircle className="text-xl" />
                 <span className="text-base font-medium">Add New Product</span>
@@ -340,190 +359,200 @@ export function Tables() {
             </div>
           </div>
         </CardHeader>
-        <CardBody className="px-0 pt-0 pb-2 overflow-x-scroll">
-          {filteredProductData.length === 0 ? (
+
+        <CardBody className="px-0 pt-0 pb-2">
+          {filteredProducts.length === 0 ? (
             <div className="py-4 text-center">No results found.</div>
           ) : (
-            <table className="w-full min-w-[640px] table-auto">
-              <thead>
-                <tr>
-                  {[
-                    "Id",
-                    "Product Number",
-                    "Description",
-                    "Selling Price",
-                    "Purchase Price",
-                    "Tax",
-                    "Other Expenses",
-                    "Discount",
-                    "Context",
-                    "Status",
-                    "Action",
-                    "Action owner",
-                  ].map((el) => (
-                    <th
-                      key={el}
-                      className="px-5 py-3 text-left border-b border-blue-gray-50"
-                    >
-                      <Typography
-                        variant="small"
-                        className="text-[11px] font-bold uppercase text-blue-gray-400"
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[640px] table-auto">
+                {/* Table headers */}
+                <thead>
+                  <tr>
+                    {[
+                      "Id",
+                      "Product Number",
+                      "Description",
+                      "Selling Price",
+                      "Purchase Price",
+                      "Tax",
+                      "Other Expenses",
+                      "Discount",
+                      "Context",
+                      "Status",
+                      "Action",
+                      "Action owner",
+                    ].map((el) => (
+                      <th
+                        key={el}
+                        className="px-5 py-3 text-left border-b border-blue-gray-50"
                       >
-                        {el}
-                      </Typography>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {currentProducts.map(
-                  (
-                    {
-                      id,
-                      num,
-                      description,
-                      selling_price,
-                      purchase_price,
-                      tax,
-                      other_expenses,
-                      discount,
-                      context,
-                      is_sold,
-                      actions,
+                        <Typography
+                          variant="small"
+                          className="text-[11px] font-bold uppercase text-blue-gray-400"
+                        >
+                          {el}
+                        </Typography>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                {/* Table body */}
+                <tbody>
+                  {currentProducts.map(
+                    (
+                      {
+                        id,
+                        num,
+                        description,
+                        selling_price,
+                        purchase_price,
+                        tax,
+                        other_expenses,
+                        discount,
+                        context,
+                        is_sold,
+                        actions,
+                      },
+                      key,
+                    ) => {
+                      const className = `py-3 px-5 ${
+                        key === currentProducts.length - 1
+                          ? ""
+                          : "border-b border-blue-gray-50"
+                      }`;
+
+                      return (
+                        <tr key={id}>
+                          {/* Table data */}
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-semibold"
+                                >
+                                  {id}
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-semibold"
+                                >
+                                  {num}
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <Typography className="text-xs font-semibold text-blue-gray-600">
+                              {description}
+                            </Typography>
+                          </td>
+                          <td className={className}>
+                            <Typography className="text-xs font-semibold text-blue-gray-600">
+                              {selling_price} RWF
+                            </Typography>
+                          </td>
+                          <td className={className}>
+                            <Typography className="text-xs font-semibold text-blue-gray-600">
+                              {purchase_price} RWF
+                            </Typography>
+                          </td>
+                          <td className={className}>
+                            <Typography className="text-xs font-semibold text-blue-gray-600">
+                              {tax} RWF
+                            </Typography>
+                          </td>
+                          <td className={className}>
+                            <Typography className="text-xs font-semibold text-blue-gray-600">
+                              {other_expenses} RWF
+                            </Typography>
+                          </td>
+                          <td className={className}>
+                            <Typography className="text-xs font-semibold text-blue-gray-600">
+                              {discount} RWF
+                            </Typography>
+                          </td>
+                          <td className={className}>
+                            <Typography className="text-xs font-semibold text-blue-gray-600">
+                              {context}
+                            </Typography>
+                          </td>
+                          <td className={className}>
+                            <Typography className="text-xs font-semibold text-blue-gray-600">
+                              {is_sold ? (
+                                <span className="text-red-500">Sold</span>
+                              ) : (
+                                <span className="text-green-500">In Stock</span>
+                              )}
+                            </Typography>
+                          </td>
+
+                          <td className={className}>
+                            <div className="flex justify-between gap-1">
+                              {!isAgent && (
+                                <FaEdit
+                                  className="text-blue-500 cursor-pointer material-icons"
+                                  onClick={() => handleViewEditProduct(id)}
+                                />
+                              )}
+                              {!is_sold && ( // Conditionally render the edit button
+                                <AiOutlineTransaction
+                                  className="text-blue-500 cursor-pointer material-icons"
+                                  onClick={() => handleSellProducts(id)}
+                                />
+                              )}
+                              {!isAgent && (
+                                <MdAutoDelete
+                                  className="ml-2 text-red-500 cursor-pointer material-icons"
+                                  onClick={() => handleDeleteProduct(id)}
+                                />
+                              )}
+                              <FaQrcode
+                                className="ml-2 text-green-500 cursor-pointer material-icons"
+                                onClick={() => handleViewProduct(id)}
+                              />
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <Typography className="text-xs font-semibold text-blue-gray-600">
+                              {actions
+                                .map((action) => action.user_name)
+                                .join(", ")}
+                            </Typography>
+                          </td>
+                        </tr>
+                      );
                     },
-                    key,
-                  ) => {
-                    const className = `py-3 px-5 ${
-                      key === currentProducts.length - 1
-                        ? ""
-                        : "border-b border-blue-gray-50"
-                    }`;
-
-                    return (
-                      <tr key={id}>
-                        <td className={className}>
-                          <div className="flex items-center gap-4">
-                            <div>
-                              <Typography
-                                variant="small"
-                                color="blue-gray"
-                                className="font-semibold"
-                              >
-                                {id}
-                              </Typography>
-                            </div>
-                          </div>
-                        </td>
-                        <td className={className}>
-                          <div className="flex items-center gap-4">
-                            <div>
-                              <Typography
-                                variant="small"
-                                color="blue-gray"
-                                className="font-semibold"
-                              >
-                                {num}
-                              </Typography>
-                            </div>
-                          </div>
-                        </td>
-                        <td className={className}>
-                          <Typography className="text-xs font-semibold text-blue-gray-600">
-                            {description}
-                          </Typography>
-                        </td>
-                        <td className={className}>
-                          <Typography className="text-xs font-semibold text-blue-gray-600">
-                            {selling_price} RWF
-                          </Typography>
-                        </td>
-                        <td className={className}>
-                          <Typography className="text-xs font-semibold text-blue-gray-600">
-                            {purchase_price} RWF
-                          </Typography>
-                        </td>
-                        <td className={className}>
-                          <Typography className="text-xs font-semibold text-blue-gray-600">
-                            {tax} RWF
-                          </Typography>
-                        </td>
-                        <td className={className}>
-                          <Typography className="text-xs font-semibold text-blue-gray-600">
-                            {other_expenses} RWF
-                          </Typography>
-                        </td>
-                        <td className={className}>
-                          <Typography className="text-xs font-semibold text-blue-gray-600">
-                            {discount} RWF
-                          </Typography>
-                        </td>
-                        <td className={className}>
-                          <Typography className="text-xs font-semibold text-blue-gray-600">
-                            {context}
-                          </Typography>
-                        </td>
-                        <td className={className}>
-                          <Typography className="text-xs font-semibold text-blue-gray-600">
-                            {is_sold ? (
-                              <span className="text-red-500">Sold</span>
-                            ) : (
-                              <span className="text-green-500">In Stock</span>
-                            )}
-                          </Typography>
-                        </td>
-
-                        <td className={className}>
-                          <div className="flex justify-between gap-1">
-                            {!isAgent && (
-                              <FaEdit
-                                className="text-blue-500 cursor-pointer material-icons"
-                                onClick={() => handleViewEditProduct(id)}
-                              />
-                            )}
-                            {!is_sold && ( // Conditionally render the edit button
-                              <AiOutlineTransaction
-                                className="text-blue-500 cursor-pointer material-icons"
-                                onClick={() => handleSellProducts(id)}
-                              />
-                            )}
-                            {!isAgent && (
-                              <MdAutoDelete
-                                className="ml-2 text-red-500 cursor-pointer material-icons"
-                                onClick={() => handleDeleteProduct(id)}
-                              />
-                            )}
-                            <FaQrcode
-                              className="ml-2 text-green-500 cursor-pointer material-icons"
-                              onClick={() => handleViewProduct(id)}
-                            />
-                          </div>
-                        </td>
-                        <td className={className}>
-                          <Typography className="text-xs font-semibold text-blue-gray-600">
-                            {actions
-                              .map((action) => action.user_name)
-                              .join(", ")}
-                          </Typography>
-                        </td>
-                      </tr>
-                    );
-                  },
-                )}
-              </tbody>
-            </table>
+                  )}
+                </tbody>
+              </table>
+            </div>
           )}
         </CardBody>
       </Card>
 
-      <div className="flex justify-center mt-4">
-        <ul className="flex space-x-2">
+      <div className="flex justify-center mt-4 mb-4">
+        <ul className="flex flex-wrap gap-2">
           {Array.from(
             { length: Math.ceil(productTableData.length / productsPerPage) },
             (_, i) => (
               <li key={i}>
                 <Button
-                  className={`px-3 py-1 rounded-md ${currentPage === i + 1 ? "bg-black" : "bg-gray-200"} focus:outline-none`}
-                  onClick={() => paginate(i + 1)}
+                  className={`px-3 py-1 rounded-md ${
+                    currentPage === i + 1
+                      ? "bg-black text-white"
+                      : "bg-gray-200 text-black"
+                  } focus:outline-none`}
+                  onClick={() => handlePagination(i + 1)}
                 >
                   {i + 1}
                 </Button>
@@ -532,6 +561,7 @@ export function Tables() {
           )}
         </ul>
       </div>
+
       {showAddForm && (
         <form>
           <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full bg-black bg-opacity-60">

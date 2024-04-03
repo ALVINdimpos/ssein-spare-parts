@@ -1,86 +1,115 @@
+import { useState } from "react";
 import PropTypes from "prop-types";
 import { Link, NavLink } from "react-router-dom";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { Button, IconButton, Typography } from "@material-tailwind/react";
-import { useMaterialTailwindController, setOpenSidenav } from "../../context";
+import { IconButton, Button, Typography } from "@material-tailwind/react";
 
 export function Sidenav({ brandName, routes }) {
-  const [controller, dispatch] = useMaterialTailwindController();
-  const { sidenavColor } = controller;
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleSidenav = () => {
+    setIsOpen(!isOpen);
+  };
 
   return (
-    <aside className="-translate-x-80 fixed inset-0 z-50 my-4 ml-4 h-[calc(100vh-32px)] w-72 rounded-xl transition-transform duration-300 xl:translate-x-0 border border-blue-gray-100">
-      <div className={`relative`}>
-        <Link to="/" className="px-8 py-6 text-center">
-          <Typography variant="h6" color="blue-gray">
+    <>
+      {/* Hamburger Icon */}
+      <IconButton
+        variant="text"
+        color="white"
+        size="sm"
+        ripple={false}
+        className={`fixed top-4 left-4 z-50 xl:hidden ${
+          isOpen ? "hidden" : ""
+        }`}
+        onClick={toggleSidenav}
+      >
+        <XMarkIcon strokeWidth={2.5} className="w-5 h-5 text-white" />
+      </IconButton>
+
+      {/* Sidenav */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-lg overflow-y-auto transition-transform duration-300 ease-in-out transform ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        } xl:translate-x-0`}
+      >
+        <div className="flex items-center justify-between px-8 py-4 border-b border-gray-200">
+          <Link
+            to="/"
+            className="text-2xl font-bold text-black capitalize transition-colors hover:text-indigo-600"
+            style={{ textTransform: "capitalize" }}
+          >
             {brandName}
-          </Typography>
-        </Link>
-        <IconButton
-          variant="text"
-          color="white"
-          size="sm"
-          ripple={false}
-          className="absolute top-0 right-0 grid rounded-tl-none rounded-br-none xl:hidden"
-          onClick={() => setOpenSidenav(dispatch, false)}
-        >
-          <XMarkIcon strokeWidth={2.5} className="w-5 h-5 text-white" />
-        </IconButton>
-      </div>
-      <div className="m-4">
-        {routes.map(({ layout, title, pages }, key) => (
-          <ul key={key} className="flex flex-col gap-1 mb-4">
-            {title && (
-              <li className="mx-3.5 mt-4 mb-2">
-                <Typography
-                  variant="small"
-                  color="blue-gray"
-                  className="font-black uppercase opacity-75"
-                >
+          </Link>
+
+          {/* Close Icon */}
+          <IconButton
+            variant="filled"
+            color="gray"
+            size="sm"
+            ripple={true}
+            className={`xl:hidden ${isOpen ? "" : "hidden"}`}
+            onClick={toggleSidenav}
+          >
+            <XMarkIcon strokeWidth={2} className="w-5 h-5" />
+          </IconButton>
+        </div>
+
+        <nav className="mt-4">
+          {routes.map(({ layout, title, pages }, key) => (
+            <div key={key} className="border-t border-gray-200">
+              {title && (
+                <div className="px-8 py-4 text-sm font-semibold text-gray-600">
                   {title}
-                </Typography>
-              </li>
-            )}
-            {pages.map(({ icon, name, path }) => (
-              <li key={name}>
-                <NavLink to={`/${layout}${path}`}>
-                  {({ isActive }) => (
-                    <Button
-                      variant={isActive ? "" : "text"}
-                      color={isActive ? sidenavColor : "blue-gray"}
-                      className="flex items-center gap-4 px-4 capitalize"
-                      fullWidth
-                    >
-                      {icon}
-                      <Typography
-                        color="inherit"
-                        className="font-medium capitalize"
-                      >
-                        {name}
-                      </Typography>
-                    </Button>
-                  )}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-        ))}
-      </div>
-    </aside>
+                </div>
+              )}
+              <ul>
+                {pages.map(({ icon, name, path }) => (
+                  <li key={name} className="relative">
+                    <NavLink to={`/${layout}${path}`}>
+                      {({ isActive }) => (
+                        <Button
+                          variant={isActive ? "" : "text"}
+                          color={isActive ? "black" : "blue-gray"}
+                          className="flex items-center gap-4 px-4 capitalize"
+                          fullWidth
+                        >
+                          {icon}
+                          <Typography
+                            color="inherit"
+                            className="font-medium capitalize"
+                          >
+                            {name}
+                          </Typography>
+                        </Button>
+                      )}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </nav>
+      </aside>
+
+      {/* Overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black opacity-50 xl:hidden"
+          onClick={toggleSidenav}
+        ></div>
+      )}
+    </>
   );
 }
 
 Sidenav.defaultProps = {
-  brandImg: "/img/logo-ct.png",
   brandName: "Ssein Spare Parts",
 };
 
 Sidenav.propTypes = {
-  brandImg: PropTypes.string,
   brandName: PropTypes.string,
   routes: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
-
-Sidenav.displayName = "/src/widgets/layout/sidenav.jsx";
 
 export default Sidenav;

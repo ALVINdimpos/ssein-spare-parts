@@ -48,7 +48,7 @@ export function UserTables() {
       const token = localStorage.getItem("accessToken");
       const response = await axios.patch(
         `https://parts.kagaba.tech/users/${editUserId}`,
-        { role: newUserData.role }, // Only include the role field in the request body
+        { role: newUserData.role },
         {
           headers: {
             Accept: "application/json",
@@ -169,16 +169,16 @@ export function UserTables() {
   return (
     <div className="flex flex-col gap-12 mt-12 mb-8">
       <Card>
-        <CardHeader variant="black" color="gray" className="p-6 mb-8">
-          <div className="flex items-center justify-between">
-            <Typography variant="h6" color="white">
+        <CardHeader variant="black" color="gray" className="p-4 mb-8 md:p-6">
+          <div className="flex flex-col items-center justify-between md:flex-row">
+            <Typography variant="h6" color="white" className="mb-4 md:mb-0">
               User Table
             </Typography>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col items-center gap-2 md:flex-row">
               <input
                 type="text"
-                placeholder="Search product..."
-                className="px-3 py-2 text-black border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                placeholder="Search user..."
+                className="w-full px-3 py-2 mb-2 text-black border border-gray-300 rounded-md md:w-auto focus:outline-none focus:border-indigo-500 md:mb-0"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -199,6 +199,7 @@ export function UserTables() {
             </div>
           </div>
         </CardHeader>
+
         <CardBody className="px-0 pt-0 pb-2 overflow-x-scroll">
           {filteredUserData.length === 0 ? (
             <div className="py-4 text-center">No results found.</div>
@@ -277,10 +278,6 @@ export function UserTables() {
                             className="ml-2 text-red-500 cursor-pointer material-icons"
                             onClick={() => handleDeleteUser(id)}
                           />
-                          {/* <MdOutlineVisibility
-                                                        className="ml-2 text-green-500 cursor-pointer material-icons"
-                                                        onClick={() => handleViewUser(id)}
-                                                    /> */}
                         </div>
                       </td>
                     </tr>
@@ -292,7 +289,7 @@ export function UserTables() {
         </CardBody>
       </Card>
       <div className="flex justify-center mt-4">
-        <ul className="flex space-x-2">
+        <ul className="flex flex-wrap space-x-2">
           {Array.from(
             { length: Math.ceil(userTableData.length / usersPerPage) },
             (_, i) => (
@@ -308,6 +305,7 @@ export function UserTables() {
           )}
         </ul>
       </div>
+
       {showAddForm && (
         <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full bg-black bg-opacity-60">
           {/* Add User Form */}

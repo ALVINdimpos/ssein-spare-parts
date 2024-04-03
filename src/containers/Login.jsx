@@ -44,14 +44,12 @@ const Login = () => {
   return (
     <div>
       <div className="absolute top-0 bottom-0 left-0 w-full h-full overflow-hidden leading-5 bg-black-900 bg-gradient-to-b from-gray-900 via-gray-900 to-black-800"></div>
-      <div className="relative justify-center min-h-screen bg-transparent shadow-xl sm:flex sm:flex-row rounded-3xl">
+      <div className="relative flex items-center justify-center min-h-screen bg-transparent shadow-xl sm:flex sm:flex-row rounded-3xl">
         <div className="z-10 flex flex-col self-center lg:px-14 sm:max-w-4xl xl:max-w-md">
           <div className="flex-col self-start hidden text-gray-300 lg:flex">
-            <h1 className="my-3 text-4xl font-semibold">Welcome back</h1>
+            <h1 className="my-3 text-4xl font-semibold">Welcome back!</h1>
             <p className="pr-3 text-sm opacity-75">
-              Lorem ipsum is placeholder text commonly used in the graphic,
-              print, and publishing industries for previewing layouts and visual
-              mockups
+              Log in to access your account.
             </p>
           </div>
         </div>

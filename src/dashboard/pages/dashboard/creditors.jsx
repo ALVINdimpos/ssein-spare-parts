@@ -13,13 +13,12 @@ import { MdAutoDelete } from "react-icons/md";
 import { MdOutlineVisibility } from "react-icons/md";
 import { IoMdAddCircle } from "react-icons/io";
 import { IoIosCloseCircle } from "react-icons/io";
-// import { creditorsData } from "../../data";
 import Loader from "react-js-loader";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { format } from "date-fns";
+
 export function CreditorTable() {
-  // const [debtorData, setDebtorData] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [viewCreditors, setViewCreditors] = useState(false);
   const [editCreditors, setEditCreditors] = useState(false);
@@ -30,6 +29,7 @@ export function CreditorTable() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [creditorsPerPage] = useState(5);
+  const [filteredCreditors, setFilteredCreditors] = useState([]);
 
   const [newCreditorData, setNewCreditorData] = useState({
     name: "",
@@ -41,7 +41,7 @@ export function CreditorTable() {
     scope: "creditors",
   });
 
-  // Event handler to update the new debtor data as the user types
+  // Event handler to update the new creditor data as the user types
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewCreditorData({ ...newCreditorData, [name]: value });
@@ -89,6 +89,7 @@ export function CreditorTable() {
         const { data } = response.data;
         if (data && data.records) {
           setCreditorData(data?.records);
+          setFilteredCreditors(data?.records); // Initialize filtered creditors with all creditors
           setLoading(false);
         }
       } catch (error) {
@@ -99,6 +100,7 @@ export function CreditorTable() {
 
     fetchData();
   }, []);
+
   const handleDeleteCreditors = async (id) => {
     try {
       await axios.delete(`https://parts.kagaba.tech/management/${id}`, {
@@ -113,10 +115,12 @@ export function CreditorTable() {
       toast.error("Error deleting Creditors");
     }
   };
+
   const handleEditCreditors = (id) => {
     setEditCreditors(true);
     setEditCreditorId(id);
   };
+
   const handleEditCreditorSubmit = async () => {
     try {
       setLoading(true);
@@ -144,6 +148,7 @@ export function CreditorTable() {
   const handleViewDebtor = (id) => {
     setViewCreditors(true);
   };
+
   const getPaymentStatusColor = (status) => {
     switch (status) {
       case "paid":
@@ -157,34 +162,11 @@ export function CreditorTable() {
     }
   };
 
-  // Filter the debtor data based on the search query
-  const filteredCreditors = creditorsData?.filter((creditor) => {
-    if (
-      creditor &&
-      creditor.name &&
-      creditor.contact_info &&
-      creditor.due_date &&
-      creditor.payment_status
-    ) {
-      return (
-        creditor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        creditor.contact_info
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        creditor.due_date.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        creditor.payment_status
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase())
-      );
-    }
-    return false; // Return false for undefined or missing properties
-  });
-
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const indexOfLastCreditor = currentPage * creditorsPerPage;
   const indexOfFirstCreditor = indexOfLastCreditor - creditorsPerPage;
-  const currentCreditors = filteredCreditors?.slice(
+  const currentCreditors = filteredCreditors.slice(
     indexOfFirstCreditor,
     indexOfLastCreditor,
   );
@@ -193,14 +175,14 @@ export function CreditorTable() {
     <div className="flex flex-col gap-12 mt-12 mb-8">
       <Card>
         <CardHeader variant="black" color="gray" className="p-6 mb-8">
-          <div className="flex items-center justify-between">
-            <Typography variant="h6" color="white">
-              Debtor Table
+          <div className="flex flex-col items-center justify-between md:flex-row">
+            <Typography variant="h6" color="white" className="mb-4 md:mb-0">
+              Creditors Table
             </Typography>
             <div className="flex items-center gap-2">
               <input
                 type="text"
-                placeholder="Search Debtors..."
+                placeholder="Search Creditors..."
                 className="px-3 py-2 text-black border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -217,13 +199,16 @@ export function CreditorTable() {
                 className="flex items-center gap-2"
               >
                 <IoMdAddCircle className="text-xl" />
-                <span className="text-base font-medium">Add New Debtor</span>
+                <span className="hidden text-base font-medium md:block">
+                  Add New Creditors
+                </span>
               </Button>
             </div>
           </div>
         </CardHeader>
+
         <CardBody className="px-0 pt-0 pb-2 overflow-x-scroll">
-          {filteredCreditors.length === 0 ? (
+          {currentCreditors.length === 0 ? (
             <div className="py-4 text-center">No results found.</div>
           ) : (
             <table className="w-full min-w-[640px] table-auto">
@@ -254,7 +239,7 @@ export function CreditorTable() {
                 </tr>
               </thead>
               <tbody>
-                {currentCreditors?.map(
+                {currentCreditors.map(
                   (
                     {
                       id,
@@ -268,82 +253,55 @@ export function CreditorTable() {
                     key,
                   ) => {
                     const className = `py-3 px-5 ${
-                      key === currentCreditors?.length - 1
+                      key === currentCreditors.length - 1
                         ? ""
                         : "border-b border-blue-gray-50"
                     }`;
 
                     return (
                       <tr key={id}>
-                        <td className={className}>
-                          <div className="flex items-center gap-4">
-                            <div>
-                              <Typography
-                                variant="small"
-                                color="blue-gray"
-                                className="font-semibold"
-                              >
-                                {id}
-                              </Typography>
-                            </div>
-                          </div>
+                        <td className={className}>{id}</td>
+                        <td className={className}>{name}</td>
+                        <td className={className}>{contact_info}</td>
+                        <td className={className}>{amount}</td>
+                        <td className={className}>{due_date}</td>
+                        <td className={className}>{context}</td>
+                        <td
+                          className={`${className} ${getPaymentStatusColor(payment_status)}`}
+                        >
+                          {payment_status}
                         </td>
                         <td className={className}>
-                          <div className="flex items-center gap-4">
-                            <div>
-                              <Typography
-                                variant="small"
-                                color="blue-gray"
-                                className="font-semibold"
-                              >
-                                {name}
-                              </Typography>
-                            </div>
-                          </div>
-                        </td>
-                        <td className={className}>
-                          <Typography className="text-xs font-semibold text-blue-gray-600">
-                            {contact_info}
-                          </Typography>
-                        </td>
-                        <td className={className}>
-                          <Typography className="text-xs font-semibold text-blue-gray-600">
-                            {amount} RWF
-                          </Typography>
-                        </td>
-                        <td className={className}>
-                          <Typography className="text-xs font-semibold text-blue-gray-600">
-                            {format(new Date(due_date), "dd-MM-yyyy")}
-                          </Typography>
-                        </td>
-                        <td className={className}>
-                          <Typography className="text-xs font-semibold text-blue-gray-600">
-                            {context}
-                          </Typography>
-                        </td>
-                        <td className={className}>
-                          <Typography
-                            className={`text-xs font-semibold ${getPaymentStatusColor(payment_status)}`}
+                          <Button
+                            onClick={() => handleViewDebtor(id)}
+                            color="gray"
+                            buttonType="outline"
+                            rounded={false}
+                            iconOnly={false}
+                            ripple="light"
                           >
-                            {payment_status}
-                          </Typography>
-                        </td>
-
-                        <td className={className}>
-                          <div className="flex">
-                            <FaEdit
-                              className="text-blue-500 cursor-pointer material-icons"
-                              onClick={() => handleEditCreditors(id)}
-                            />
-                            <MdAutoDelete
-                              className="ml-2 text-red-500 cursor-pointer material-icons"
-                              onClick={() => handleDeleteCreditors(id)}
-                            />
-                            <MdOutlineVisibility
-                              className="ml-2 text-green-500 cursor-pointer material-icons"
-                              onClick={() => handleViewDebtor(id)}
-                            />
-                          </div>
+                            <MdOutlineVisibility className="text-lg" />
+                          </Button>
+                          <Button
+                            onClick={() => handleEditCreditors(id)}
+                            color="amber"
+                            buttonType="outline"
+                            rounded={false}
+                            iconOnly={false}
+                            ripple="light"
+                          >
+                            <FaEdit className="text-lg" />
+                          </Button>
+                          <Button
+                            onClick={() => handleDeleteCreditors(id)}
+                            color="red"
+                            buttonType="outline"
+                            rounded={false}
+                            iconOnly={false}
+                            ripple="light"
+                          >
+                            <MdAutoDelete className="text-lg" />
+                          </Button>
                         </td>
                       </tr>
                     );
@@ -354,10 +312,11 @@ export function CreditorTable() {
           )}
         </CardBody>
       </Card>
+
       <div className="flex justify-center mt-4">
         <ul className="flex space-x-2">
           {Array.from(
-            { length: Math.ceil(creditorsData.length / creditorsPerPage) },
+            { length: Math.ceil(filteredCreditors.length / creditorsPerPage) },
             (_, i) => (
               <li key={i}>
                 <Button
