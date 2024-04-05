@@ -323,7 +323,7 @@ export function Tables() {
               color="white"
               className="mb-2 md:mb-0 md:mr-4"
             >
-              Product Table
+              Products
             </Typography>
             <div className="flex flex-col items-center gap-2 md:flex-row">
               <input

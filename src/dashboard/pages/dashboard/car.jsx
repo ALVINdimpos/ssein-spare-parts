@@ -1,0 +1,1325 @@
+/* eslint-disable no-unused-vars */
+import { useEffect, useState } from "react";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Typography,
+  Button,
+} from "@material-tailwind/react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { FaEdit } from "react-icons/fa";
+import { MdAutoDelete } from "react-icons/md";
+import { IoMdAddCircle } from "react-icons/io";
+import { IoIosCloseCircle } from "react-icons/io";
+import { AiOutlineTransaction } from "react-icons/ai";
+import { carDatas } from "../../data";
+import axios from "axios";
+import Loader from "react-js-loader";
+import { jwtDecode } from "jwt-decode";
+export const CarsPage = () => {
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [viewCar, setViewCar] = useState(false);
+  const [editCar, setEditCar] = useState(false);
+  const [sellCar, setSellCar] = useState(false); // Assuming this will represent deleting a car
+  const [car, setCar] = useState(""); // Placeholder for car data
+  const [singleCar, setSingleCar] = useState({}); // Placeholder for single car data
+  const [userRole, setUserRole] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [carTableData, setCarTableData] = useState([]); // Placeholder for car table data
+  const [filteredCars, setFilteredCars] = useState([]);
+  const [isSoldFilter, setIsSoldFilter] = useState("all"); // Assuming this will represent sold or unsold cars
+  const [carData, setCarData] = useState({
+    vinNumber: "",
+    description: "",
+    make: "",
+    model: "",
+    year: 0,
+    engine: "",
+    carImage: "",
+    dmc: "",
+    assessment_document: "",
+    tax_payment_document: "",
+    proof_of_payment_document: "",
+    selling_price: 0,
+    transport_fees: 0,
+    purchase_price: 0,
+    tax: 0,
+    other_expenses: 0,
+    discount: 0,
+    context: "",
+    sold_date: "",
+    is_sold: false,
+  });
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [editingCarId, setEditingCarId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [carsPerPage] = useState(15); // Number of cars to display per page
+
+  const handleAddCar = () => {
+    setShowAddForm(!showAddForm);
+  };
+  const isAgent = userRole === "agent";
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      const decodedToken = jwtDecode(accessToken);
+      setUserRole(decodedToken.role);
+    }
+  }, []);
+  useEffect(() => {
+    setCarTableData(carDatas);
+  }, []);
+
+  useEffect(() => {
+    // Placeholder for filtering car table data based on search query and filter options
+    const filteredData = carTableData.filter((car) => {
+      // Placeholder logic for filtering cars based on search query
+      // const carNumberMatchesSearch = car.carNumber.toLowerCase().includes(searchQuery.toLowerCase());
+      // const vinNumberMatchesSearch = car.vinNumber.toLowerCase().includes(searchQuery.toLowerCase());
+      // return carNumberMatchesSearch || vinNumberMatchesSearch;
+
+      // Assuming isSoldFilter represents sold or unsold cars
+      if (isSoldFilter === "all") {
+        return true; // Return all cars
+      } else if (isSoldFilter === "sold") {
+        return car.sold; // Return only sold cars
+      } else if (isSoldFilter === "unsold") {
+        return !car.sold; // Return only unsold cars
+      }
+    });
+    setFilteredCars(filteredData);
+  }, [carTableData, searchQuery, isSoldFilter]);
+
+  // Pagination logic
+  const indexOfLastCar = currentPage * carsPerPage;
+  const indexOfFirstCar = indexOfLastCar - carsPerPage;
+  const currentCars = filteredCars.slice(indexOfFirstCar, indexOfLastCar);
+
+  // Placeholder functions for handling actions on cars
+  const handleDeleteCar = async (carId) => {
+    try {
+      // Placeholder for deleting a car
+      console.log(`Deleting car with ID ${carId}`);
+    } catch (error) {
+      console.error("Error deleting car:", error);
+    }
+  };
+
+  const handleEditCar = async (carId) => {
+    try {
+      // Placeholder for editing a car
+      console.log(`Editing car with ID ${carId}`);
+    } catch (error) {
+      console.error("Error editing car:", error);
+    }
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1); // Reset pagination to first page when search query changes
+  };
+
+  const handleSoldFilterChange = (e) => {
+    setIsSoldFilter(e.target.value);
+    setCurrentPage(1); // Reset pagination to first page when filter changes
+  };
+
+  const handlePagination = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setCarData({ ...carData, [name]: value });
+  };
+  const handleSellCars = (id) => {
+    setSellCar(true);
+  };
+  const handleSellCar = async () => {
+    try {
+      // Placeholder for selling a car
+      console.log(`Selling car with ID ${car.id}`);
+    } catch (error) {
+      console.error("Error selling car:", error);
+    }
+  };
+
+  const handleViewEditCar = (id) => {
+    setViewCar(true);
+    setSingleCar(carTableData.find((car) => car.id === id));
+    setEditingCarId(id);
+    setEditCar(true);
+  };
+  const handleSubmit = async (e) => {
+    console.log("Car data:", carData);
+    e.preventDefault();
+    setLoading(true);
+  };
+  return (
+    <div className="flex flex-col mt-12 mb-8 overflow-x-auto">
+      <Card>
+        <CardHeader variant="black" color="gray" className="p-4 mb-8 md:p-6">
+          <div className="flex flex-col items-center justify-between md:flex-row">
+            <Typography
+              variant="h6"
+              color="white"
+              className="mb-2 md:mb-0 md:mr-4"
+            >
+              Cars
+            </Typography>
+            <div className="flex flex-col items-center gap-2 md:flex-row">
+              <input
+                type="text"
+                placeholder="Search car..."
+                className="px-3 py-2 text-black border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                value={searchQuery}
+                onChange={handleSearchChange}
+              />
+              <select
+                value={isSoldFilter}
+                onChange={handleSoldFilterChange}
+                className="px-3 py-2 text-black border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                style={{
+                  appearance: "none",
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M7.293 11.293a1 1 0 011.414 0L10 12.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414zM7 7a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1z' clip-rule='evenodd' /%3E%3C/svg%3E")`,
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "right 0.5rem center",
+                  paddingRight: "2.5rem",
+                }}
+              >
+                <option value="all">All</option>
+                <option value="sold">Sold</option>
+                <option value="inStock">In Stock</option>
+              </select>
+              <Button
+                onClick={handleAddCar}
+                color="indigo"
+                buttonType="filled"
+                size="regular"
+                rounded={false}
+                block={false}
+                iconOnly={false}
+                ripple="light"
+                className="flex items-center gap-2 mt-2 md:mt-0"
+              >
+                <IoMdAddCircle className="text-xl" />
+                <span className="text-base font-medium">Add New Car</span>
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardBody className="px-0 pt-0 pb-2">
+          {filteredCars.length === 0 ? (
+            <div className="py-4 text-center">No results found.</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[640px] table-auto">
+                {/* Table headers */}
+                <thead>
+                  <tr>
+                    {[
+                      "ID",
+                      "vinNumber",
+                      "description",
+                      "make",
+                      "model",
+                      "year",
+                      "engine",
+                      "carImage",
+                      "dmc",
+                      "assessment_document",
+                      "tax_payment_document",
+                      "proof_of_payment_document",
+                      "selling_price",
+                      "transport_fees",
+                      "purchase_price",
+                      "tax",
+                      "other_expenses",
+                      "discount",
+                      "context",
+                      "sold_date",
+                      "is_sold",
+                      "Actions",
+                    ].map((el) => (
+                      <th
+                        key={el}
+                        className="px-5 py-3 text-left border-b border-blue-gray-50"
+                      >
+                        <Typography
+                          variant="small"
+                          className="text-[11px] font-bold uppercase text-blue-gray-400"
+                        >
+                          {el}
+                        </Typography>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                {/* Table body */}
+                <tbody>
+                  {currentCars.map(
+                    (
+                      {
+                        id,
+                        vinNumber,
+                        description,
+                        make,
+                        model,
+                        year,
+                        engine,
+                        carImage,
+                        dmc,
+                        assessment_document,
+                        tax_payment_document,
+                        proof_of_payment_document,
+                        selling_price,
+                        transport_fees,
+                        purchase_price,
+                        tax,
+                        other_expenses,
+                        discount,
+                        context,
+                        sold_date,
+                        is_sold,
+                      },
+                      key,
+                    ) => {
+                      const className = `py-3 px-5 ${
+                        key === currentCars.length - 1
+                          ? ""
+                          : "border-b border-blue-gray-50"
+                      }`;
+
+                      return (
+                        <tr key={id}>
+                          {/* Table data */}
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-semibold"
+                                >
+                                  {id}
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-semibold"
+                                >
+                                  {vinNumber}
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-semibold"
+                                >
+                                  {description}
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-semibold"
+                                >
+                                  {make}
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-semibold"
+                                >
+                                  {model}
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-semibold"
+                                >
+                                  {year}
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-semibold"
+                                >
+                                  {engine}
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-semibold"
+                                >
+                                  <img src={carImage} alt="" />
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-semibold"
+                                >
+                                  <a
+                                    href={dmc}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    View DMC
+                                  </a>
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  class
+                                  Name="font-semibold"
+                                >
+                                  <a
+                                    href={assessment_document}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    View Assessment
+                                  </a>
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-semibold"
+                                >
+                                  <a
+                                    href={tax_payment_document}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    View Tax Payment
+                                  </a>
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-semibold"
+                                >
+                                  <a
+                                    href={proof_of_payment_document}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    View Proof of Payment
+                                  </a>
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-semibold"
+                                >
+                                  {selling_price}
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-semibold"
+                                >
+                                  {transport_fees}
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-semibold"
+                                >
+                                  {purchase_price}
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-semibold"
+                                >
+                                  {tax}
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-semibold"
+                                >
+                                  {other_expenses}
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-semibold"
+                                >
+                                  {discount}
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-semibold"
+                                >
+                                  {context}
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-semibold"
+                                >
+                                  {sold_date}
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <Typography className="text-xs font-semibold text-blue-gray-600">
+                              {is_sold ? (
+                                <span className="text-red-500">Sold</span>
+                              ) : (
+                                <span className="text-green-500">In Stock</span>
+                              )}
+                            </Typography>
+                          </td>
+
+                          <td className={className}>
+                            <div className="flex justify-between gap-1">
+                              {!isAgent && (
+                                <FaEdit
+                                  className="text-blue-500 cursor-pointer material-icons"
+                                  onClick={() => handleViewEditCar(id)}
+                                />
+                              )}
+                              {!is_sold && ( // Conditionally render the edit button
+                                <AiOutlineTransaction
+                                  className="text-blue-500 cursor-pointer material-icons"
+                                  onClick={() => handleSellCars(id)}
+                                />
+                              )}
+                              {!isAgent && (
+                                <MdAutoDelete
+                                  className="ml-2 text-red-500 cursor-pointer material-icons"
+                                  onClick={() => handleDeleteCar(id)}
+                                />
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    },
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardBody>
+      </Card>
+      <div className="flex items-center justify-between mt-6">
+        {/* Total Cars */}
+        <div>
+          <Typography
+            variant="small"
+            color="blue-gray"
+            className="font-semibold"
+          >
+            Total Cars: {filteredCars.length}
+          </Typography>
+        </div>
+
+        {/* Cars count */}
+        <div className="flex items-center gap-4">
+          <div>
+            <Typography
+              variant="small"
+              color="blue-gray"
+              className="font-semibold"
+            >
+              Showing {currentCars.length} of {filteredCars.length}
+            </Typography>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex justify-center mt-4 mb-4">
+        <ul className="flex flex-wrap gap-2">
+          {Array.from(
+            { length: Math.ceil(carTableData.length / carsPerPage) },
+            (_, i) => (
+              <li key={i}>
+                <Button
+                  className={`px-3 py-1 rounded-md ${
+                    currentPage === i + 1
+                      ? "bg-black text-white"
+                      : "bg-gray-200 text-black"
+                  } focus:outline-none`}
+                  onClick={() => handlePagination(i + 1)}
+                >
+                  {i + 1}
+                </Button>
+              </li>
+            ),
+          )}
+        </ul>
+      </div>
+
+      {showAddForm && (
+        <form>
+          <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full overflow-y-auto bg-black bg-opacity-60">
+            <div className="w-full max-w-md p-8 bg-white rounded-md shadow-lg">
+              <div className="flex items-center justify-between mb-4">
+                <Typography variant="h6" color="gray">
+                  Add New Car
+                </Typography>
+                <button onClick={handleAddCar}>
+                  <IoIosCloseCircle className="text-xl text-gray-500 hover:text-gray-700" />
+                </button>
+              </div>
+              {/* Basic Information Section */}
+              <div className="mb-4">
+                <div className="grid w-full grid-cols-3 gap-4">
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      VIN Number
+                    </label>
+                    <input
+                      type="text"
+                      name="vinNumber"
+                      placeholder="VIN Number"
+                      required
+                      value={carData.vinNumber}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Description
+                    </label>
+                    <input
+                      type="text"
+                      name="description"
+                      placeholder="Description"
+                      required
+                      value={carData.description}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Make
+                    </label>
+                    <input
+                      type="text"
+                      name="make"
+                      placeholder="Make"
+                      required
+                      value={carData.make}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Model
+                    </label>
+                    <input
+                      type="text"
+                      name="model"
+                      placeholder="Model"
+                      required
+                      value={carData.model}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Year
+                    </label>
+                    <input
+                      type="number"
+                      name="year"
+                      placeholder="Year"
+                      required
+                      value={carData.year}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Engine
+                    </label>
+                    <input
+                      type="text"
+                      name="engine"
+                      placeholder="Engine"
+                      required
+                      value={carData.engine}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Car Image
+                    </label>
+                    <input
+                      type="file"
+                      name="carImage"
+                      placeholder="Car Image URL"
+                      required
+                      value={carData.carImage}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      DMC Document
+                    </label>
+                    <input
+                      type="file"
+                      name="dmc"
+                      placeholder="DMC Document URL"
+                      required
+                      value={carData.dmc}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Document Section */}
+              <div className="mb-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Assessment Document
+                    </label>
+                    <input
+                      type="file"
+                      name="assessment_document"
+                      required
+                      value={carData.assessment_document}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Tax Payment Document
+                    </label>
+                    <input
+                      type="file"
+                      name="tax_payment_document"
+                      required
+                      value={carData.tax_payment_document}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Pricing Section */}
+              <div className="mb-4">
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Selling Price
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      value={carData.selling_price}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Transport Fees
+                    </label>
+                    <input
+                      type="number"
+                      name="transport_fees"
+                      placeholder="Transport Fees"
+                      required
+                      value={carData.transport_fees}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Purchase Price
+                    </label>
+                    <input
+                      type="number"
+                      name="purchase_price"
+                      placeholder="Purchase Price"
+                      required
+                      value={carData.purchase_price}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Tax
+                    </label>
+                    <input
+                      type="number"
+                      name="tax"
+                      placeholder="Tax"
+                      required
+                      value={carData.tax}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Other Expenses
+                    </label>
+                    <input
+                      type="number"
+                      name="other_expenses"
+                      placeholder="Other Expenses"
+                      required
+                      value={carData.other_expenses}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Error Message */}
+              {errorMessage && (
+                <div
+                  className="px-4 py-3 text-red-700 bg-red-100 border-l-4 border-red-500"
+                  role="alert"
+                >
+                  <p className="font-bold">{errorMessage}</p>
+                </div>
+              )}
+
+              {/* Submit Button */}
+              <Button
+                color="primary"
+                variant="contained"
+                size="large"
+                fullWidth
+                disabled={loading}
+                onClick={handleSubmit}
+              >
+                {loading ? (
+                  <Loader
+                    type="ThreeDots"
+                    color="#ffffff"
+                    height={24}
+                    width={50}
+                  />
+                ) : (
+                  "Add Car"
+                )}
+              </Button>
+            </div>
+          </div>
+        </form>
+      )}
+      {sellCar && (
+        <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full bg-black bg-opacity-60">
+          <div className="p-8 bg-white rounded-md shadow-lg">
+            <div className="flex flex-col items-center gap-4">
+              <div className="flex items-center justify-between w-full">
+                <Typography variant="h6" color="gray">
+                  Sell Car
+                </Typography>
+                <button onClick={() => setSellCar(false)}>
+                  <IoIosCloseCircle className="text-xl text-gray-500 hover:text-gray-700" />
+                </button>
+              </div>
+              {/* Edit Car form */}
+              <div className="">
+                <div className="">
+                  <div>
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Discount
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="Discount"
+                      required
+                      defaultValue={singleCar?.discount}
+                      onChange={(e) =>
+                        setCarData({
+                          ...carData,
+                          discount: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mt-2 mb-1 text-sm text-gray-600">
+                      Selling Price
+                    </label>
+                    <input
+                      type="text"
+                      placeholder={`Selling Price: ${singleCar?.selling_price} RWF`}
+                      required
+                      onChange={(e) =>
+                        setCarData({
+                          ...carData,
+                          selling_price: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block mb-1 text-sm text-gray-600">
+                    Context
+                  </label>
+                  <textarea
+                    type="text"
+                    placeholder="Context"
+                    required
+                    value={carData.context}
+                    onChange={(e) =>
+                      setCarData({
+                        ...carData,
+                        context: e.target.value,
+                      })
+                    }
+                    className="w-full h-[108px] px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
+                <div className="w-full">
+                  <label className="block mb-1 text-sm text-gray-600">
+                    Prove of Payment Document
+                  </label>
+                  <input
+                    type="file"
+                    name="proof_of_payment_document"
+                    required
+                    value={carData.proof_of_payment_document}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
+              </div>
+              <Button
+                color="black"
+                buttonType="filled"
+                size="regular"
+                rounded={true}
+                block={false}
+                iconOnly={false}
+                ripple="light"
+                className="w-full"
+                onClick={handleSellCar}
+              >
+                {loading ? (
+                  <Loader type="spinner-default" bgColor={"#fff"} size={20} />
+                ) : (
+                  "Sell Car"
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* EDIT Car */}
+      {editCar && (
+        <form>
+          <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full overflow-y-auto bg-black bg-opacity-60">
+            <div className="w-full max-w-md p-8 bg-white rounded-md shadow-lg">
+              <div className="flex items-center justify-between mb-4">
+                <Typography variant="h6" color="gray">
+                  Edit Car
+                </Typography>
+                <button onClick={() => setEditCar(false)}>
+                  <IoIosCloseCircle className="text-xl text-gray-500 hover:text-gray-700" />
+                </button>
+              </div>
+              {/* Basic Information Section */}
+              <div className="mb-4">
+                <div className="grid w-full grid-cols-3 gap-4">
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      VIN Number
+                    </label>
+                    <input
+                      type="text"
+                      name="vinNumber"
+                      placeholder="VIN Number"
+                      required
+                      value={carData.vinNumber}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Description
+                    </label>
+                    <input
+                      type="text"
+                      name="description"
+                      placeholder="Description"
+                      required
+                      value={carData.description}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Make
+                    </label>
+                    <input
+                      type="text"
+                      name="make"
+                      placeholder="Make"
+                      required
+                      value={carData.make}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Model
+                    </label>
+                    <input
+                      type="text"
+                      name="model"
+                      placeholder="Model"
+                      required
+                      value={carData.model}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Year
+                    </label>
+                    <input
+                      type="number"
+                      name="year"
+                      placeholder="Year"
+                      required
+                      value={carData.year}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Engine
+                    </label>
+                    <input
+                      type="text"
+                      name="engine"
+                      placeholder="Engine"
+                      required
+                      value={carData.engine}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Car Image
+                    </label>
+                    <input
+                      type="file"
+                      name="carImage"
+                      placeholder="Car Image URL"
+                      required
+                      value={carData.carImage}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      DMC Document
+                    </label>
+                    <input
+                      type="file"
+                      name="dmc"
+                      placeholder="DMC Document URL"
+                      required
+                      value={carData.dmc}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Document Section */}
+              <div className="mb-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Assessment Document
+                    </label>
+                    <input
+                      type="file"
+                      name="assessment_document"
+                      required
+                      value={carData.assessment_document}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Tax Payment Document
+                    </label>
+                    <input
+                      type="file"
+                      name="tax_payment_document"
+                      required
+                      value={carData.tax_payment_document}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Pricing Section */}
+              <div className="mb-4">
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Selling Price
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      value={carData.selling_price}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Transport Fees
+                    </label>
+                    <input
+                      type="number"
+                      name="transport_fees"
+                      placeholder="Transport Fees"
+                      required
+                      value={carData.transport_fees}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Purchase Price
+                    </label>
+                    <input
+                      type="number"
+                      name="purchase_price"
+                      placeholder="Purchase Price"
+                      required
+                      value={carData.purchase_price}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Tax
+                    </label>
+                    <input
+                      type="number"
+                      name="tax"
+                      placeholder="Tax"
+                      required
+                      value={carData.tax}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Other Expenses
+                    </label>
+                    <input
+                      type="number"
+                      name="other_expenses"
+                      placeholder="Other Expenses"
+                      required
+                      value={carData.other_expenses}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Error Message */}
+              {errorMessage && (
+                <div
+                  className="px-4 py-3 text-red-700 bg-red-100 border-l-4 border-red-500"
+                  role="alert"
+                >
+                  <p className="font-bold">{errorMessage}</p>
+                </div>
+              )}
+
+              {/* Submit Button */}
+              <Button
+                color="primary"
+                variant="contained"
+                size="large"
+                fullWidth
+                disabled={loading}
+                onClick={handleSubmit}
+              >
+                {loading ? (
+                  <Loader
+                    type="ThreeDots"
+                    color="#ffffff"
+                    height={24}
+                    width={50}
+                  />
+                ) : (
+                  "Edit Car"
+                )}
+              </Button>
+            </div>
+          </div>
+        </form>
+      )}
+      <ToastContainer />
+    </div>
+  );
+};
+
+export default CarsPage;

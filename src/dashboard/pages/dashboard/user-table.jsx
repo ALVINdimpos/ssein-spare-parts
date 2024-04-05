@@ -11,7 +11,6 @@ import { useEffect } from "react";
 import axios from "axios";
 import { FaEdit } from "react-icons/fa";
 import { MdAutoDelete } from "react-icons/md";
-import { MdOutlineVisibility } from "react-icons/md";
 import { IoMdAddCircle } from "react-icons/io";
 import { IoIosCloseCircle } from "react-icons/io";
 import Loader from "react-js-loader";
@@ -172,7 +171,7 @@ export function UserTables() {
         <CardHeader variant="black" color="gray" className="p-4 mb-8 md:p-6">
           <div className="flex flex-col items-center justify-between md:flex-row">
             <Typography variant="h6" color="white" className="mb-4 md:mb-0">
-              User Table
+              Users
             </Typography>
             <div className="flex flex-col items-center gap-2 md:flex-row">
               <input

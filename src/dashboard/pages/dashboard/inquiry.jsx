@@ -101,7 +101,7 @@ export function InquiriesTable() {
         <CardHeader variant="black" color="gray" className="p-6 mb-8">
           <div className="flex items-center justify-between">
             <Typography variant="h6" color="white">
-              Product inquiries table
+              Product inquiries
             </Typography>
             <div className="flex items-center gap-2">
               <select

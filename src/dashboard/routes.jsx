@@ -11,6 +11,7 @@ import {
   QueriesTable,
   InquiriesTable,
   Profile,
+  CarsPage,
 } from "./pages/dashboard";
 import { AiOutlineShopping } from "react-icons/ai";
 import { BiSolidReport } from "react-icons/bi";
@@ -19,6 +20,7 @@ import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import { MdOutlineQuestionAnswer } from "react-icons/md";
 import { LuMailQuestion } from "react-icons/lu";
 import { ImProfile } from "react-icons/im";
+import { PiCarFill } from "react-icons/pi";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -82,6 +84,12 @@ export const routes = (userRole) => {
           name: "Profile",
           path: "/profile",
           element: <Profile />,
+        },
+        {
+          icon: <PiCarFill {...icon} />,
+          name: "Cars",
+          path: "/cars",
+          element: <CarsPage />,
         },
         {
           icon: <InformationCircleIcon {...icon} />,

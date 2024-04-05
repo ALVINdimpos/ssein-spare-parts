@@ -177,7 +177,7 @@ export function CreditorTable() {
         <CardHeader variant="black" color="gray" className="p-6 mb-8">
           <div className="flex flex-col items-center justify-between md:flex-row">
             <Typography variant="h6" color="white" className="mb-4 md:mb-0">
-              Creditors Table
+              Creditors
             </Typography>
             <div className="flex items-center gap-2">
               <input
