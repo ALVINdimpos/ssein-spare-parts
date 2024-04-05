@@ -596,19 +596,19 @@ export function Tables() {
 
       {showAddForm && (
         <form>
-          <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full bg-black bg-opacity-60">
-            {/* Add Product Form */}
-
-            <div className="p-8 bg-white rounded-md shadow-lg">
-              <div className="flex items-center justify-between mb-4">
-                <Typography variant="h6" color="gray">
+          <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full overflow-y-auto bg-black bg-opacity-60">
+            <div className="w-full max-w-md p-8 bg-white rounded-md shadow-lg">
+              <div className="flex items-center justify-between px-4 py-2 mb-6 bg-gray-100 rounded-lg">
+                <h2 className="text-lg font-semibold text-gray-800">
                   Add New Product
-                </Typography>
-                <button onClick={handleAddProduct}>
-                  <IoIosCloseCircle className="text-xl text-gray-500 hover:text-gray-700" />
+                </h2>
+                <button
+                  onClick={handleAddProduct}
+                  className="flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full hover:bg-gray-300 focus:outline-none"
+                >
+                  <IoIosCloseCircle className="text-gray-600" />
                 </button>
               </div>
-              {/* Add product form */}
               <div className="mb-4">
                 <label className="block mb-1 text-sm text-gray-600">
                   Product Number
@@ -778,15 +778,18 @@ export function Tables() {
       )}
 
       {sellProduct && (
-        <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full bg-black bg-opacity-60">
-          <div className="p-8 bg-white rounded-md shadow-lg">
-            <div className="flex flex-col items-center gap-4">
-              <div className="flex items-center justify-between w-full">
-                <Typography variant="h6" color="gray">
+        <form>
+          <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full overflow-y-auto bg-black bg-opacity-60">
+            <div className="w-full max-w-md p-8 bg-white rounded-md shadow-lg">
+              <div className="flex items-center justify-between px-4 py-2 mb-6 bg-gray-100 rounded-lg">
+                <h2 className="text-lg font-semibold text-gray-800">
                   Sell product
-                </Typography>
-                <button onClick={() => setSellProduct(false)}>
-                  <IoIosCloseCircle className="text-xl text-gray-500 hover:text-gray-700" />
+                </h2>
+                <button
+                  onClick={() => setSellProduct(false)}
+                  className="flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full hover:bg-gray-300 focus:outline-none"
+                >
+                  <IoIosCloseCircle className="text-gray-600" />
                 </button>
               </div>
               {/* Edit product form */}
@@ -855,7 +858,7 @@ export function Tables() {
                 block={false}
                 iconOnly={false}
                 ripple="light"
-                className="w-full"
+                className="w-full mt-3"
                 onClick={handleSellProduct}
               >
                 {loading ? (
@@ -866,19 +869,22 @@ export function Tables() {
               </Button>
             </div>
           </div>
-        </div>
+        </form>
       )}
       {/* EDIT PRODUCT */}
       {editProduct && (
-        <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full bg-black bg-opacity-60">
-          <div className="p-8 bg-white rounded-md shadow-lg">
-            <div className="flex flex-col items-center gap-4">
-              <div className="flex items-center justify-between w-full">
-                <Typography variant="h6" color="gray">
+        <form>
+          <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full overflow-y-auto bg-black bg-opacity-60">
+            <div className="w-full max-w-md p-8 bg-white rounded-md shadow-lg">
+              <div className="flex items-center justify-between px-4 py-2 mb-6 bg-gray-100 rounded-lg">
+                <h2 className="text-lg font-semibold text-gray-800">
                   Edit Product
-                </Typography>
-                <button onClick={() => setEditProduct(false)}>
-                  <IoIosCloseCircle className="text-xl text-gray-500 hover:text-gray-700" />
+                </h2>
+                <button
+                  onClick={() => setEditProduct(false)}
+                  className="flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full hover:bg-gray-300 focus:outline-none"
+                >
+                  <IoIosCloseCircle className="text-gray-600" />
                 </button>
               </div>
               {/* Edit product form */}
@@ -996,7 +1002,7 @@ export function Tables() {
               </div>
             </div>
           </div>
-        </div>
+        </form>
       )}
       <ToastContainer />
     </div>
