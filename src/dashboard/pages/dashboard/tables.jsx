@@ -131,7 +131,7 @@ export function Tables() {
     setProduct(`https://parts.kagaba.tech/products/qrcode/${id}`);
   };
   const isAgent = userRole === "agent";
-
+  const isAdmin = userRole === "admin";
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const handleSubmit = async (e) => {
@@ -517,7 +517,7 @@ export function Tables() {
                                   onClick={() => handleSellProducts(id)}
                                 />
                               )}
-                              {!isAgent && (
+                              {(!isAgent || !isAdmin) && (
                                 <MdAutoDelete
                                   className="ml-2 text-red-500 cursor-pointer material-icons"
                                   onClick={() => handleDeleteProduct(id)}

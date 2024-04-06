@@ -16,11 +16,13 @@ import { IoIosCloseCircle } from "react-icons/io";
 import Loader from "react-js-loader";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { jwtDecode } from "jwt-decode";
 export function UserTables() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [userTableData, setUserTableData] = useState([]);
   const [editUserData, setEditUserData] = useState(false);
   const [editUserId, setEditUserId] = useState();
+  const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -41,6 +43,13 @@ export function UserTables() {
     setEditUserData(true);
     setEditUserId(id);
   };
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      const decodedToken = jwtDecode(accessToken);
+      setUserRole(decodedToken.role);
+    }
+  }, []);
   const handleEditUserSubmit = async () => {
     setLoading(true);
     try {
@@ -65,7 +74,8 @@ export function UserTables() {
       setLoading(false);
     }
   };
-
+  const isAgent = userRole === "agent";
+  const isAdmin = userRole === "admin";
   const handleViewUser = (id) => {
     // Handle view User
     console.log(id);
@@ -273,10 +283,12 @@ export function UserTables() {
                             className="text-blue-500 cursor-pointer material-icons"
                             onClick={() => handleEditUser(id)}
                           />
-                          <MdAutoDelete
-                            className="ml-2 text-red-500 cursor-pointer material-icons"
-                            onClick={() => handleDeleteUser(id)}
-                          />
+                          {!isAdmin && (
+                            <MdAutoDelete
+                              className="ml-2 text-red-500 cursor-pointer material-icons"
+                              onClick={() => handleDeleteUser(id)}
+                            />
+                          )}
                         </div>
                       </td>
                     </tr>
