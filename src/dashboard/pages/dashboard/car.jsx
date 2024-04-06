@@ -14,10 +14,10 @@ import { MdAutoDelete } from "react-icons/md";
 import { IoMdAddCircle } from "react-icons/io";
 import { IoIosCloseCircle } from "react-icons/io";
 import { AiOutlineTransaction } from "react-icons/ai";
+import { jwtDecode } from "jwt-decode";
 import { carDatas } from "../../data";
 import axios from "axios";
 import Loader from "react-js-loader";
-import { jwtDecode } from "jwt-decode";
 export const CarsPage = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [viewCar, setViewCar] = useState(false);
@@ -57,11 +57,9 @@ export const CarsPage = () => {
   const [editingCarId, setEditingCarId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [carsPerPage] = useState(15); // Number of cars to display per page
-
   const handleAddCar = () => {
     setShowAddForm(!showAddForm);
   };
-  const isAgent = userRole === "agent";
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
@@ -70,10 +68,12 @@ export const CarsPage = () => {
       setUserRole(decodedToken.role);
     }
   }, []);
+
   useEffect(() => {
     setCarTableData(carDatas);
   }, []);
-
+  const isAgent = userRole === "agent";
+  const isAdmin = userRole === "admin";
   useEffect(() => {
     // Placeholder for filtering car table data based on search query and filter options
     const filteredData = carTableData.filter((car) => {
@@ -606,7 +606,7 @@ export const CarsPage = () => {
                                   onClick={() => handleSellCars(id)}
                                 />
                               )}
-                              {!isAgent && (
+                              {(!isAgent || !isAdmin) && (
                                 <MdAutoDelete
                                   className="ml-2 text-red-500 cursor-pointer material-icons"
                                   onClick={() => handleDeleteCar(id)}

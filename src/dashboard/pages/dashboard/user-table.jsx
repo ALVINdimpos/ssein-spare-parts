@@ -74,7 +74,6 @@ export function UserTables() {
       setLoading(false);
     }
   };
-  const isAgent = userRole === "agent";
   const isAdmin = userRole === "admin";
   const handleViewUser = (id) => {
     // Handle view User
