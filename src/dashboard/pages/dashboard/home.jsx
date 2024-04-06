@@ -67,7 +67,7 @@ export function Home() {
     });
   }
   // Statistics data for superadmin users
-  if (userRole === "superadmin") {
+  if (userRole === "superadmin" || userRole === "admin") {
     statisticsData.push(
       {
         title: "In Stock",

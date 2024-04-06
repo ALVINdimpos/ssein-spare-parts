@@ -101,7 +101,7 @@ export const routes = (userRole) => {
     },
   ];
 
-  if (userRole === "superadmin") {
+  if (userRole === "superadmin" || userRole === "admin") {
     // Superadmin has access to all routes
     return allRoutes;
   } else {
