@@ -17,7 +17,9 @@ import Loader from "react-js-loader";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { format } from "date-fns";
-
+import { FaFilePdf } from "react-icons/fa6";
+import { FaFileCsv } from "react-icons/fa6";
+import jsPDF from "jspdf";
 export function CreditorTable() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [viewCreditors, setViewCreditors] = useState(false);
@@ -28,6 +30,7 @@ export function CreditorTable() {
   const [errorMessage, setErrorMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [isStatusFilter, setIsStatusFilter] = useState("all");
   const [creditorsPerPage] = useState(5);
   const [filteredCreditors, setFilteredCreditors] = useState([]);
 
@@ -100,7 +103,49 @@ export function CreditorTable() {
 
     fetchData();
   }, []);
+  useEffect(() => {
+    // Filter the creditors data based on search query and isStatusFilter
+    const filteredData = creditorsData.filter((creditor) => {
+      const numMatchesSearch = creditor.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const descriptionMatchesSearch = creditor.contact_info
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const statusMatchesSearch = creditor.payment_status
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const contactMatchesSearch = creditor.contact_info
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const amountMatchesSearch = creditor.amount
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const dueDateMatchesSearch = creditor.due_date
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      let matchesSearch =
+        numMatchesSearch ||
+        descriptionMatchesSearch ||
+        statusMatchesSearch ||
+        contactMatchesSearch ||
+        amountMatchesSearch ||
+        dueDateMatchesSearch;
 
+      if (isStatusFilter === "all") {
+        return matchesSearch;
+      } else if (isStatusFilter === "paid") {
+        return matchesSearch && creditor.payment_status === "paid";
+      } else if (isStatusFilter === "pending") {
+        return matchesSearch && creditor.payment_status === "Pending";
+      } else if (isStatusFilter === "outstanding") {
+        return matchesSearch && creditor.payment_status === "outstanding";
+      }
+      return false;
+    });
+
+    setFilteredCreditors(filteredData);
+  }, [searchQuery, isStatusFilter, creditorsData]);
   const handleDeleteCreditors = async (id) => {
     try {
       await axios.delete(`https://parts.kagaba.tech/management/${id}`, {
@@ -170,6 +215,137 @@ export function CreditorTable() {
     indexOfFirstCreditor,
     indexOfLastCreditor,
   );
+  const handleStatusFilterChange = (e) => {
+    setIsStatusFilter(e.target.value);
+    setCurrentPage(1); // Reset pagination to first page when filter changes
+  };
+  // Helper function to get payment status
+  const getPaymentStatus = (status) => {
+    switch (status) {
+      case "paid":
+        return "Paid";
+      case "Pending":
+        return "Pending";
+      case "outstanding":
+        return "Outstanding";
+      default:
+        return "Unknown";
+    }
+  };
+  // Function to download data as PDF
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF("l", "pt", "letter");
+    console.log(filteredCreditors);
+    // Define column widths and row heights
+    const columnWidths = [15, 100, 80, 80, 80, 80, 80];
+    const rowHeight = 5;
+
+    // Set font size and style
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+
+    doc.autoTable({
+      head: [
+        [
+          "ID",
+          "Name",
+          "Contact Info",
+          "Debt Amount",
+          "Due Date",
+          "Context",
+          "Payment Status",
+        ],
+      ],
+      body: filteredCreditors.map(
+        ({
+          id,
+          name,
+          contact_info,
+          amount,
+          due_date,
+          context,
+          payment_status,
+        }) => [
+          id,
+          name,
+          contact_info,
+          amount,
+          due_date,
+          context,
+          getPaymentStatus(payment_status),
+        ],
+      ),
+      startY: 20,
+      styles: {
+        cellPadding: 3,
+        fontSize: 8,
+        valign: "middle",
+      },
+      columnStyles: {
+        0: { cellWidth: columnWidths[0] },
+        1: { cellWidth: columnWidths[1] },
+        2: { cellWidth: columnWidths[2] },
+        3: { cellWidth: columnWidths[3] },
+        4: { cellWidth: columnWidths[4] },
+        5: { cellWidth: columnWidths[5] },
+        6: { cellWidth: columnWidths[6] },
+      },
+      headStyles: { fillColor: [0, 0, 0] },
+      margin: { top: 30 },
+      theme: "grid", // Grid theme
+      rowHeight: rowHeight,
+    });
+
+    doc.save("products.pdf");
+  };
+  // function to download data as CSV
+  const handleDownloadCSV = () => {
+    const csvData = filteredCreditors.map(
+      ({
+        id,
+        name,
+        contact_info,
+        amount,
+        due_date,
+        context,
+        payment_status,
+      }) => [
+        id,
+        name,
+        contact_info,
+        amount,
+        due_date,
+        `"${context.replace(/"/g, '""')}"`,
+        getPaymentStatus(payment_status),
+      ],
+    );
+
+    const headers = [
+      "ID",
+      "Name",
+      "Contact Info",
+      "Debt Amount",
+      "Due Date",
+      "Context",
+      "Payment Status",
+    ];
+
+    const csvContent = [
+      headers.join(","),
+      ...csvData.map((row) => row.join(",")),
+    ].join("\r\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.setAttribute("hidden", "");
+    a.setAttribute("href", url);
+    a.setAttribute("download", "products.csv");
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="flex flex-col gap-12 mt-12 mb-8">
@@ -202,6 +378,47 @@ export function CreditorTable() {
                 <span className="hidden text-base font-medium md:block">
                   Add New Creditors
                 </span>
+              </Button>
+              <select
+                value={isStatusFilter}
+                onChange={handleStatusFilterChange}
+                className="px-3 py-2 text-black border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                style={{
+                  appearance: "none",
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M7.293 11.293a1 1 0 011.414 0L10 12.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414zM7 7a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1z' clip-rule='evenodd' /%3E%3C/svg%3E")`,
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "right 0.5rem center",
+                  paddingRight: "2.5rem",
+                }}
+              >
+                <option value="all">All</option>
+                <option value="paid">Paid</option>
+                <option value="pending">Pending</option>
+                <option value="outstanding">Outstanding</option>
+              </select>
+              <Button
+                onClick={handleDownloadPDF}
+                color="indigo"
+                buttonType="filled"
+                size="regular"
+                rounded={false}
+                block={false}
+                iconOnly={false}
+                ripple="light"
+              >
+                <FaFilePdf className="text-xl" />
+              </Button>
+              <Button
+                onClick={handleDownloadCSV}
+                color="indigo"
+                buttonType="filled"
+                size="regular"
+                rounded={false}
+                block={false}
+                iconOnly={false}
+                ripple="light"
+              >
+                <FaFileCsv className="text-xl" />
               </Button>
             </div>
           </div>
@@ -264,7 +481,9 @@ export function CreditorTable() {
                         <td className={className}>{name}</td>
                         <td className={className}>{contact_info}</td>
                         <td className={className}>{amount}</td>
-                        <td className={className}>{due_date}</td>
+                        <td className={className}>
+                          {format(new Date(due_date), "dd/MM/yyyy")}
+                        </td>
                         <td className={className}>{context}</td>
                         <td
                           className={`${className} ${getPaymentStatusColor(payment_status)}`}
@@ -272,36 +491,17 @@ export function CreditorTable() {
                           {payment_status}
                         </td>
                         <td className={className}>
-                          <Button
-                            onClick={() => handleViewDebtor(id)}
-                            color="gray"
-                            buttonType="outline"
-                            rounded={false}
-                            iconOnly={false}
-                            ripple="light"
-                          >
-                            <MdOutlineVisibility className="text-lg" />
-                          </Button>
-                          <Button
-                            onClick={() => handleEditCreditors(id)}
-                            color="amber"
-                            buttonType="outline"
-                            rounded={false}
-                            iconOnly={false}
-                            ripple="light"
-                          >
-                            <FaEdit className="text-lg" />
-                          </Button>
-                          <Button
-                            onClick={() => handleDeleteCreditors(id)}
-                            color="red"
-                            buttonType="outline"
-                            rounded={false}
-                            iconOnly={false}
-                            ripple="light"
-                          >
-                            <MdAutoDelete className="text-lg" />
-                          </Button>
+                          <div className="flex">
+                            {/* <MdOutlineVisibility className="ml-2 text-green-500 cursor-pointer material-icons" onClick={() => handleViewDebtor(id)} /> */}
+                            <FaEdit
+                              className="ml-2 text-blue-500 cursor-pointer material-icons"
+                              onClick={() => handleEditCreditors(id)}
+                            />
+                            <MdAutoDelete
+                              className="ml-2 text-red-500 cursor-pointer material-icons"
+                              onClick={() => handleDeleteCreditors(id)}
+                            />
+                          </div>
                         </td>
                       </tr>
                     );

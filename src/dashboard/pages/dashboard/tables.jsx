@@ -8,6 +8,8 @@ import {
   Button,
 } from "@material-tailwind/react";
 import jsPDF from "jspdf";
+import { CSVLink } from "react-csv";
+import "jspdf-autotable";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaEdit } from "react-icons/fa";
@@ -19,6 +21,8 @@ import { FaQrcode } from "react-icons/fa";
 import axios from "axios";
 import Loader from "react-js-loader";
 import { jwtDecode } from "jwt-decode";
+import { FaFilePdf } from "react-icons/fa6";
+import { FaFileCsv } from "react-icons/fa6";
 
 export function Tables() {
   const [showAddForm, setShowAddForm] = useState(false);
@@ -313,6 +317,102 @@ export function Tables() {
   const handlePagination = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+  // Function to download data as PDF
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF();
+    doc.autoTable({
+      head: [
+        [
+          "Id",
+          "Product Number",
+          "Description",
+          "Selling Price",
+          "Purchase Price",
+          "Tax",
+          "Other Expenses",
+          "Discount",
+          "Context",
+          "Status",
+        ],
+      ],
+      body: filteredProducts.map(
+        ({
+          id,
+          num,
+          description,
+          selling_price,
+          purchase_price,
+          tax,
+          other_expenses,
+          discount,
+          context,
+          is_sold,
+        }) => [
+          id,
+          num,
+          description,
+          selling_price,
+          purchase_price,
+          tax,
+          other_expenses,
+          discount,
+          context,
+          is_sold ? "Sold" : "In Stock",
+        ],
+      ),
+    });
+    doc.save("products.pdf");
+  };
+  // Function to download data as CSV
+  const handleDownloadCSV = () => {
+    const headers = [
+      { label: "Id", key: "id" },
+      { label: "Product Number", key: "num" },
+      { label: "Description", key: "description" },
+      { label: "Selling Price", key: "selling_price" },
+      { label: "Purchase Price", key: "purchase_price" },
+      { label: "Tax", key: "tax" },
+      { label: "Other Expenses", key: "other_expenses" },
+      { label: "Discount", key: "discount" },
+      { label: "Context", key: "context" },
+      { label: "Status", key: "status" },
+    ];
+    const csvData = filteredProducts.map(
+      ({
+        id,
+        num,
+        description,
+        selling_price,
+        purchase_price,
+        tax,
+        other_expenses,
+        discount,
+        context,
+        is_sold,
+      }) => ({
+        id,
+        num,
+        description,
+        selling_price,
+        purchase_price,
+        tax,
+        other_expenses,
+        discount,
+        context,
+        status: is_sold ? "Sold" : "In Stock",
+      }),
+    );
+    const csvReport = {
+      filename: "products.csv",
+      headers,
+      data: csvData,
+    };
+    return (
+      <CSVLink {...csvReport}>
+        <FaFileCsv className="text-xl" />
+      </CSVLink>
+    );
+  };
   return (
     <div className="flex flex-col mt-12 mb-8 overflow-x-auto">
       <Card>
@@ -363,6 +463,19 @@ export function Tables() {
                 <IoMdAddCircle className="text-xl" />
                 <span className="text-base font-medium">Add New Product</span>
               </Button>
+              <Button
+                color="gray"
+                buttonType="filled"
+                size="regular"
+                rounded={false}
+                block={false}
+                iconOnly={false}
+                ripple="light"
+                onClick={handleDownloadPDF}
+              >
+                <FaFilePdf className="text-xl" />
+              </Button>
+              {handleDownloadCSV()}
             </div>
           </div>
         </CardHeader>

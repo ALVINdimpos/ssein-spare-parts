@@ -16,7 +16,9 @@ import { IoIosCloseCircle } from "react-icons/io";
 import { AiOutlineTransaction } from "react-icons/ai";
 import { jwtDecode } from "jwt-decode";
 import { carDatas } from "../../data";
-import axios from "axios";
+import { FaFilePdf } from "react-icons/fa6";
+import { FaFileCsv } from "react-icons/fa6";
+import jsPDF from "jspdf";
 import Loader from "react-js-loader";
 export const CarsPage = () => {
   const [showAddForm, setShowAddForm] = useState(false);
@@ -158,6 +160,179 @@ export const CarsPage = () => {
     e.preventDefault();
     setLoading(true);
   };
+  // Function to download data as PDF
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF("l", "pt", "letter"); // 'l' for landscape orientation
+
+    // Define column widths and row heights
+    const columnWidths = [
+      15, 50, 80, 30, 30, 30, 50, 50, 50, 50, 50, 50, 50, 50, 50,
+    ];
+    const rowHeight = 5;
+
+    // Set font size and style
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+
+    doc.autoTable({
+      head: [
+        [
+          "ID",
+          "VIN Number",
+          "Description",
+          "Make",
+          "Model",
+          "Year",
+          "Engine",
+          "Selling Price",
+          "Transport Fees",
+          "Purchase Price",
+          "Tax",
+          "Other Expenses",
+          "Discount",
+          "Context",
+          "Status",
+        ],
+      ],
+      body: filteredCars.map(
+        ({
+          id,
+          vinNumber,
+          description,
+          make,
+          model,
+          year,
+          engine,
+          selling_price,
+          transport_fees,
+          purchase_price,
+          tax,
+          other_expenses,
+          discount,
+          context,
+          is_sold,
+        }) => [
+          id,
+          vinNumber,
+          description,
+          make,
+          model,
+          year,
+          engine,
+          selling_price,
+          transport_fees,
+          purchase_price,
+          tax,
+          other_expenses,
+          discount,
+          context,
+          is_sold ? "Sold" : "In Stock",
+        ],
+      ),
+      startY: 20,
+      styles: {
+        cellPadding: 3,
+        fontSize: 8,
+        valign: "middle",
+      },
+      columnStyles: {
+        0: { cellWidth: columnWidths[0] },
+        1: { cellWidth: columnWidths[1] },
+        2: { cellWidth: columnWidths[2] },
+        3: { cellWidth: columnWidths[3] },
+        4: { cellWidth: columnWidths[4] },
+        5: { cellWidth: columnWidths[5] },
+        6: { cellWidth: columnWidths[6] },
+        7: { cellWidth: columnWidths[7] },
+        8: { cellWidth: columnWidths[8] },
+        9: { cellWidth: columnWidths[9] },
+        10: { cellWidth: columnWidths[10] },
+        11: { cellWidth: columnWidths[11] },
+        12: { cellWidth: columnWidths[12] },
+        13: { cellWidth: columnWidths[13] },
+        14: { cellWidth: columnWidths[14] },
+      },
+      headStyles: { fillColor: [0, 0, 0] },
+      margin: { top: 30 },
+      theme: "grid", // Grid theme
+      rowHeight: rowHeight,
+    });
+
+    doc.save("products.pdf");
+  };
+  // function to download data as CSV
+  const handleDownloadCSV = () => {
+    const csvData = filteredCars.map(
+      ({
+        id,
+        vinNumber,
+        description,
+        make,
+        model,
+        year,
+        engine,
+        selling_price,
+        transport_fees,
+        purchase_price,
+        tax,
+        other_expenses,
+        discount,
+        context,
+        is_sold,
+      }) => [
+        id,
+        vinNumber,
+        `"${description.replace(/"/g, '""')}"`, // Escape double quotes
+        make,
+        model,
+        year,
+        engine,
+        selling_price,
+        transport_fees,
+        purchase_price,
+        tax,
+        other_expenses,
+        discount,
+        `"${context.replace(/"/g, '""')}"`, // Escape double quotes
+        is_sold ? "Sold" : "In Stock",
+      ],
+    );
+
+    const headers = [
+      "ID",
+      "VIN Number",
+      "Description",
+      "Make",
+      "Model",
+      "Year",
+      "Engine",
+      "Selling Price",
+      "Transport Fees",
+      "Purchase Price",
+      "Tax",
+      "Other Expenses",
+      "Discount",
+      "Context",
+      "Status",
+    ];
+
+    const csvContent = [
+      headers.join(","),
+      ...csvData.map((row) => row.join(",")),
+    ].join("\r\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.setAttribute("hidden", "");
+    a.setAttribute("href", url);
+    a.setAttribute("download", "products.csv");
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="flex flex-col mt-12 mb-8 overflow-x-auto">
       <Card>
@@ -207,6 +382,30 @@ export const CarsPage = () => {
               >
                 <IoMdAddCircle className="text-xl" />
                 <span className="text-base font-medium">Add New Car</span>
+              </Button>
+              <Button
+                color="gray"
+                buttonType="filled"
+                size="regular"
+                rounded={false}
+                block={false}
+                iconOnly={false}
+                ripple="light"
+                onClick={handleDownloadPDF}
+              >
+                <FaFilePdf className="text-xl" />
+              </Button>
+              <Button
+                color="gray"
+                buttonType="filled"
+                size="regular"
+                rounded={false}
+                block={false}
+                iconOnly={false}
+                ripple="light"
+                onClick={handleDownloadCSV}
+              >
+                <FaFileCsv className="text-xl" />
               </Button>
             </div>
           </div>
@@ -951,7 +1150,7 @@ export const CarsPage = () => {
             <div className="w-full max-w-md p-8 bg-white rounded-md shadow-lg">
               <div className="flex items-center justify-between px-4 py-2 mb-6 bg-gray-100 rounded-lg">
                 <h2 className="text-lg font-semibold text-gray-800">
-                  Sell Carr
+                  Sell Car
                 </h2>
                 <button
                   onClick={() => setSellCar(false)}

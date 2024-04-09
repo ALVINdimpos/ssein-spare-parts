@@ -381,6 +381,7 @@ export function UserTables() {
                   <option value="">Select role</option>
                   <option value="agent">Agent</option>
                   <option value="admin">Admin</option>
+                  <option value="client">Client</option>
                 </select>
               </div>
             </div>
@@ -436,6 +437,7 @@ export function UserTables() {
                 <option value="">Select role</option>
                 <option value="agent">Agent</option>
                 <option value="admin">Admin</option>
+                <option value="client">Client</option>
               </select>
             </div>
 
