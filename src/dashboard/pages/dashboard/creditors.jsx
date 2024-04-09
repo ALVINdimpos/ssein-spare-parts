@@ -355,7 +355,7 @@ export function CreditorTable() {
             <Typography variant="h6" color="white" className="mb-4 md:mb-0">
               Creditors
             </Typography>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col items-center gap-2 md:flex-row">
               <input
                 type="text"
                 placeholder="Search Creditors..."

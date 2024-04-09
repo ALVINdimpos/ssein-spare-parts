@@ -337,7 +337,7 @@ export function DebtorTable() {
             <Typography variant="h6" color="white" className="mb-4 md:mb-0">
               Debtors
             </Typography>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col items-center gap-2 md:flex-row">
               <input
                 type="text"
                 placeholder="Search Debtors..."
