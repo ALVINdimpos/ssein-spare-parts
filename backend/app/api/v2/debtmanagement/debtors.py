@@ -1,4 +1,4 @@
-from app.api.v2 import Res
+from app.api.v2 import Res, DebitStatus, ProductScopes
 from datetime import datetime
 from sqlalchemy.orm import Session
 from fastapi import Depends, APIRouter, Body, HTTPException, status, Path
@@ -44,7 +44,9 @@ async def add_record(name: str = Body(None, description="Name of the debtor or c
                                           description="Amount you owe the creditor or the amount the debtor owes you"),
                      due_date: datetime = Body(None, description="The due date of the amount specified"),
                      context: str = Body(None, description="Any additional comments"),
-                     payment_status: str = Body(None, description="The status of the record"),
+                     payment_status: DebitStatus = Body(None, description="The status of the record"),
+                     product_id: int = Body(None, description="A product on which you are giving a debt"),
+                     product_scope: ProductScopes = Body(None, description="Which scope does this product belongs to?"),
                      scope: ManagementScope = Body(None,
                                                    description="The scope of the amount, whether debtor or creditor"),
                      db: Session = Depends(get_db)) -> Res:
@@ -53,9 +55,11 @@ async def add_record(name: str = Body(None, description="Name of the debtor or c
         contact_info=contact_info,
         amount=amount,
         due_date=due_date,
-        status=payment_status,
+        status=payment_status.value,
         scope=scope.value,
         context=context,
+        product_id=product_id,
+        product_scope=product_scope.value
     )
 
     db.add(new_rec)

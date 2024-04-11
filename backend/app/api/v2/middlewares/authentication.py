@@ -21,6 +21,11 @@ credentials_exception = HTTPException(
     headers={"WWW-Authenticate": "Bearer"},
 )
 
+unauthorized_exception = HTTPException(
+    status_code=status.HTTP_403_FORBIDDEN,
+    detail="Forbidden to access this resource"
+)
+
 
 class TokenData(BaseModel):
     email: EmailStr | None = None
@@ -38,5 +43,24 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Se
     user = db.query(User).filter_by(email=token_data.email).first()
     if user is None:
         raise credentials_exception
+
+    return user
+
+
+async def get_internal_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("email")
+        if email is None:
+            raise credentials_exception
+        token_data = TokenData(email=email)
+    except JWTError:
+        raise credentials_exception
+    user = db.query(User).filter_by(email=token_data.email).first()
+    if user is None:
+        raise credentials_exception
+
+    if user.role not in ['admin', 'superadmin', 'agent']:
+        raise unauthorized_exception
 
     return user

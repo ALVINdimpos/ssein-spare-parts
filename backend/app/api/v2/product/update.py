@@ -1,7 +1,7 @@
 from datetime import datetime
 from app.api.v2 import Res, make_product, ActionTypes
 from fastapi import Depends, APIRouter, status, Body, Path, HTTPException
-from app.api.v2.middlewares import get_current_user
+from app.api.v2.middlewares import get_internal_user
 from app.db.models import Product, Action, User
 from app.db import get_db
 from pydantic import BaseModel, model_validator
@@ -51,7 +51,7 @@ class UpdateProduct(BaseModel):
 
 @router.post("/{product_id}", response_model=Res)
 async def update_product(
-        user: Annotated[User, Depends(get_current_user)],
+        user: Annotated[User, Depends(get_internal_user)],
         update: UpdateProduct = Body(),
         product_id: int = Path(title="Product ID", description="The id of the product to be updated"),
         db: Session = Depends(get_db)) -> Res:

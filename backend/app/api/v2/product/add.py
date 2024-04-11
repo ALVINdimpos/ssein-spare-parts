@@ -1,6 +1,6 @@
 from app.api.v2 import Res, ProductModel, make_product, ActionTypes
 from sqlalchemy.orm import Session
-from app.api.v2.middlewares import get_current_user
+from app.api.v2.middlewares import get_internal_user
 from fastapi import Depends, APIRouter, Body, status
 from typing import Annotated
 from app.db.models import Product, User, Action
@@ -12,7 +12,7 @@ router = APIRouter()
 
 @router.post("/", response_model=Res)
 async def create_product(
-        user: Annotated[User, Depends(get_current_user)],
+        user: Annotated[User, Depends(get_internal_user)],
         product: Annotated[ProductModel, Body()],
         db: Session = Depends(get_db)) -> Res:
     product.num = generate_short_unique_id()
