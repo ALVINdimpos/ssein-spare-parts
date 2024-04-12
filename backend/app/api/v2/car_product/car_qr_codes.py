@@ -43,7 +43,7 @@ async def get_product_document(
     if not product:
         raise not_found
     product_document = CarDocument(
-        vinnumber=product.vinnumber,
+        vinnumber=product.vin_number,
         description=product.description,
         make=product.make,
         model=product.model,

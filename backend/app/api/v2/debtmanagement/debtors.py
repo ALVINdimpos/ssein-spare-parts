@@ -101,6 +101,8 @@ def update_record(_id: int = Path(..., description="The id of the record to be u
                   due_date: datetime = Body(None, description="The due date of the amount specified"),
                   payment_status: str = Body(None, description="The updated status of the payment"),
                   context: str = Body(None, description="Any additional comments"),
+                  product_id: int = Body(None, description="Product id"),
+                  product_scope: ProductScopes = Body(None, description="Product scope"),
                   scope: ManagementScope = Body(None,
                                                 description="The scope of the amount, whether debtor or creditor"),
                   db: Session = Depends(get_db)) -> Res:
@@ -122,6 +124,10 @@ def update_record(_id: int = Path(..., description="The id of the record to be u
         record.context = context
     if scope is not None:
         record.scope = scope.value
+    if product_scope is not None:
+        record.product_scope = product_scope
+    if product_id is not None:
+        record.product_id = product_id
 
     db.commit()
 

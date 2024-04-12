@@ -1,5 +1,5 @@
 from datetime import datetime
-from app.api.v2 import Res, ActionTypes, make_cashbook, FileScope
+from app.api.v2 import Res, ActionTypes, make_cashbook, FileScope, WhereTo
 from sqlalchemy.orm import Session
 from app.api.v2.middlewares import get_internal_user
 from app.api.v2.file.upload import upload_files
@@ -21,10 +21,10 @@ class WhereFrom(Enum):
 @router.post("/", response_model=Res)
 async def add_entry(
         user: Annotated[User, Depends(get_internal_user)],
-        proof: UploadFile,
+        proof: UploadFile = None,
         description: str = Body(None, description="Description of the cash flow"),
         amount: float = Body(0, description="Amount of the cashflow"),
-        where_to: str = Body(None, description="Where is the cash going? bank or cash"),
+        where_to: WhereTo = Body(None, description="Where is the cash going? bank or cash"),
         where_from: WhereFrom = Body(None, description="Where is the cash coming from? bank or cash or outside"),
         context: str = Body(None, description="Any additional context?"),
         db: Session = Depends(get_db)) -> Res:
@@ -96,7 +96,7 @@ async def upload_proof(
     _proof = ''
     if proof:
         _proof = await upload_files(
-            db=db, files=[proof], scope=FileScope.PROOF.value
+            db=db, files=[proof], scope=FileScope.PROOF
         )
 
     action = Action(

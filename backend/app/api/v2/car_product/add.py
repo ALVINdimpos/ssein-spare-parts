@@ -22,7 +22,8 @@ async def create_car_product(
         proof_of_payment: UploadFile = None,
         vin_number: str = Body(None, description="Vin Number"),
         description: str = Body(None, description="Description"),
-        make: ActionTypes = Body(None, description="Car Make"),
+        make: str = Body(None, description="Car Make"),
+        model: str = Body(None, description="Car Model"),
         year: str = Body(None, description="Car Year"),
         engine: str = Body(None, description="Car Engine"),
         selling_price: int = Body(None, description="Car's Selling price"),
@@ -35,27 +36,27 @@ async def create_car_product(
         context: str = Body(None, description="Context"),
         db: Session = Depends(get_db)) -> Res:
     if image:
-        _image = await upload_files(files=[image], db=db, scope=FileScope.IMAGE.value)
+        _image = await upload_files(files=[image], db=db, scope=FileScope.IMAGE)
         image = _image.data.files
 
     if dmc:
-        _dmc = await upload_files(files=[dmc], db=db, scope=FileScope.DMC.value)
+        _dmc = await upload_files(files=[dmc], db=db, scope=FileScope.DMC)
         dmc = _dmc.data.files[0]
 
     if assessment_doc:
-        _assessment_doc = await upload_files(files=[assessment_doc], db=db, scope=FileScope.ASSESSMENT.value)
+        _assessment_doc = await upload_files(files=[assessment_doc], db=db, scope=FileScope.ASSESSMENT)
         assessment_doc = _assessment_doc.data.files[0]
 
     if tax_doc:
-        _tax_doc = await upload_files(files=[tax_doc], db=db, scope=FileScope.TAX.value)
+        _tax_doc = await upload_files(files=[tax_doc], db=db, scope=FileScope.TAX)
         tax_doc = _tax_doc.data.files[0]
 
     if ebm_receipt:
-        _ebm_receipt = await upload_files(files=[ebm_receipt], db=db, scope=FileScope.EBM.value)
+        _ebm_receipt = await upload_files(files=[ebm_receipt], db=db, scope=FileScope.EBM)
         ebm_receipt = _ebm_receipt.data.files[0]
 
     if proof_of_payment:
-        _proof_of_payment = await upload_files(files=[proof_of_payment], db=db, scope=FileScope.PROOF.value)
+        _proof_of_payment = await upload_files(files=[proof_of_payment], db=db, scope=FileScope.PROOF)
         proof_of_payment = _proof_of_payment.data.files[0]
 
     car_product = CarProduct(
@@ -68,6 +69,7 @@ async def create_car_product(
         vin_number=vin_number,
         description=description,
         make=make,
+        model=model,
         year=year,
         engine=engine,
         selling_price=selling_price,

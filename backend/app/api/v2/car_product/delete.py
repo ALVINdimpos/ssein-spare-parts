@@ -13,7 +13,7 @@ not_found = HTTPException(
 )
 
 
-@router.delete("/{product_id}", response_model=Res, dependencies=[Depends(get_internal_user)])
+@router.delete("/{car_product_id}", response_model=Res, dependencies=[Depends(get_internal_user)])
 async def delete_car_product(
         car_product_id: int = Path(title="Product ID", description="The id of the product to be deleted"),
         db: Session = Depends(get_db)) -> Res:
