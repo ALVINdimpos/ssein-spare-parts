@@ -81,27 +81,27 @@ async def update_product(
         db: Session = Depends(get_db)) -> Res:
     if image:
         _image = await upload_files(files=[image], db=db, scope=FileScope.IMAGE)
-        image = _image.data.files
+        image = [_image.data['files'][0]['path']]
 
     if dmc:
         _dmc = await upload_files(files=[dmc], db=db, scope=FileScope.DMC)
-        dmc = _dmc.data.files[0]
+        dmc = _dmc.data['files'][0]['path']
 
     if assessment_doc:
         _assessment_doc = await upload_files(files=[assessment_doc], db=db, scope=FileScope.ASSESSMENT)
-        assessment_doc = _assessment_doc.data.files[0]
+        assessment_doc = _assessment_doc.data['files'][0]['path']
 
     if tax_doc:
         _tax_doc = await upload_files(files=[tax_doc], db=db, scope=FileScope.TAX)
-        tax_doc = _tax_doc.data.files[0]
+        tax_doc = _tax_doc.data['files'][0]['path']
 
     if ebm_receipt:
         _ebm_receipt = await upload_files(files=[ebm_receipt], db=db, scope=FileScope.EBM)
-        ebm_receipt = _ebm_receipt.data.files[0]
+        ebm_receipt = _ebm_receipt.data['files'][0]['path']
 
     if proof_of_payment:
         _proof_of_payment = await upload_files(files=[proof_of_payment], db=db, scope=FileScope.PROOF)
-        proof_of_payment = _proof_of_payment.data.files[0]
+        proof_of_payment = _proof_of_payment.data['files'][0]['path']
 
     car_product = db.query(CarProduct).filter_by(id=product_id).first()
 

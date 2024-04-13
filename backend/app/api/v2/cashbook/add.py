@@ -41,7 +41,7 @@ async def add_entry(
         description=description,
         amount=amount,
         where_to=where_to,
-        proof=_proof.data.files[0],
+        proof=_proof.data['files'][0]['path'],
         context=context,
         type='original',
         created_at=datetime.utcnow()
@@ -106,7 +106,7 @@ async def upload_proof(
     )
     entry.actions.append(action)
 
-    entry.proof = _proof
+    entry.proof = _proof.data['files'][0]['path']
     db.commit()
 
     res = Res(
