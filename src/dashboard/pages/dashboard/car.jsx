@@ -1233,7 +1233,9 @@ export const CarsPage = () => {
                     <input
                       type="number"
                       name="selling_price"
+                      placeholder="Selling Price"
                       required
+                      value={carData.selling_price}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
@@ -1246,6 +1248,7 @@ export const CarsPage = () => {
                       type="number"
                       name="transport_fees"
                       placeholder="Transport Fees"
+                      value={carData.transport_fees}
                       required
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
@@ -1259,6 +1262,7 @@ export const CarsPage = () => {
                       type="number"
                       name="purchase_price"
                       placeholder="Purchase Price"
+                      value={carData.purchase_price}
                       required
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
@@ -1272,6 +1276,7 @@ export const CarsPage = () => {
                       type="number"
                       name="tax"
                       placeholder="Tax"
+                      value={carData.tax}
                       required
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
@@ -1285,6 +1290,7 @@ export const CarsPage = () => {
                       type="number"
                       name="other_expenses"
                       placeholder="Other Expenses"
+                      value={carData.other_expenses}
                       required
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
