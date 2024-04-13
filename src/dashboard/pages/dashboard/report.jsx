@@ -18,19 +18,16 @@ import { useState, useEffect } from "react";
 
 const Reports = () => {
   const [reportData, setReportData] = useState(null);
-
+  const API_URL = "https://parts.kagaba.tech";
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          "https://parts.kagaba.tech/metrics/profit-loss-graph",
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
+        const response = await fetch(`${API_URL}/metrics/profit-loss-graph`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
-        );
+        });
         const data = await response.json();
         setReportData(data.data);
       } catch (error) {

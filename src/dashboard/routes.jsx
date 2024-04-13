@@ -104,7 +104,7 @@ export const routes = (userRole) => {
   if (userRole === "superadmin" || userRole === "admin") {
     // Superadmin has access to all routes
     return allRoutes;
-  } else {
+  } else if (userRole === "agent") {
     // Other users have restricted access
     // You can define your own logic here for restricting routes
     // For example, let's say non-superadmins can only access Home and Products
@@ -116,6 +116,18 @@ export const routes = (userRole) => {
           page.name === "products" ||
           page.name === "Debtors" ||
           page.name === "Profile",
+      ),
+    }));
+
+    return restrictedRoutes;
+  } else {
+    // If the user is not an admin or a superadmin
+    // You can define your own logic here for restricting routes
+    // For example, let's say non-superadmins can only access Home and Products
+    const restrictedRoutes = allRoutes.map((route) => ({
+      ...route,
+      pages: route.pages.filter(
+        (page) => page.name === "products" || page.name === "Profile",
       ),
     }));
 

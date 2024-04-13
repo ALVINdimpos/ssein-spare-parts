@@ -17,6 +17,7 @@ export function Profile() {
   });
   const [showPassword, setShowPassword] = useState(false); // State to manage password visibility
   const [error, setError] = useState(null);
+  const API_URL = "https://test.kagaba.tech";
 
   useEffect(() => {
     fetchUserData();
@@ -24,7 +25,7 @@ export function Profile() {
 
   const fetchUserData = async () => {
     try {
-      const response = await axios.get(`https://parts.kagaba.tech/users/me`, {
+      const response = await axios.get(`${API_URL}/users/me`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -56,7 +57,7 @@ export function Profile() {
 
   const handleSaveClick = () => {
     try {
-      axios.post(`https://parts.kagaba.tech/users/me`, formData, {
+      axios.post(`${API_URL}/users/me`, formData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,

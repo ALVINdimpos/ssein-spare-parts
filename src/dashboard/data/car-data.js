@@ -11,6 +11,7 @@ export const carDatas = [
     dmc: "https://example.com/dmc1.pdf", // Placeholder URL for DMC document
     assessment_document: "https://example.com/assessment1.pdf", // Placeholder URL for assessment document
     tax_payment_document: "https://example.com/tax_payment1.pdf", // Placeholder URL for tax payment document
+    ebm_receipt: "https://example.com/ebm_receipt1.pdf", // Placeholder URL for EBM receipt
     selling_price: 15000,
     purchase_price: 12000,
     tax: 1000,

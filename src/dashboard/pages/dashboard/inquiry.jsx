@@ -16,10 +16,11 @@ import { Tooltip } from "react-tooltip";
 import { format } from "date-fns";
 export function InquiriesTable() {
   const [queryData, setQueryData] = useState([]);
+  const API_URL = "https://parts.kagaba.tech";
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://parts.kagaba.tech/inquiry/", {
+        const response = await axios.get(`${API_URL}/inquiry/`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -34,7 +35,7 @@ export function InquiriesTable() {
   }, []);
   const handleDeleteQuery = async (id) => {
     try {
-      await axios.delete(`https://parts.kagaba.tech/inquiry/${id}`, {
+      await axios.delete(`${API_URL}/inquiry/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           Accept: "application/json",
@@ -58,7 +59,7 @@ export function InquiriesTable() {
         return;
       }
 
-      await axios.patch(`https://parts.kagaba.tech/inquiry/${id}`, null, {
+      await axios.patch(`${API_URL}/inquiry/${id}`, null, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           Accept: "application/json",

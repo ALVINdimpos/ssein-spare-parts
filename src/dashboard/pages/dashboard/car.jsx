@@ -1,5 +1,6 @@
+/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable no-unused-vars */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   Card,
   CardHeader,
@@ -15,11 +16,12 @@ import { IoMdAddCircle } from "react-icons/io";
 import { IoIosCloseCircle } from "react-icons/io";
 import { AiOutlineTransaction } from "react-icons/ai";
 import { jwtDecode } from "jwt-decode";
-import { carDatas } from "../../data";
 import { FaFilePdf } from "react-icons/fa6";
 import { FaFileCsv } from "react-icons/fa6";
 import jsPDF from "jspdf";
 import Loader from "react-js-loader";
+import axios from "axios";
+
 export const CarsPage = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [viewCar, setViewCar] = useState(false);
@@ -39,26 +41,28 @@ export const CarsPage = () => {
     model: "",
     year: 0,
     engine: "",
-    carImage: "",
-    dmc: "",
-    assessment_document: "",
-    tax_payment_document: "",
-    proof_of_payment_document: "",
+    carImage: null,
+    dmc: null,
+    assessment_document: null,
+    tax_payment_document: null,
+    ebm_receipt: null,
+    proof_of_payment_document: null,
+    discount: 0,
+    context: "",
     selling_price: 0,
     transport_fees: 0,
     purchase_price: 0,
     tax: 0,
     other_expenses: 0,
-    discount: 0,
-    context: "",
-    sold_date: "",
-    is_sold: false,
   });
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [editingCarId, setEditingCarId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [carsPerPage] = useState(15); // Number of cars to display per page
+
+  const API_URL = "https://test.kagaba.tech";
+
   const handleAddCar = () => {
     setShowAddForm(!showAddForm);
   };
@@ -71,11 +75,30 @@ export const CarsPage = () => {
     }
   }, []);
 
+  // Add useEffect hook to fetch data when the component mounts
   useEffect(() => {
-    setCarTableData(carDatas);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(` ${API_URL}/car-product/`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            Accept: "application/json",
+          },
+        });
+        if (response?.data?.data?.car_products) {
+          setCarTableData(response?.data?.data?.car_products);
+          setLoading(false);
+        }
+      } catch (error) {
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, []);
   const isAgent = userRole === "agent";
   const isAdmin = userRole === "admin";
+
   useEffect(() => {
     // Placeholder for filtering car table data based on search query and filter options
     const filteredData = carTableData.filter((car) => {
@@ -104,22 +127,77 @@ export const CarsPage = () => {
   // Placeholder functions for handling actions on cars
   const handleDeleteCar = async (carId) => {
     try {
-      // Placeholder for deleting a car
-      console.log(`Deleting car with ID ${carId}`);
+      const response = await axios.delete(`${API_URL}/car-product/${carId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      });
+      toast.success(`Successfully deleted car with ID ${carId}`);
+      window.location.reload();
     } catch (error) {
+      toast.error("Error deleting car");
       console.error("Error deleting car:", error);
     }
   };
-
-  const handleEditCar = async (carId) => {
+  const handleViewEditCar = async (id) => {
+    const response = await axios.get(`${API_URL}/car-product/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+    setSingleCar(response?.data?.data?.car_product);
+    setEditCar(true);
+    setEditingCarId(id);
+  };
+  const handleEditCar = async () => {
+    setLoading(true);
     try {
-      // Placeholder for editing a car
-      console.log(`Editing car with ID ${carId}`);
+      const formData = new FormData();
+      formData.append("vin_number", carData.vinNumber);
+      formData.append("description", carData.description);
+      formData.append("make", carData.make);
+      formData.append("model", carData.model);
+      formData.append("year", carData.year);
+      formData.append("engine", carData.engine);
+      formData.append("image", carData.carImage); // Add the carImage file to FormData
+      formData.append("dmc", carData.dmc); // Add the dmc file to FormData
+      formData.append("assessment_doc", carData.assessment_document); // Add the assessment_document file to FormData
+      formData.append("tax_doc", carData.tax_payment_document); // Add the tax_payment_document file to FormData
+      formData.append("selling_price", carData.selling_price);
+      formData.append("transport_fees", carData.transport_fees);
+      formData.append("purchase_price", carData.purchase_price);
+      formData.append("proof_of_payment", carData.proof_of_payment_document);
+      formData.append("ebm_receipt", carData.ebm_receipt);
+      formData.append("tax", carData.tax);
+      formData.append("other_expenses", carData.other_expenses);
+      formData.append("discount", carData.discount);
+      formData.append("context", carData.context);
+      // Log formData to ensure file data is correctly appended
+
+      const response = await axios.patch(
+        `${API_URL}/car-product/${editingCarId}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            "Content-Type": "multipart/form-data", // Ensure proper content type for FormData
+          },
+        },
+      );
+
+      toast.success(`Successfully updated car with ID ${editingCarId}`);
+      setLoading(false);
+      setEditingCarId(null);
+      setEditCar(false);
+      window.location.reload();
     } catch (error) {
-      console.error("Error editing car:", error);
+      console.error("Error adding car:", error); // Log the error response for debugging
+      toast.error(`Error adding car. Please try again.`);
+      setLoading(false);
     }
   };
-
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
     setCurrentPage(1); // Reset pagination to first page when search query changes
@@ -134,32 +212,108 @@ export const CarsPage = () => {
     setCurrentPage(pageNumber);
   };
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setCarData({ ...carData, [name]: value });
-  };
-  const handleSellCars = (id) => {
-    setSellCar(true);
-  };
-  const handleSellCar = async () => {
-    try {
-      // Placeholder for selling a car
-      console.log(`Selling car with ID ${car.id}`);
-    } catch (error) {
-      console.error("Error selling car:", error);
+    const { name, value, files } = e.target;
+    if (files) {
+      // Handle file uploads separately
+      setCarData((prevData) => ({
+        ...prevData,
+        [name]: files[0], // Assuming single file uploads
+      }));
+    } else {
+      setCarData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
     }
   };
 
-  const handleViewEditCar = (id) => {
-    setViewCar(true);
-    setSingleCar(carTableData.find((car) => car.id === id));
+  const handleSellCars = async (id) => {
+    const response = await axios.get(`${API_URL}/car-product/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+    setSingleCar(response?.data?.data?.car_product);
+    setSellCar(true);
     setEditingCarId(id);
-    setEditCar(true);
+  };
+  const handleSellCar = async () => {
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("is_sold", true);
+      formData.append("selling_price", carData.selling_price);
+      formData.append("proof_of_payment", carData.proof_of_payment_document);
+      formData.append("ebm_receipt", carData.ebm_receipt);
+      formData.append("discount", carData.discount);
+      formData.append("context", carData.context);
+      // Log formData to ensure file data is correctly appended
+      const response = await axios.patch(
+        `${API_URL}/car-product/${editingCarId}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            "Content-Type": "multipart/form-data", // Ensure proper content type for FormData
+          },
+        },
+      );
+
+      toast.success(`Successfully sell car with ID ${editingCarId}`);
+      setLoading(false);
+      setEditingCarId(null);
+      setSellCar(false);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error selling car:", error); // Log the error response for debugging
+      toast.error(`Error selling car. Please try again.`);
+      setLoading(false);
+    }
   };
   const handleSubmit = async (e) => {
-    console.log("Car data:", carData);
     e.preventDefault();
     setLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("vin_number", carData.vinNumber);
+      formData.append("description", carData.description);
+      formData.append("make", carData.make);
+      formData.append("model", carData.model);
+      formData.append("year", carData.year);
+      formData.append("engine", carData.engine);
+      formData.append("image", carData.carImage); // Add the carImage file to FormData
+      formData.append("dmc", carData.dmc); // Add the dmc file to FormData
+      formData.append("assessment_doc", carData.assessment_document); // Add the assessment_document file to FormData
+      formData.append("tax_doc", carData.tax_payment_document); // Add the tax_payment_document file to FormData
+      formData.append("selling_price", carData.selling_price);
+      formData.append("transport_fees", carData.transport_fees);
+      formData.append("purchase_price", carData.purchase_price);
+      formData.append("tax", carData.tax);
+      formData.append("other_expenses", carData.other_expenses);
+      formData.append("discount", carData.discount);
+      formData.append("context", carData.context);
+
+      // Log formData to ensure file data is correctly appended
+
+      const response = await axios.post(`${API_URL}/car-product/`, formData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          "Content-Type": "multipart/form-data", // Ensure proper content type for FormData
+        },
+      });
+
+      toast.success(`Successfully added car with ID ${carData.vinNumber}`);
+      setLoading(false);
+      setShowAddForm(false);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error adding car:", error.message); // Log the error response for debugging
+      toast.error(`Error adding car. Please try again.`);
+      setLoading(false);
+    }
   };
+
   // Function to download data as PDF
   const handleDownloadPDF = () => {
     const doc = new jsPDF("l", "pt", "letter"); // 'l' for landscape orientation
@@ -422,7 +576,7 @@ export const CarsPage = () => {
                   <tr>
                     {[
                       "ID",
-                      "vinNumber",
+                      "vinNum",
                       "description",
                       "make",
                       "model",
@@ -432,15 +586,16 @@ export const CarsPage = () => {
                       "dmc",
                       "assessment_document",
                       "tax_payment_document",
-                      "proof_of_payment_document",
                       "selling_price",
+                      "sold_date",
                       "transport_fees",
                       "purchase_price",
                       "tax",
+                      "proof_of_payment_document",
+                      "ebm_receipt",
+                      "context",
                       "other_expenses",
                       "discount",
-                      "context",
-                      "sold_date",
                       "is_sold",
                       "Actions",
                     ].map((el) => (
@@ -464,26 +619,28 @@ export const CarsPage = () => {
                     (
                       {
                         id,
-                        vinNumber,
+                        vin_number,
                         description,
                         make,
                         model,
                         year,
                         engine,
-                        carImage,
+                        image,
                         dmc,
-                        assessment_document,
-                        tax_payment_document,
-                        proof_of_payment_document,
+                        assessment_doc,
+                        tax_doc,
                         selling_price,
+                        sold_date,
                         transport_fees,
                         purchase_price,
                         tax,
+                        proof_of_payment,
+                        ebm_receipt,
+                        context,
                         other_expenses,
                         discount,
-                        context,
-                        sold_date,
                         is_sold,
+                        Actions,
                       },
                       key,
                     ) => {
@@ -517,7 +674,7 @@ export const CarsPage = () => {
                                   color="blue-gray"
                                   className="font-semibold"
                                 >
-                                  {vinNumber}
+                                  {vin_number}
                                 </Typography>
                               </div>
                             </div>
@@ -590,13 +747,10 @@ export const CarsPage = () => {
                           <td className={className}>
                             <div className="flex items-center gap-4">
                               <div>
-                                <Typography
-                                  variant="small"
-                                  color="blue-gray"
-                                  className="font-semibold"
-                                >
-                                  <img src={carImage} alt="" />
-                                </Typography>
+                                <img
+                                  src={`https://test.kagaba.tech/files/download?path=${image[0]}`}
+                                  alt="Car image"
+                                />
                               </div>
                             </div>
                           </td>
@@ -609,9 +763,8 @@ export const CarsPage = () => {
                                   className="font-semibold"
                                 >
                                   <a
-                                    href={dmc}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                                    href={`https://test.kagaba.tech/files/download?path=${dmc}`}
+                                    download
                                   >
                                     View DMC
                                   </a>
@@ -629,9 +782,10 @@ export const CarsPage = () => {
                                   Name="font-semibold"
                                 >
                                   <a
-                                    href={assessment_document}
+                                    href={`https://test.kagaba.tech/files/download?path=${assessment_doc}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    download
                                   >
                                     View Assessment
                                   </a>
@@ -648,9 +802,10 @@ export const CarsPage = () => {
                                   className="font-semibold"
                                 >
                                   <a
-                                    href={tax_payment_document}
+                                    href={`https://test.kagaba.tech/files/download?path=${tax_doc}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    download
                                   >
                                     View Tax Payment
                                   </a>
@@ -666,13 +821,7 @@ export const CarsPage = () => {
                                   color="blue-gray"
                                   className="font-semibold"
                                 >
-                                  <a
-                                    href={proof_of_payment_document}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    View Proof of Payment
-                                  </a>
+                                  {selling_price}
                                 </Typography>
                               </div>
                             </div>
@@ -685,7 +834,7 @@ export const CarsPage = () => {
                                   color="blue-gray"
                                   className="font-semibold"
                                 >
-                                  {selling_price}
+                                  {sold_date}
                                 </Typography>
                               </div>
                             </div>
@@ -737,7 +886,13 @@ export const CarsPage = () => {
                                   color="blue-gray"
                                   className="font-semibold"
                                 >
-                                  {other_expenses}
+                                  <a
+                                    href={`https://test.kagaba.tech/files/download?path=${proof_of_payment}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    View Proof of Payment
+                                  </a>
                                 </Typography>
                               </div>
                             </div>
@@ -750,7 +905,13 @@ export const CarsPage = () => {
                                   color="blue-gray"
                                   className="font-semibold"
                                 >
-                                  {discount}
+                                  <a
+                                    href={`https://test.kagaba.tech/files/download?path=${ebm_receipt}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    View EBM Receipt
+                                  </a>
                                 </Typography>
                               </div>
                             </div>
@@ -776,7 +937,20 @@ export const CarsPage = () => {
                                   color="blue-gray"
                                   className="font-semibold"
                                 >
-                                  {sold_date}
+                                  {other_expenses}
+                                </Typography>
+                              </div>
+                            </div>
+                          </td>
+                          <td className={className}>
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <Typography
+                                  variant="small"
+                                  color="blue-gray"
+                                  className="font-semibold"
+                                >
+                                  {discount}
                                 </Typography>
                               </div>
                             </div>
@@ -872,7 +1046,7 @@ export const CarsPage = () => {
       </div>
 
       {showAddForm && (
-        <form>
+        <form encType="multipart/form-data">
           <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full overflow-y-auto bg-black bg-opacity-60">
             <div className="w-full max-w-md p-8 bg-white rounded-md shadow-lg">
               <div className="flex items-center justify-between px-4 py-2 mb-6 bg-gray-100 rounded-lg">
@@ -973,6 +1147,11 @@ export const CarsPage = () => {
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
                   </div>
+                </div>
+              </div>
+              {/* Document Section */}
+              <div className="mb-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div className="w-full">
                     <label className="block mb-1 text-sm text-gray-600">
                       Car Image
@@ -980,10 +1159,13 @@ export const CarsPage = () => {
                     <input
                       type="file"
                       name="carImage"
-                      placeholder="Car Image URL"
                       required
-                      value={carData.carImage}
-                      onChange={handleInputChange}
+                      onChange={(e) => {
+                        setCarData({
+                          ...carData,
+                          carImage: e.target.files[0],
+                        });
+                      }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
                   </div>
@@ -994,19 +1176,16 @@ export const CarsPage = () => {
                     <input
                       type="file"
                       name="dmc"
-                      placeholder="DMC Document URL"
                       required
-                      value={carData.dmc}
-                      onChange={handleInputChange}
+                      onChange={(e) => {
+                        setCarData({
+                          ...carData,
+                          dmc: e.target.files[0],
+                        });
+                      }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
                   </div>
-                </div>
-              </div>
-
-              {/* Document Section */}
-              <div className="mb-4">
-                <div className="grid grid-cols-2 gap-4">
                   <div className="w-full">
                     <label className="block mb-1 text-sm text-gray-600">
                       Assessment Document
@@ -1015,8 +1194,12 @@ export const CarsPage = () => {
                       type="file"
                       name="assessment_document"
                       required
-                      value={carData.assessment_document}
-                      onChange={handleInputChange}
+                      onChange={(e) => {
+                        setCarData({
+                          ...carData,
+                          assessment_document: e.target.files[0],
+                        });
+                      }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
                   </div>
@@ -1028,8 +1211,12 @@ export const CarsPage = () => {
                       type="file"
                       name="tax_payment_document"
                       required
-                      value={carData.tax_payment_document}
-                      onChange={handleInputChange}
+                      onChange={(e) => {
+                        setCarData({
+                          ...carData,
+                          tax_payment_document: e.target.files[0],
+                        });
+                      }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
                   </div>
@@ -1045,8 +1232,8 @@ export const CarsPage = () => {
                     </label>
                     <input
                       type="number"
+                      name="selling_price"
                       required
-                      value={carData.selling_price}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
@@ -1060,7 +1247,6 @@ export const CarsPage = () => {
                       name="transport_fees"
                       placeholder="Transport Fees"
                       required
-                      value={carData.transport_fees}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
@@ -1074,7 +1260,6 @@ export const CarsPage = () => {
                       name="purchase_price"
                       placeholder="Purchase Price"
                       required
-                      value={carData.purchase_price}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
@@ -1088,7 +1273,6 @@ export const CarsPage = () => {
                       name="tax"
                       placeholder="Tax"
                       required
-                      value={carData.tax}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
@@ -1102,7 +1286,6 @@ export const CarsPage = () => {
                       name="other_expenses"
                       placeholder="Other Expenses"
                       required
-                      value={carData.other_expenses}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
@@ -1126,7 +1309,6 @@ export const CarsPage = () => {
                 variant="contained"
                 size="large"
                 fullWidth
-                disabled={loading}
                 onClick={handleSubmit}
               >
                 {loading ? (
@@ -1159,9 +1341,9 @@ export const CarsPage = () => {
                   <IoIosCloseCircle className="text-gray-600" />
                 </button>
               </div>
-              {/* Edit Car form */}
+              {/* sell Car form */}
               <div className="mb-4">
-                <div className="">
+                <div className="grid w-full grid-cols-2 gap-4">
                   <div>
                     <label className="block mb-1 text-sm text-gray-600">
                       Discount
@@ -1181,7 +1363,7 @@ export const CarsPage = () => {
                     />
                   </div>
                   <div>
-                    <label className="block mt-2 mb-1 text-sm text-gray-600">
+                    <label className="block mb-1 text-sm text-gray-600">
                       Selling Price
                     </label>
                     <input
@@ -1216,18 +1398,41 @@ export const CarsPage = () => {
                     className="w-full h-[108px] px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                   />
                 </div>
-                <div className="w-full">
-                  <label className="block mb-1 text-sm text-gray-600">
-                    Prove of Payment Document
-                  </label>
-                  <input
-                    type="file"
-                    name="proof_of_payment_document"
-                    required
-                    value={carData.proof_of_payment_document}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
-                  />
+                <div className="grid w-full grid-cols-2 gap-4">
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Prove of Payment Document
+                    </label>
+                    <input
+                      type="file"
+                      name="proof_of_payment_document"
+                      required
+                      onChange={(e) => {
+                        setCarData({
+                          ...carData,
+                          proof_of_payment_document: e.target.files[0],
+                        });
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      EBM Receipt
+                    </label>
+                    <input
+                      type="file"
+                      name="ebm_receipt"
+                      required
+                      onChange={(e) => {
+                        setCarData({
+                          ...carData,
+                          ebm_receipt: e.target.files[0],
+                        });
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
                 </div>
               </div>
               <Button
@@ -1255,7 +1460,7 @@ export const CarsPage = () => {
       {editCar && (
         <form>
           <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full overflow-y-auto bg-black bg-opacity-60">
-            <div className="w-full max-w-md p-8 bg-white rounded-md shadow-lg">
+            <div className="w-full max-w-lg p-8 bg-white rounded-md shadow-lg">
               <div className="flex items-center justify-between px-4 py-2 mb-6 bg-gray-100 rounded-lg">
                 <h2 className="text-lg font-semibold text-gray-800">
                   {" "}
@@ -1270,31 +1475,17 @@ export const CarsPage = () => {
               </div>
               {/* Basic Information Section */}
               <div className="mb-4">
-                <div className="grid w-full grid-cols-3 gap-4">
+                <div className="grid w-full grid-cols-5 gap-4">
                   <div className="w-full">
                     <label className="block mb-1 text-sm text-gray-600">
-                      VIN Number
+                      VIN Num
                     </label>
                     <input
                       type="text"
                       name="vinNumber"
                       placeholder="VIN Number"
                       required
-                      value={carData.vinNumber}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
-                    />
-                  </div>
-                  <div className="w-full">
-                    <label className="block mb-1 text-sm text-gray-600">
-                      Description
-                    </label>
-                    <input
-                      type="text"
-                      name="description"
-                      placeholder="Description"
-                      required
-                      value={carData.description}
+                      defaultValue={singleCar?.vin_number}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
@@ -1308,7 +1499,7 @@ export const CarsPage = () => {
                       name="make"
                       placeholder="Make"
                       required
-                      value={carData.make}
+                      defaultValue={singleCar?.make}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
@@ -1322,7 +1513,7 @@ export const CarsPage = () => {
                       name="model"
                       placeholder="Model"
                       required
-                      value={carData.model}
+                      defaultValue={singleCar?.model}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
@@ -1336,7 +1527,7 @@ export const CarsPage = () => {
                       name="year"
                       placeholder="Year"
                       required
-                      value={carData.year}
+                      defaultValue={singleCar?.year}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
@@ -1348,13 +1539,30 @@ export const CarsPage = () => {
                     <input
                       type="text"
                       name="engine"
-                      placeholder="Engine"
                       required
-                      value={carData.engine}
+                      defaultValue={singleCar?.engine}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
                   </div>
+                </div>
+              </div>
+              <div className="w-full">
+                <label className="block mb-1 text-sm text-gray-600">
+                  Description
+                </label>
+                <textarea
+                  type="text"
+                  name="description"
+                  required
+                  defaultValue={singleCar?.description}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                />
+              </div>
+              {/* Document Section */}
+              <div className="mb-4">
+                <div className="grid grid-cols-3 gap-4">
                   <div className="w-full">
                     <label className="block mb-1 text-sm text-gray-600">
                       Car Image
@@ -1362,10 +1570,14 @@ export const CarsPage = () => {
                     <input
                       type="file"
                       name="carImage"
-                      placeholder="Car Image URL"
                       required
-                      value={carData.carImage}
-                      onChange={handleInputChange}
+                      // defaultValue={`https://test.kagaba.tech/files/download?path=${singleCar?.image[0]}`}
+                      onChange={(e) => {
+                        setCarData({
+                          ...carData,
+                          carImage: e.target.files[0],
+                        });
+                      }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
                   </div>
@@ -1376,42 +1588,81 @@ export const CarsPage = () => {
                     <input
                       type="file"
                       name="dmc"
-                      placeholder="DMC Document URL"
                       required
-                      value={carData.dmc}
-                      onChange={handleInputChange}
+                      onChange={(e) => {
+                        setCarData({
+                          ...carData,
+                          dmc: e.target.files[0],
+                        });
+                      }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
                   </div>
-                </div>
-              </div>
-
-              {/* Document Section */}
-              <div className="mb-4">
-                <div className="grid grid-cols-2 gap-4">
                   <div className="w-full">
                     <label className="block mb-1 text-sm text-gray-600">
-                      Assessment Document
+                      Assessment Doc
                     </label>
                     <input
                       type="file"
                       name="assessment_document"
                       required
-                      value={carData.assessment_document}
-                      onChange={handleInputChange}
+                      onChange={(e) => {
+                        setCarData({
+                          ...carData,
+                          assessment_document: e.target.files[0],
+                        });
+                      }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                   <div className="w-full">
                     <label className="block mb-1 text-sm text-gray-600">
-                      Tax Payment Document
+                      Tax Payment Doc
                     </label>
                     <input
                       type="file"
                       name="tax_payment_document"
                       required
-                      value={carData.tax_payment_document}
-                      onChange={handleInputChange}
+                      onChange={(e) => {
+                        setCarData({
+                          ...carData,
+                          tax_payment_document: e.target.files[0],
+                        });
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      EBM Receipt
+                    </label>
+                    <input
+                      type="file"
+                      name="ebm_receipt"
+                      required
+                      onChange={(e) => {
+                        setCarData({
+                          ...carData,
+                          ebm_receipt: e.target.files[0],
+                        });
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Prove of Payment
+                    </label>
+                    <input
+                      type="file"
+                      name="proof_of_payment_document"
+                      required
+                      onChange={(e) => {
+                        setCarData({
+                          ...carData,
+                          proof_of_payment_document: e.target.files[0],
+                        });
+                      }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
                   </div>
@@ -1427,8 +1678,9 @@ export const CarsPage = () => {
                     </label>
                     <input
                       type="number"
+                      name="selling_price"
                       required
-                      value={carData.selling_price}
+                      defaultValue={singleCar?.selling_price}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
@@ -1440,9 +1692,8 @@ export const CarsPage = () => {
                     <input
                       type="number"
                       name="transport_fees"
-                      placeholder="Transport Fees"
                       required
-                      value={carData.transport_fees}
+                      defaultValue={singleCar?.transport_fees}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
@@ -1454,9 +1705,8 @@ export const CarsPage = () => {
                     <input
                       type="number"
                       name="purchase_price"
-                      placeholder="Purchase Price"
                       required
-                      value={carData.purchase_price}
+                      defaultValue={singleCar?.purchase_price}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
@@ -1468,9 +1718,8 @@ export const CarsPage = () => {
                     <input
                       type="number"
                       name="tax"
-                      placeholder="Tax"
                       required
-                      value={carData.tax}
+                      defaultValue={singleCar?.tax}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
@@ -1482,9 +1731,21 @@ export const CarsPage = () => {
                     <input
                       type="number"
                       name="other_expenses"
-                      placeholder="Other Expenses"
                       required
-                      value={carData.other_expenses}
+                      defaultValue={singleCar?.other_expenses}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="block mb-1 text-sm text-gray-600">
+                      Context
+                    </label>
+                    <input
+                      type="text"
+                      name="context"
+                      required
+                      defaultValue={singleCar?.context}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                     />
@@ -1509,7 +1770,7 @@ export const CarsPage = () => {
                 size="large"
                 fullWidth
                 disabled={loading}
-                onClick={handleSubmit}
+                onClick={handleEditCar}
               >
                 {loading ? (
                   <Loader

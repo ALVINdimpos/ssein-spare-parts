@@ -3,16 +3,20 @@ import axios from "axios";
 import { StatisticsCard } from "../../widgets/cards";
 import Tables from "./tables";
 import { AiOutlineStock } from "react-icons/ai";
-import { IoDocumentTextOutline } from "react-icons/io5";
 import { RiExchangeDollarLine } from "react-icons/ri";
 import { FaMoneyBillWave } from "react-icons/fa";
 import { RiMoneyDollarCircleLine } from "react-icons/ri";
 import { FaUserAstronaut } from "react-icons/fa";
+import { AiOutlineBank } from "react-icons/ai";
+import { FcMoneyTransfer } from "react-icons/fc";
+import { SiCashapp } from "react-icons/si";
+import { PiBankFill } from "react-icons/pi";
 import { jwtDecode } from "jwt-decode";
-
+import { GiCash } from "react-icons/gi";
 export function Home() {
   const [data, setData] = useState({});
   const [userRole, setUserRole] = useState(null);
+  const API_URL = "https://test.kagaba.tech";
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
@@ -25,7 +29,7 @@ export function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://parts.kagaba.tech/metrics/", {
+        const response = await axios.get(`${API_URL}/metrics/`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -76,12 +80,6 @@ export function Home() {
         color: "gray",
       },
       {
-        title: "Tax Documents",
-        value: data.tax_docs || 0,
-        icon: <IoDocumentTextOutline />,
-        color: "gray",
-      },
-      {
         title: "Sold Today",
         value: parseFloat(data.sold_today) || 0,
         icon: <RiExchangeDollarLine />,
@@ -91,6 +89,36 @@ export function Home() {
         title: "Users",
         value: data.users || 0,
         icon: <FaUserAstronaut />,
+        color: "gray",
+      },
+      {
+        title: "Debit today",
+        value: data.debit_today || 0,
+        icon: <FcMoneyTransfer />,
+        color: "gray",
+      },
+      {
+        title: "Bank today",
+        value: data?.cash_book?.bank_today || 0,
+        icon: <AiOutlineBank />,
+        color: "gray",
+      },
+      {
+        title: "Cash today",
+        value: data?.cash_book?.cash_today || 0,
+        icon: <SiCashapp />,
+        color: "gray",
+      },
+      {
+        title: "Total bank",
+        value: data?.cash_book?.total_bank || 0,
+        icon: <PiBankFill />,
+        color: "gray",
+      },
+      {
+        title: "Total cash",
+        value: data?.cash_book?.total_cash || 0,
+        icon: <GiCash />,
         color: "gray",
       },
     );

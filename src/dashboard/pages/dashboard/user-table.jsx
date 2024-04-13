@@ -34,6 +34,9 @@ export function UserTables() {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(5);
+
+  const API_URL = "https://test.kagaba.tech";
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewUserData({ ...newUserData, [name]: value });
@@ -55,7 +58,7 @@ export function UserTables() {
     try {
       const token = localStorage.getItem("accessToken");
       const response = await axios.patch(
-        `https://parts.kagaba.tech/users/${editUserId}`,
+        `${API_URL}/users/${editUserId}`,
         { role: newUserData.role },
         {
           headers: {
@@ -84,7 +87,7 @@ export function UserTables() {
       try {
         const token = localStorage.getItem("accessToken");
 
-        const response = await axios.get("https://parts.kagaba.tech/users/", {
+        const response = await axios.get(`${API_URL}/users/`, {
           headers: {
             Accept: "application/json",
             Authorization: `Bearer ${token}`,
@@ -105,17 +108,13 @@ export function UserTables() {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.post(
-        "https://parts.kagaba.tech/users/",
-        newUserData,
-        {
-          headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+      const response = await axios.post(`${API_URL}/users/`, newUserData, {
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-      );
+      });
 
       toast.success("User added successfully");
       window.location.reload();
@@ -136,16 +135,13 @@ export function UserTables() {
   const handleDeleteUser = async (id) => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.delete(
-        `https://parts.kagaba.tech/users/${id}`,
-        {
-          headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+      const response = await axios.delete(`${API_URL}/users/${id}`, {
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-      );
+      });
 
       toast.success("User deleted successfully");
       window.location.reload();

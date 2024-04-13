@@ -54,6 +54,7 @@ export function Tables() {
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(15); // Number of products to display per page
 
+  const API_URL = "https://parts.kagaba.tech";
   const handleAddProduct = () => {
     setShowAddForm(!showAddForm);
   };
@@ -68,15 +69,12 @@ export function Tables() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          "https://parts.kagaba.tech/products/",
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
+        const response = await axios.get(` ${API_URL}/products/`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
-        );
+        });
         setProductTableData(response.data?.data?.products);
       } catch (error) {
         console.log(error);
@@ -116,15 +114,12 @@ export function Tables() {
   );
 
   const handleSellProducts = async (id) => {
-    const getProductResponse = await axios.get(
-      `https://parts.kagaba.tech/products/${id}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
+    const getProductResponse = await axios.get(`${API_URL}/products/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
-    );
+    });
     setSingleProduct(getProductResponse?.data?.data?.product);
     setSellProduct(true);
     setEditingProductId(id);
@@ -132,7 +127,7 @@ export function Tables() {
   };
   const handleViewProduct = async (id) => {
     setViewProduct(true);
-    setProduct(`https://parts.kagaba.tech/products/qrcode/${id}`);
+    setProduct(`${API_URL}/products/qrcode/${id}`);
   };
   const isAgent = userRole === "agent";
   const isAdmin = userRole === "admin";
@@ -163,16 +158,12 @@ export function Tables() {
         context: "",
         other_expenses,
       };
-      const response = await axios.post(
-        "https://parts.kagaba.tech/products/",
-        requestData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
+      const response = await axios.post(`${API_URL}/products/`, requestData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
-      );
+      });
       toast.success("Product added successfully");
       window.location.reload();
       setShowAddForm(false);
@@ -183,15 +174,12 @@ export function Tables() {
     }
   };
   const handleViewEditProduct = async (id) => {
-    const getProductResponse = await axios.get(
-      `https://parts.kagaba.tech/products/${id}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
+    const getProductResponse = await axios.get(`${API_URL}/products/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
-    );
+    });
     setSingleProduct(getProductResponse?.data?.data?.product);
     setEditProduct(true);
     setEditingProductId(id);
@@ -218,7 +206,7 @@ export function Tables() {
         is_sold: false,
       };
       const response = await axios.post(
-        `https://parts.kagaba.tech/products/${editingProductId}`,
+        `${API_URL}/products/${editingProductId}`,
         requestData,
         {
           headers: {
@@ -256,7 +244,7 @@ export function Tables() {
       };
       // get product
       const response = await axios.post(
-        `https://parts.kagaba.tech/products/${editingProductId}`,
+        `${API_URL}/products/${editingProductId}`,
         requestData,
         {
           headers: {
@@ -289,14 +277,11 @@ export function Tables() {
       if (!confirmed) {
         return; // If user cancels, do not proceed with deletion
       }
-      const response = await axios.delete(
-        `https://parts.kagaba.tech/products/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
+      const response = await axios.delete(`${API_URL}/products/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
-      );
+      });
       window.location.reload();
       toast.success("Product deleted successfully");
       window.location.reload();

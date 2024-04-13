@@ -44,7 +44,7 @@ export function DebtorTable() {
     payment_status: "Pending",
     scope: "debtors",
   });
-
+  const API_URL = "https://parts.kagaba.tech";
   // Event handler to update the new debtor data as the user types
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -64,7 +64,7 @@ export function DebtorTable() {
       try {
         setLoading(true);
         const response = await axios.get(
-          "https://parts.kagaba.tech/management/?scope=debtors",
+          ` ${API_URL}/management/?scope=debtors`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -86,7 +86,6 @@ export function DebtorTable() {
 
     fetchData();
   }, []);
-  console.log(debtorsData);
   useEffect(() => {
     // Filter the creditors data based on search query and isStatusFilter
     const filteredData = debtorsData.filter((debtors) => {
@@ -114,7 +113,7 @@ export function DebtorTable() {
   const handleAddDebtor = async () => {
     try {
       setLoading(true);
-      await axios.post("https://parts.kagaba.tech/management/", newDebtorData, {
+      await axios.post(`${API_URL}/management/`, newDebtorData, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -134,7 +133,7 @@ export function DebtorTable() {
 
   const handleDeleteDebtor = async (id) => {
     try {
-      await axios.delete(`https://parts.kagaba.tech/management/${id}`, {
+      await axios.delete(`${API_URL}/management/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           Accept: "application/json",
@@ -155,7 +154,7 @@ export function DebtorTable() {
     try {
       setLoading(true);
       await axios.patch(
-        `https://parts.kagaba.tech/management/${editDebtorId}`,
+        `${API_URL}/management/${editDebtorId}`,
         { payment_status: newDebtorData.payment_status },
         {
           headers: {
