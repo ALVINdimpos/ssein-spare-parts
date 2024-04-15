@@ -141,6 +141,80 @@ export function CashBookTable() {
     indexOfFirstEntry,
     indexOfLastEntry,
   );
+  // Function to download data as PDF
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF("l", "pt", "letter"); // 'l' for landscape orientation
+
+    // Define column widths and row heights
+    const columnWidths = [15, 100, 100, 100, 100];
+    const rowHeight = 5;
+
+    // Set font size and style
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+
+    doc.autoTable({
+      head: [["ID", "Description", "AMOUNT", "WHERE TO", "CONTEXT"]],
+      body: filteredData.map(
+        ({ id, description, amount, where_to, context }) => [
+          id,
+          description,
+          amount,
+          where_to,
+          `"${context.replace(/"/g, '""')}"`,
+        ],
+      ),
+      startY: 20,
+      styles: {
+        cellPadding: 3,
+        fontSize: 8,
+        valign: "middle",
+      },
+      columnStyles: {
+        0: { cellWidth: columnWidths[0] },
+        1: { cellWidth: columnWidths[1] },
+        2: { cellWidth: columnWidths[2] },
+        3: { cellWidth: columnWidths[3] },
+        4: { cellWidth: columnWidths[4] },
+      },
+      headStyles: { fillColor: [0, 0, 0] },
+      margin: { top: 30 },
+      theme: "grid", // Grid theme
+      rowHeight: rowHeight,
+    });
+
+    doc.save("products.pdf");
+  };
+  // function to download data as CSV
+  const handleDownloadCSV = () => {
+    const csvData = filteredData.map(
+      ({ id, description, amount, where_to, context }) => [
+        id,
+        description,
+        amount,
+        where_to,
+        `"${context.replace(/"/g, '""')}"`,
+      ],
+    );
+
+    const headers = ["ID", "Description", "AMOUNT", "WHERE TO", "CONTEXT"];
+
+    const csvContent = [
+      headers.join(","),
+      ...csvData.map((row) => row.join(",")),
+    ].join("\r\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.setAttribute("hidden", "");
+    a.setAttribute("href", url);
+    a.setAttribute("download", "products.csv");
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  };
   return (
     <div className="flex flex-col gap-12 mt-12 mb-8">
       <Card>
@@ -173,6 +247,30 @@ export function CashBookTable() {
                   Add New Entry
                 </span>
               </Button>
+              <Button
+                color="gray"
+                buttonType="filled"
+                size="regular"
+                rounded={false}
+                block={false}
+                iconOnly={false}
+                ripple="light"
+                onClick={handleDownloadPDF}
+              >
+                <FaFilePdf className="text-xl" />
+              </Button>
+              <Button
+                color="gray"
+                buttonType="filled"
+                size="regular"
+                rounded={false}
+                block={false}
+                iconOnly={false}
+                ripple="light"
+                onClick={handleDownloadCSV}
+              >
+                <FaFileCsv className="text-xl" />
+              </Button>
             </div>
           </div>
         </CardHeader>
@@ -190,7 +288,6 @@ export function CashBookTable() {
                     "Description",
                     "Amount",
                     "Where To",
-                    "Where From",
                     "Context",
                     "Action",
                   ].map((el) => (
@@ -211,15 +308,7 @@ export function CashBookTable() {
               <tbody>
                 {currentEntries?.map(
                   (
-                    {
-                      id,
-                      proof,
-                      description,
-                      amount,
-                      where_to,
-                      where_from,
-                      context,
-                    },
+                    { id, proof, description, amount, where_to, context },
                     key,
                   ) => {
                     const className = `py-3 px-5 ${
@@ -276,11 +365,6 @@ export function CashBookTable() {
                         <td className={className}>
                           <Typography className="text-xs font-semibold text-blue-gray-600">
                             {where_to}
-                          </Typography>
-                        </td>
-                        <td className={className}>
-                          <Typography className="text-xs font-semibold text-blue-gray-600">
-                            {where_from}
                           </Typography>
                         </td>
                         <td className={className}>
