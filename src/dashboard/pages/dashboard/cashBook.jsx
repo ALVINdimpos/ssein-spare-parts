@@ -8,15 +8,11 @@ import {
 } from "@material-tailwind/react";
 import axios from "axios";
 import { FaEdit } from "react-icons/fa";
-import { MdAutoDelete } from "react-icons/md";
 import { IoMdAddCircle } from "react-icons/io";
 import { IoIosCloseCircle } from "react-icons/io";
 import Loader from "react-js-loader";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { jwtDecode } from "jwt-decode";
-import { cashBookDatas } from "../../data";
-import { format } from "date-fns";
 import { FaFilePdf } from "react-icons/fa6";
 import { FaFileCsv } from "react-icons/fa6";
 import jsPDF from "jspdf";
@@ -31,7 +27,6 @@ export function CashBookTable() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredData, setFilteredData] = useState([]);
-  const [userRole, setUserRole] = useState(null);
   const [entriesPerPage] = useState(5);
   const [newEntryData, setNewEntryData] = useState({
     description: "",
@@ -39,48 +34,34 @@ export function CashBookTable() {
     where_to: "",
     where_from: "",
     context: "",
+    proof: null,
   });
-  const API_URL = "https://parts.kagaba.tech";
+  const API_URL = "https://test.kagaba.tech";
 
   // Event handler to update the new entry data as the user types
   const handleEntryInputChange = (e) => {
     const { name, value } = e.target;
     setNewEntryData({ ...newEntryData, [name]: value });
   };
-
-  useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
-    if (accessToken) {
-      const decodedToken = jwtDecode(accessToken);
-      setUserRole(decodedToken.role);
-    }
-  }, []);
   // Add useEffect hook to fetch data when the component mounts
   useEffect(() => {
-    setCashBookData(cashBookDatas);
-    // const fetchData = async () => {
-    //     try {
-    //         setLoading(true);
-    //         const response = await axios.get(`${API_URL}/management/?scope=cashbook`, {
-    //             headers: {
-    //                 Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-    //                 Accept: "application/json",
-    //             },
-    //         });
-
-    //         const { data } = response.data;
-    //         if (data && data.records) {
-    //             setCashBookData(cashBookData);
-    //             setLoading(false);
-    //         }
-    //     } catch (error) {
-    //         setLoading(false);
-    //     }
-    // };
-
-    // fetchData();
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${API_URL}/cashbook/cashflow`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            Accept: "application/json",
+          },
+        });
+        setCashBookData(response?.data?.data?.cashflow);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, []);
-
   useEffect(() => {
     // Filter the cash book data based on search query
     const filteredData = cashBookData.filter((entry) => {
@@ -90,13 +71,7 @@ export function CashBookTable() {
       const whereToMatchesSearch = entry.where_to
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
-      const whereFromMatchesSearch = entry.where_from
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-      let matchesSearch =
-        descriptionMatchesSearch ||
-        whereToMatchesSearch ||
-        whereFromMatchesSearch;
+      let matchesSearch = descriptionMatchesSearch || whereToMatchesSearch;
 
       return matchesSearch;
     });
@@ -106,41 +81,29 @@ export function CashBookTable() {
   const handleAddEntry = async () => {
     try {
       setLoading(true);
-      await axios.post(
-        `${API_URL}/management/`,
-        { ...newEntryData, scope: "cashbook" },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            "Access-Control-Allow-Origin": "*",
-          },
+      const formData = new FormData();
+      formData.append("description", newEntryData.description);
+      formData.append("amount", newEntryData.amount);
+      formData.append("where_to", newEntryData.where_to);
+      formData.append("where_from", newEntryData.where_from);
+      formData.append("context", newEntryData.context);
+      formData.append("proof", newEntryData.proof);
+
+      await axios.post(`${API_URL}/cashbook/`, formData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          "Content-Type": "multipart/form-data",
         },
-      );
+      });
       setLoading(false);
       toast.success("Entry added successfully");
+
       window.location.reload();
       setShowAddForm(false);
     } catch (error) {
       setLoading(false);
+      setErrorMessage(error.response.data.message);
       console.error("Error adding entry:", error);
-      toast.error("Error adding entry");
-    }
-  };
-
-  const handleDeleteEntry = async (id) => {
-    try {
-      await axios.delete(`${API_URL}/management/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          Accept: "application/json",
-        },
-      });
-      toast.success("Entry deleted successfully");
-      window.location.reload();
-    } catch (error) {
-      console.error("Error deleting entry:", error);
-      toast.error("Error deleting entry");
     }
   };
 
@@ -152,17 +115,14 @@ export function CashBookTable() {
   const handleEditEntrySubmit = async () => {
     try {
       setLoading(true);
-      await axios.patch(
-        `${API_URL}/management/${editEntryId}`,
-        { ...newEntryData, scope: "cashbook" },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            "Access-Control-Allow-Origin": "*",
-          },
+      const formData = new FormData();
+      formData.append("proof", newEntryData.proof);
+      await axios.patch(`${API_URL}/cashbook/${editEntryId}`, formData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          "Content-Type": "multipart/form-data",
         },
-      );
+      });
       setLoading(false);
       toast.success("Entry updated successfully");
       window.location.reload();
@@ -173,8 +133,6 @@ export function CashBookTable() {
       toast.error("Error updating entry");
     }
   };
-  const isAgent = userRole === "agent";
-  const isAdmin = userRole === "admin";
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const indexOfLastEntry = currentPage * entriesPerPage;
@@ -295,6 +253,9 @@ export function CashBookTable() {
                               >
                                 <a
                                   href={`https://test.kagaba.tech/files/download?path=${proof}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  download
                                 >
                                   View Proof
                                 </a>
@@ -333,12 +294,6 @@ export function CashBookTable() {
                               className="text-blue-500 cursor-pointer material-icons"
                               onClick={() => handleEditEntry(id)}
                             />
-                            {(!isAgent || !isAdmin) && (
-                              <MdAutoDelete
-                                className="ml-2 text-red-500 cursor-pointer material-icons"
-                                onClick={() => handleDeleteEntry(id)}
-                              />
-                            )}
                           </div>
                         </td>
                       </tr>
@@ -522,79 +477,6 @@ export function CashBookTable() {
                     proof: e.target.files[0],
                   });
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block mb-1 text-sm text-gray-600">
-                Description
-              </label>
-              <input
-                type="text"
-                placeholder="Description"
-                name="description"
-                value={newEntryData.description}
-                onChange={handleEntryInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block mb-1 text-sm text-gray-600">
-                  Amount
-                </label>
-                <input
-                  type="number"
-                  placeholder="Amount"
-                  name="amount"
-                  value={newEntryData.amount}
-                  onChange={handleEntryInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
-                />
-              </div>
-              <div>
-                <label className="block mb-1 text-sm text-gray-600">
-                  Where To
-                </label>
-                {/* select form bank and cash */}
-                <select
-                  name="where_to"
-                  value={newEntryData.where_to}
-                  onChange={handleEntryInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500 "
-                >
-                  <option value="">Select Where To</option>
-                  <option value="bank">Bank</option>
-                  <option value="cash">Cash</option>
-                </select>
-              </div>
-            </div>
-            <div className="mb-4">
-              <label className="block mb-1 text-sm text-gray-600">
-                Where From
-              </label>
-              {/* select form bank and cash, Outside */}
-              <select
-                name="where_from"
-                value={newEntryData.where_from}
-                onChange={handleEntryInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
-              >
-                <option value="">Select Where From</option>
-                <option value="bank">Bank</option>
-                <option value="cash">Cash</option>
-                <option value="outside">Outside</option>
-              </select>
-            </div>
-            <div className="mb-4">
-              <label className="block mb-1 text-sm text-gray-600">
-                Context
-              </label>
-              <textarea
-                placeholder="Context"
-                name="context"
-                value={newEntryData.context}
-                onChange={handleEntryInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
               />
             </div>
