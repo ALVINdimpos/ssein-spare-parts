@@ -23,7 +23,7 @@ async def get_cashflow(user: Annotated[User, Depends(get_internal_user)],
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail='You do not have permission to access this resource')
 
-    cashflow = db.query(CashBook).all()
+    cashflow = db.query(CashBook).filter_by(type='original').all()
 
     res = Res(
         status=status.HTTP_200_OK,
@@ -40,7 +40,7 @@ async def get_cashflow(user: Annotated[User, Depends(get_internal_user)],
 async def get_cashflow(db: Session = Depends(get_db)) -> Res:
     cashflow = db.query(CashBook).filter(
         func.DATE(CashBook.created_at) == datetime.date.today()
-    ).all()
+    ).filter_by(type='original').all()
 
     res = Res(
         status=status.HTTP_200_OK,

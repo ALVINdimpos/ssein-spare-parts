@@ -64,6 +64,7 @@ async def get_profit_loss_graph_products(db: Session = Depends(get_db)):
                     - CarProduct.tax
                     - CarProduct.other_expenses
                     - CarProduct.transport_fees
+                    - CarProduct.discount
         ))).label("amount")
     ).group_by(
         func.to_char(CarProduct.sold_date, date_format),
@@ -75,6 +76,7 @@ async def get_profit_loss_graph_products(db: Session = Depends(get_db)):
                     - CarProduct.tax
                     - CarProduct.other_expenses
                     - CarProduct.transport_fees
+                    - CarProduct.discount
             ) >= 0,
             CarProduct.is_sold == True
         )
@@ -114,6 +116,7 @@ async def get_profit_loss_graph_products(db: Session = Depends(get_db)):
             - CarProduct.tax
             - CarProduct.other_expenses
             - CarProduct.transport_fees
+            - CarProduct.discount
         ))).label("amount")
     ).group_by(
         func.to_char(CarProduct.sold_date, date_format),
@@ -125,6 +128,7 @@ async def get_profit_loss_graph_products(db: Session = Depends(get_db)):
                     - CarProduct.tax
                     - CarProduct.other_expenses
                     - CarProduct.transport_fees
+                    - CarProduct.discount
             ) < 0,
             CarProduct.is_sold == True
         )
@@ -185,6 +189,7 @@ async def get_metrics(user: Annotated[User, Depends(get_internal_user)],
                     - CarProduct.tax
                     - CarProduct.other_expenses
                     - CarProduct.transport_fees
+                    - CarProduct.discount
             )
         ).label('profit')
     ).filter(and_(
@@ -194,6 +199,7 @@ async def get_metrics(user: Annotated[User, Depends(get_internal_user)],
                 - CarProduct.tax
                 - CarProduct.other_expenses
                 - CarProduct.transport_fees
+                - CarProduct.discount
         ) >= 0,
         CarProduct.is_sold == True
     )).first()
@@ -229,6 +235,7 @@ async def get_metrics(user: Annotated[User, Depends(get_internal_user)],
                     - CarProduct.tax
                     - CarProduct.other_expenses
                     - CarProduct.transport_fees
+                    - CarProduct.discount
             )
         ).label('loss')
     ).filter(and_(
@@ -238,6 +245,7 @@ async def get_metrics(user: Annotated[User, Depends(get_internal_user)],
                 - CarProduct.tax
                 - CarProduct.other_expenses
                 - CarProduct.transport_fees
+                - CarProduct.discount
         ) < 0,
         CarProduct.is_sold == True
     )).first()

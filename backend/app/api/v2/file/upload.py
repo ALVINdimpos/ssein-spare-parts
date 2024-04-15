@@ -1,4 +1,5 @@
 from app.api.v2 import Res, FileScope, FileModel
+from datetime import datetime
 from sqlalchemy.orm import Session
 from fastapi import Depends, APIRouter, HTTPException, status, UploadFile
 from app.core.minio import minio_client
@@ -53,7 +54,10 @@ async def upload_files(files: list[UploadFile],
 
     file_list = []
     for file in files:
-        path = f"documents/{scope.value}/{file.filename}"
+        filename, extension = os.path.splitext(file.filename)
+        timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
+        new_filename = f"{filename}_{timestamp}{extension}"
+        path = f"documents/{scope.value}/{new_filename}"
         check_dup = db.query(File).filter_by(path=path).first()
         if check_dup:
             raise file_already_exists_exception

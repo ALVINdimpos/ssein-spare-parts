@@ -60,7 +60,7 @@ async def get_internal_user(token: Annotated[str, Depends(oauth2_scheme)], db: S
     if user is None:
         raise credentials_exception
 
-    if user.role not in ['admin', 'superadmin', 'agent']:
+    if user.role not in ['admin', 'superadmin', 'agent', 'client']:
         raise unauthorized_exception
 
     return user

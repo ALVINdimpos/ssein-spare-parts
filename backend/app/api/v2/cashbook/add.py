@@ -28,42 +28,40 @@ async def add_entry(
         where_from: WhereFrom = Body(None, description="Where is the cash coming from? bank or cash or outside"),
         context: str = Body(None, description="Any additional context?"),
         db: Session = Depends(get_db)) -> Res:
+    if where_from == where_to:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="Can not transfer a cash flow in the same scope")
+
     _proof = ''
     if proof:
         _proof = await upload_files(
-            db=db, files=[proof], scope=FileScope.PROOF.value
+            db=db, files=[proof], scope=FileScope.PROOF
         )
-
-    if where_to == 'outside':
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Can not send money out of business")
+        _proof = _proof.data['files'][0]['path']
 
     entry = CashBook(
         description=description,
         amount=amount,
-        where_to=where_to,
-        proof=_proof.data['files'][0]['path'],
+        where_to=where_to.value,
+        proof=_proof,
         context=context,
         type='original',
         created_at=datetime.utcnow()
     )
 
-    if where_from == where_to:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="Can not transfer a cash flow in the same scope")
-
-    if where_to in ['bank', 'cash'] and where_from in ['cash', 'bank']:
+    if where_to.value in ['bank', 'cash'] and where_from.value in ['cash', 'bank']:
         contra = CashBook(
             description=description,
             amount=-1 * amount,
-            where_to=where_from,
+            where_to=where_from.value,
             context=context,
             type='contra',
             created_at=datetime.utcnow()
         )
-        entry.contra.append(contra)
+        entry.contras.append(contra)
 
     action = Action(
-        product_id=entry.id,
+        entry_id=entry.id,
         user_id=user.id,
         action_type=ActionTypes.CREATE.value
     )
@@ -100,7 +98,7 @@ async def upload_proof(
         )
 
     action = Action(
-        product_id=entry.id,
+        entry_id=entry.id,
         user_id=user.id,
         action_type=ActionTypes.UPDATE.value
     )

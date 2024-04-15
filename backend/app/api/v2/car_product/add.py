@@ -29,10 +29,11 @@ async def create_car_product(
         selling_price: int = Body(None, description="Car's Selling price"),
         transport_fees: int = Body(None, description="Transport fees"),
         purchase_price: int = Body(None, description="Purchase price"),
+        discount: int = Body(None, description="Discounted amount"),
         is_sold: bool = Body(None, description="Is the product sold"),
         sold_date: datetime = Body(None, description="When did you sell the product?"),
         tax: int = Body(None, description="Tax"),
-        other_expenses: int = Body(None, description="Purchase price"),
+        other_expenses: int = Body(None, description="Other expenses"),
         context: str = Body(None, description="Context"),
         db: Session = Depends(get_db)) -> Res:
     if image:
@@ -72,6 +73,7 @@ async def create_car_product(
         model=model,
         year=year,
         engine=engine,
+        discount=discount,
         selling_price=selling_price,
         transport_fees=transport_fees,
         purchase_price=purchase_price,
@@ -83,7 +85,7 @@ async def create_car_product(
     )
 
     action = Action(
-        product_id=car_product.id,
+        car_id=car_product.id,
         user_id=user.id,
         action_type=ActionTypes.CREATE.value
     )

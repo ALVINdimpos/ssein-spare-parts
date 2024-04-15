@@ -6,6 +6,7 @@ from typing import Annotated
 from app.db import get_db
 from app.db.models import File
 from fastapi.responses import StreamingResponse
+from app.api.v2.middlewares import get_internal_user
 from dotenv import load_dotenv
 import os
 
@@ -45,7 +46,7 @@ def make_file(file: File) -> FileModel:
     )
 
 
-@router.get("/", response_model=Res)
+@router.get("/", response_model=Res, dependencies=[Depends(get_internal_user)])
 async def get_files(db: Annotated[Session, Depends(get_db)]) -> Res:
     files = db.query(File).group_by('scope', 'id').all()
 

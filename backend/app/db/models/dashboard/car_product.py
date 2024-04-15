@@ -21,6 +21,7 @@ class CarProduct(Base):
     selling_price = Column(Numeric, default=0)
     transport_fees = Column(Numeric, default=0)
     purchase_price = Column(Numeric, default=0)
+    discount = Column(Numeric, default=0)
     is_sold = Column(Boolean, default=False)
     sold_date = Column(DateTime, default=datetime.datetime.utcnow())
     tax = Column(Numeric, default=0)
