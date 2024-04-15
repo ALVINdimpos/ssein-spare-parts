@@ -136,7 +136,8 @@ async def update_product(
     update_data = update.dict(exclude_unset=True)
 
     for field, value in update_data.items():
-        setattr(car_product, field, value)
+        if value is not None:
+            setattr(car_product, field, value)
 
     action = Action(
         car_id=car_product.id,
