@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import Loader from "react-js-loader";
-
+import { jwtDecode } from "jwt-decode";
 const Login = () => {
   const [showPassword, setShowPassword] = useState(true);
   const [email, setEmail] = useState("");
@@ -31,10 +31,14 @@ const Login = () => {
         },
       );
       const { access_token } = response.data;
+      const decodedToken = jwtDecode(access_token);
+      if (decodedToken.role == "client") {
+        window.location.href = "/dashboard/products";
+      } else {
+        window.location.href = "/dashboard/home";
+      }
       // Store the access token in local storage
       localStorage.setItem("accessToken", access_token);
-      // Redirect to the dashboard or any other page
-      window.location.href = "/dashboard/home"; // Change the URL as needed
     } catch (error) {
       setErrorMessage("Invalid email or password. Please try again.");
     } finally {

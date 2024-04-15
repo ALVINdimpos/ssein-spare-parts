@@ -5,4 +5,4 @@ export { default as reportData } from "./report-data";
 export { debtorsData as debtorsData } from "./debtors-data";
 export { creditorsData as creditorsData } from "./creditors-data";
 export { queriesData as queriesData } from "./queries-data";
-export { carDatas as carDatas } from "./car-data";
+export { cashBookDatas as cashBookDatas } from "./cash-book-data";

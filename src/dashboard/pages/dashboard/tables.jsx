@@ -54,7 +54,7 @@ export function Tables() {
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(15); // Number of products to display per page
 
-  const API_URL = "https://parts.kagaba.tech";
+  const API_URL = "https://test.kagaba.tech";
   const handleAddProduct = () => {
     setShowAddForm(!showAddForm);
   };
@@ -131,6 +131,7 @@ export function Tables() {
   };
   const isAgent = userRole === "agent";
   const isAdmin = userRole === "admin";
+  const isClient = userRole === "client";
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const handleSubmit = async (e) => {

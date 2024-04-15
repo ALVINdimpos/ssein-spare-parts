@@ -29,7 +29,7 @@ export function Dashboard() {
               )),
           )}
         </Routes>
-        <div className="text-blue-gray-600">
+        <div className="flex-grow h-full text-blue-gray-600">
           <Footer />
         </div>
       </div>

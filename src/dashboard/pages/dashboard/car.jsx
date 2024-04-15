@@ -35,12 +35,12 @@ export const CarsPage = () => {
   const [filteredCars, setFilteredCars] = useState([]);
   const [isSoldFilter, setIsSoldFilter] = useState("all"); // Assuming this will represent sold or unsold cars
   const [carData, setCarData] = useState({
-    vinNumber: "",
-    description: "",
-    make: "",
-    model: "",
-    year: 0,
-    engine: "",
+    vinNumber: null,
+    description: null,
+    make: null,
+    model: null,
+    year: null,
+    engine: null,
     carImage: null,
     dmc: null,
     assessment_document: null,
@@ -48,12 +48,12 @@ export const CarsPage = () => {
     ebm_receipt: null,
     proof_of_payment_document: null,
     discount: 0,
-    context: "",
-    selling_price: 0,
-    transport_fees: 0,
-    purchase_price: 0,
-    tax: 0,
-    other_expenses: 0,
+    context: null,
+    selling_price: null,
+    transport_fees: null,
+    purchase_price: null,
+    tax: null,
+    other_expenses: null,
   });
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -175,7 +175,6 @@ export const CarsPage = () => {
       formData.append("discount", carData.discount);
       formData.append("context", carData.context);
       // Log formData to ensure file data is correctly appended
-
       const response = await axios.patch(
         `${API_URL}/car-product/${editingCarId}`,
         formData,
@@ -308,7 +307,7 @@ export const CarsPage = () => {
       setShowAddForm(false);
       window.location.reload();
     } catch (error) {
-      console.error("Error adding car:", error.message); // Log the error response for debugging
+      console.error("Error adding car:", error); // Log the error response for debugging
       toast.error(`Error adding car. Please try again.`);
       setLoading(false);
     }
@@ -748,7 +747,7 @@ export const CarsPage = () => {
                             <div className="flex items-center gap-4">
                               <div>
                                 <img
-                                  src={`https://test.kagaba.tech/files/download?path=${image[0]}`}
+                                  src={`https://test.kagaba.tech/files/download?path=${image ? image[0] : ""}`}
                                   alt="Car image"
                                 />
                               </div>

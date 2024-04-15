@@ -1,9 +1,8 @@
-import { HomeIcon, InformationCircleIcon } from "@heroicons/react/24/solid";
+import { HomeIcon } from "@heroicons/react/24/solid";
 import { IoIosPeople } from "react-icons/io";
 import {
   Home,
   Tables,
-  Notifications,
   UserTables,
   Reports,
   DebtorTable,
@@ -12,6 +11,8 @@ import {
   InquiriesTable,
   Profile,
   CarsPage,
+  CashBookTable,
+  ClientTables,
 } from "./pages/dashboard";
 import { AiOutlineShopping } from "react-icons/ai";
 import { BiSolidReport } from "react-icons/bi";
@@ -21,6 +22,7 @@ import { MdOutlineQuestionAnswer } from "react-icons/md";
 import { LuMailQuestion } from "react-icons/lu";
 import { ImProfile } from "react-icons/im";
 import { PiCarFill } from "react-icons/pi";
+import { IoCash } from "react-icons/io5";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -41,7 +43,7 @@ export const routes = (userRole) => {
           icon: <AiOutlineShopping {...icon} />,
           name: "products",
           path: "/products",
-          element: <Tables />,
+          element: userRole !== "client" ? <Tables /> : <ClientTables />,
         },
         {
           icon: <IoIosPeople {...icon} />,
@@ -80,10 +82,10 @@ export const routes = (userRole) => {
           element: <InquiriesTable />,
         },
         {
-          icon: <ImProfile {...icon} />,
-          name: "Profile",
-          path: "/profile",
-          element: <Profile />,
+          icon: <IoCash {...icon} />,
+          name: "Cash Book",
+          path: "/cash-book",
+          element: <CashBookTable />,
         },
         {
           icon: <PiCarFill {...icon} />,
@@ -92,10 +94,10 @@ export const routes = (userRole) => {
           element: <CarsPage />,
         },
         {
-          icon: <InformationCircleIcon {...icon} />,
-          name: "notifications",
-          path: "/notifications",
-          element: <Notifications />,
+          icon: <ImProfile {...icon} />,
+          name: "Profile",
+          path: "/profile",
+          element: <Profile />,
         },
       ],
     },

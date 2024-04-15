@@ -9,3 +9,5 @@ export { QueriesTable as QueriesTable } from "./queries.jsx";
 export { InquiriesTable as InquiriesTable } from "./inquiry.jsx";
 export { Profile as Profile } from "./profile.jsx";
 export { CarsPage as CarsPage } from "./car.jsx";
+export { CashBookTable as CashBookTable } from "./cashBook.jsx";
+export { ClientTables as ClientTables } from "./client-product.jsx";

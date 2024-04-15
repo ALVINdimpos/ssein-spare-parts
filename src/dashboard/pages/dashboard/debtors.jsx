@@ -420,8 +420,8 @@ export function DebtorTable() {
                     "Contact Info",
                     "Debt Amount",
                     "Due Date",
-                    "Payment Status",
                     "Context",
+                    "Payment Status",
                     "Action",
                   ].map((el) => (
                     <th
@@ -685,9 +685,9 @@ export function DebtorTable() {
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
               >
-                <option value="pending">Pending</option>
+                <option value="good">Good</option>
                 <option value="paid">Paid</option>
-                <option value="outstanding">Outstanding</option>
+                <option value="bad">Bad</option>
               </select>
             </div>
             {errorMessage && (

@@ -9,7 +9,7 @@ import {
   MenuList,
   MenuItem,
 } from "@material-tailwind/react";
-import { BellIcon, Bars3Icon } from "@heroicons/react/24/solid";
+import { Bars3Icon } from "@heroicons/react/24/solid";
 import { useMaterialTailwindController, setOpenSidenav } from "../../context";
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
@@ -19,9 +19,6 @@ export function DashboardNavbar() {
   const { fixedNavbar, openSidenav } = controller;
   const { pathname } = useLocation();
   const [layout, page] = pathname.split("/").filter((el) => el !== "");
-
-  // State for notification dropdown
-  const [showNotifications, setShowNotifications] = useState(false);
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
@@ -78,19 +75,7 @@ export function DashboardNavbar() {
             >
               <Bars3Icon strokeWidth={3} className="w-6 h-6 text-black" />
             </IconButton>
-            {/* Bell icon button */}
-            <BellIcon
-              className="w-6 h-6 text-black cursor-pointer"
-              onClick={() => setShowNotifications(!showNotifications)}
-            />
-            {/* Notification dropdown */}
-            {showNotifications && (
-              <Menu>
-                <MenuList>
-                  <MenuItem>No new notifications</MenuItem>
-                </MenuList>
-              </Menu>
-            )}
+
             {/* Display user data */}
             {userData && (
               <Menu>
