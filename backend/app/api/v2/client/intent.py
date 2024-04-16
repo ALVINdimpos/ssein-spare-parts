@@ -25,20 +25,20 @@ async def declare_intent(user: Annotated[User, Depends(get_current_user)],
                          scope: Scopes,
                          product_id: int = Path(description='Product ID of interest'),
                          db: Session = Depends(get_db)) -> Res:
-    entity = db.query(Product if scope == Scopes.PRODUCT.value else CarProduct).filter_by(id=product_id).first()
+    entity = db.query(Product if scope == Scopes.PRODUCT else CarProduct).filter_by(id=product_id).first()
 
     if not entity:
         raise not_found
 
-    if scope == Scopes.PRODUCT:
+    if scope == Scopes.CAR_PRODUCT:
         action = Action(
-            product_id=entity.id,
+            car_id=entity.id,
             user_id=user.id,
             action_type=ActionTypes.INTENT.value
         )
     else:
         action = Action(
-            car_id=entity.id,
+            product_id=entity.id,
             user_id=user.id,
             action_type=ActionTypes.INTENT.value
         )
