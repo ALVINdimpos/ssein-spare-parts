@@ -82,28 +82,6 @@ export function Tables() {
     };
     fetchData();
   }, []);
-  useEffect(() => {
-    // Filter the product data based on search query and isSoldFilter
-    const filteredData = productTableData.filter((product) => {
-      const numMatchesSearch = product.num
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-      const descriptionMatchesSearch = product.description
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-      let matchesSearch = numMatchesSearch || descriptionMatchesSearch;
-
-      if (isSoldFilter === "all") {
-        return matchesSearch;
-      } else if (isSoldFilter === "sold") {
-        return matchesSearch && product.is_sold;
-      } else if (isSoldFilter === "inStock") {
-        return matchesSearch && !product.is_sold;
-      }
-      return false;
-    });
-    setFilteredProducts(filteredData);
-  }, [productTableData, searchQuery, isSoldFilter]);
 
   // Update the calculation of indexOfFirstProduct and indexOfLastProduct to use filteredProducts
   const indexOfLastProduct = currentPage * productsPerPage;
@@ -131,7 +109,6 @@ export function Tables() {
   };
   const isAgent = userRole === "agent";
   const isAdmin = userRole === "admin";
-  const isClient = userRole === "client";
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const handleSubmit = async (e) => {
@@ -294,11 +271,41 @@ export function Tables() {
     setSearchQuery(e.target.value);
     setCurrentPage(1); // Reset pagination to first page when search query changes
   };
-
   const handleSoldFilterChange = (e) => {
-    setIsSoldFilter(e.target.value);
-    setCurrentPage(1); // Reset pagination to first page when filter changes
+    const { value } = e.target;
+    setIsSoldFilter(value);
   };
+
+  useEffect(() => {
+    if (isSoldFilter === "all") {
+      // Show all products without any additional filtering
+      setFilteredProducts(productTableData);
+    } else {
+      // Apply filtering based on the selected filter value
+      const filteredData = productTableData.filter((product) => {
+        const numMatchesSearch = product.num
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+        const descriptionMatchesSearch = product.description
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+        let matchesSearch = numMatchesSearch || descriptionMatchesSearch;
+
+        if (isSoldFilter === "selected") {
+          return product.actions.some(
+            (action) => action.action_type === "intent",
+          );
+        } else if (isSoldFilter === "sold") {
+          return matchesSearch && product.is_sold;
+        } else if (isSoldFilter === "inStock") {
+          return matchesSearch && !product.is_sold;
+        }
+        return false;
+      });
+      setFilteredProducts(filteredData);
+    }
+    setCurrentPage(1); // Reset pagination to first page when filter changes
+  }, [isSoldFilter, searchQuery, productTableData]);
 
   const handlePagination = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -434,6 +441,7 @@ export function Tables() {
                 <option value="all">All</option>
                 <option value="sold">Sold</option>
                 <option value="inStock">In Stock</option>
+                <option value="selected">Selected</option>
               </select>
               <Button
                 onClick={handleAddProduct}
@@ -505,7 +513,7 @@ export function Tables() {
                 </thead>
                 {/* Table body */}
                 <tbody>
-                  {currentProducts.map(
+                  {filteredProducts.map(
                     (
                       {
                         id,
@@ -628,11 +636,21 @@ export function Tables() {
                               />
                             </div>
                           </td>
+                          {/* Action Type and Action Owner */}
                           <td className={className}>
                             <Typography className="text-xs font-semibold text-blue-gray-600">
-                              {actions
-                                .map((action) => action.user_name)
-                                .join(", ")}
+                              {actions.length > 0 && (
+                                <>
+                                  {actions.map((action, index) => (
+                                    <div key={index}>
+                                      <span className="text-blue-500">
+                                        {action.action_type}
+                                      </span>{" "}
+                                      by {action.user_name}
+                                    </div>
+                                  ))}
+                                </>
+                              )}
                             </Typography>
                           </td>
                         </tr>

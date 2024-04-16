@@ -21,6 +21,7 @@ export function ClientTables() {
   const [isSoldFilter, setIsSoldFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(15); // Number of products to display per page
+  const [selectedProducts, setSelectedProducts] = useState([]);
 
   const API_URL = "https://test.kagaba.tech";
 
@@ -40,6 +41,7 @@ export function ClientTables() {
     };
     fetchData();
   }, []);
+
   useEffect(() => {
     // Filter the product data based on search query and isSoldFilter
     const filteredData = productTableData.filter((product) => {
@@ -79,6 +81,40 @@ export function ClientTables() {
     setCurrentPage(pageNumber);
   };
 
+  const handleProductSelection = (productId) => {
+    const isSelected = selectedProducts.includes(productId);
+    if (isSelected) {
+      setSelectedProducts(selectedProducts.filter((id) => id !== productId));
+    } else {
+      setSelectedProducts([...selectedProducts, productId]);
+    }
+  };
+
+  const handleRequestSelectedProducts = async () => {
+    try {
+      for (const productId of selectedProducts) {
+        const response = await axios.post(
+          `${API_URL}/client/${productId}?scope=product`,
+          {}, // No request body needed
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+          },
+        );
+      }
+      // Optionally clear selectedProducts state or update UI as needed
+      toast.success(
+        "Products requested successfully! We will get back to you soon.",
+      );
+      setSelectedProducts([]);
+    } catch (error) {
+      console.error("Error requesting products:", error);
+      toast.error("Error requesting products. Please try again.");
+    }
+  };
+
   return (
     <div className="flex flex-col mt-12 mb-8 overflow-x-auto">
       <Card>
@@ -108,6 +144,8 @@ export function ClientTables() {
               block={false}
               iconOnly={false}
               ripple="light"
+              onClick={handleRequestSelectedProducts}
+              disabled={selectedProducts.length === 0}
               className="flex items-center gap-2"
             >
               <IoMdAddCircle className="text-xl" />
@@ -131,7 +169,7 @@ export function ClientTables() {
                       "Product Number",
                       "Description",
                       "Selling Price",
-                      "Select Products",
+                      "Product",
                     ].map((el) => (
                       <th
                         key={el}
@@ -196,13 +234,14 @@ export function ClientTables() {
                             </Typography>
                           </td>
                           <td className={className}>
-                            <div className="flex justify-between gap-1">
-                              {/* check box */}
+                            <label className="flex items-center">
                               <input
                                 type="checkbox"
-                                className="text-indigo-600 form-checkbox"
-                              ></input>
-                            </div>
+                                onChange={() => handleProductSelection(id)}
+                                checked={selectedProducts.includes(id)}
+                                className="w-5 h-5 text-indigo-600 form-checkbox"
+                              />
+                            </label>
                           </td>
                         </tr>
                       );
