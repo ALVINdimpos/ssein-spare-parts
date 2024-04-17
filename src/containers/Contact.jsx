@@ -1,8 +1,58 @@
 /* eslint-disable react/no-unescaped-entities */
+import { useState } from "react";
 import Nav from "./Nav";
 import Footer from "./Footer";
 import { FaWhatsapp } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Loader from "react-js-loader";
 const Contact = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true); // Set loading to true when form is submitted
+    try {
+      const response = await fetch("https://test.kagaba.tech/inquiry/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          context: "contact",
+        }),
+      });
+      if (response.ok) {
+        // Handle success, maybe show a success message
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          message: "",
+        });
+        toast.success("Message sent successfully");
+        setLoading(false);
+      } else {
+        // Handle error, maybe show an error message
+        toast.error("Failed to send inquiry");
+      }
+    } catch (error) {
+      setLoading(false); // Set loading to false when error occurs
+      toast.error("Failed to send inquiry");
+    }
+  };
+
   return (
     <div>
       <Nav />
@@ -138,12 +188,16 @@ const Contact = () => {
             </div>
             <div className="w-full px-4 lg:w-1/2 xl:w-5/12">
               <div className="relative p-8 bg-white rounded-lg shadow-lg dark:bg-dark-2 sm:p-12">
-                <form>
+                <form onSubmit={handleSubmit}>
                   <div className="mb-6">
                     <input
                       type="text"
                       placeholder="Your Name"
                       className="border-stroke dark:border-dark-3 dark:text-dark-6 dark:bg-dark text-body-color focus:border-primary w-full rounded border py-3 px-[14px] text-base outline-none"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
                     />
                   </div>
                   <div className="mb-6">
@@ -151,6 +205,10 @@ const Contact = () => {
                       type="email"
                       placeholder="Your Email"
                       className="border-stroke dark:border-dark-3 dark:text-dark-6 dark:bg-dark text-body-color focus:border-primary w-full rounded border py-3 px-[14px] text-base outline-none"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
                     />
                   </div>
                   <div className="mb-6">
@@ -158,6 +216,9 @@ const Contact = () => {
                       type="text"
                       placeholder="Your Phone"
                       className="border-stroke dark:border-dark-3 dark:text-dark-6 dark:bg-dark text-body-color focus:border-primary w-full rounded border py-3 px-[14px] text-base outline-none"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
                     />
                   </div>
                   <div className="mb-6">
@@ -165,6 +226,10 @@ const Contact = () => {
                       rows="6"
                       placeholder="Your Message"
                       className="border-stroke dark:border-dark-3 dark:text-dark-6 dark:bg-dark text-body-color focus:border-primary w-full resize-none rounded border py-3 px-[14px] text-base outline-none"
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      required
                     ></textarea>
                   </div>
                   <div>
@@ -172,7 +237,15 @@ const Contact = () => {
                       type="submit"
                       className="w-full p-3 text-white transition border rounded border-primary bg-primary hover:bg-opacity-90"
                     >
-                      Send Message
+                      {loading ? (
+                        <Loader
+                          type="spinner-default"
+                          bgColor={"#fff"}
+                          size={20}
+                        />
+                      ) : (
+                        "Send Message"
+                      )}
                     </button>
                   </div>
                 </form>
@@ -990,6 +1063,7 @@ const Contact = () => {
         </div>
       </section>
       <Footer />
+      <ToastContainer />
     </div>
   );
 };

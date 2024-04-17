@@ -2,12 +2,15 @@ import { useState, useEffect } from "react";
 import Nav from "./Nav";
 import Footer from "./Footer";
 import { useParams } from "react-router-dom";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Loader from "react-js-loader";
 const PartDetail = () => {
   const { id } = useParams();
   const [partData, setPartData] = useState([]);
   const [fitments, setFitments] = useState();
   const [loading, setLoading] = useState(false);
+  const [loadingProduct, setLoadingProduct] = useState(false);
   const [showInquiryForm, setShowInquiryForm] = useState(false); // Step 1
 
   useEffect(() => {
@@ -28,6 +31,51 @@ const PartDetail = () => {
 
   const toggleInquiryForm = () => {
     setShowInquiryForm(!showInquiryForm); // Step 2
+  };
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoadingProduct(true); // Set loading to true when form is submitted
+    try {
+      const response = await fetch("https://test.kagaba.tech/inquiry/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          context: "product",
+          product_id: id,
+        }),
+      });
+      if (response.ok) {
+        // Handle success, maybe show a success message
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          message: "",
+        });
+        toast.success("Message sent successfully");
+        setLoadingProduct(false);
+      } else {
+        // Handle error, maybe show an error message
+        toast.error("Failed to send inquiry");
+      }
+    } catch (error) {
+      setLoadingProduct(false); // Set loading to false when error occurs
+      toast.error("Failed to send inquiry");
+    }
   };
 
   return (
@@ -101,7 +149,7 @@ const PartDetail = () => {
                 Make Inquiry
               </button>
               {showInquiryForm && (
-                <form>
+                <form onSubmit={handleSubmit}>
                   <div className="mb-4">
                     <label
                       htmlFor="name"
@@ -113,6 +161,9 @@ const PartDetail = () => {
                       type="text"
                       id="name"
                       name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
                       className="w-full px-3 py-2 border rounded"
                       placeholder="Enter your name"
                     />
@@ -128,8 +179,27 @@ const PartDetail = () => {
                       type="email"
                       id="email"
                       name="email"
+                      value={formData.email}
+                      onChange={handleChange}
                       className="w-full px-3 py-2 border rounded"
                       placeholder="Enter your email"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label
+                      htmlFor="email"
+                      className="block mb-2 font-semibold text-gray-700"
+                    >
+                      Your Phone
+                    </label>
+                    <input
+                      type="phone"
+                      id="phone"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border rounded"
+                      placeholder="Enter your phone number"
                     />
                   </div>
                   <div className="mb-4">
@@ -143,6 +213,8 @@ const PartDetail = () => {
                       id="message"
                       name="message"
                       rows="4"
+                      value={formData.message}
+                      onChange={handleChange}
                       className="w-full px-3 py-2 border rounded"
                       placeholder="Enter your message"
                     ></textarea>
@@ -151,7 +223,15 @@ const PartDetail = () => {
                     type="submit"
                     className="px-4 py-2 font-bold text-white rounded bg-primary hover:bg-primary"
                   >
-                    Submit Inquiry
+                    {loadingProduct ? (
+                      <Loader
+                        type="spinner-circle"
+                        bgColor={"#fff"}
+                        size={20}
+                      />
+                    ) : (
+                      "Send Inquiry"
+                    )}
                   </button>
                 </form>
               )}
@@ -160,6 +240,7 @@ const PartDetail = () => {
         </div>
       </section>
       <Footer />
+      <ToastContainer />
     </div>
   );
 };
