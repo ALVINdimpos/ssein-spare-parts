@@ -5,13 +5,14 @@ import { useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "react-js-loader";
+
 const PartDetail = () => {
   const { id } = useParams();
   const [partData, setPartData] = useState([]);
   const [fitments, setFitments] = useState();
   const [loading, setLoading] = useState(false);
   const [loadingProduct, setLoadingProduct] = useState(false);
-  const [showInquiryForm, setShowInquiryForm] = useState(false); // Step 1
+  const [showModal, setShowModal] = useState(false); // Step 1
 
   useEffect(() => {
     fetch(`https://parts.kagaba.tech/parts/${id}?scope=parts`, {
@@ -29,15 +30,21 @@ const PartDetail = () => {
       });
   }, [id]);
 
-  const toggleInquiryForm = () => {
-    setShowInquiryForm(!showInquiryForm); // Step 2
+  const openModal = () => {
+    setShowModal(true); // Step 2
   };
+
+  const closeModal = () => {
+    setShowModal(false); // Step 3
+  };
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     message: "",
   });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -68,6 +75,7 @@ const PartDetail = () => {
         });
         toast.success("Message sent successfully");
         setLoadingProduct(false);
+        closeModal(); // Close modal after successful submission
       } else {
         // Handle error, maybe show an error message
         toast.error("Failed to send inquiry");
@@ -143,97 +151,113 @@ const PartDetail = () => {
                 </div>
               </div>
               <button
-                onClick={toggleInquiryForm}
+                onClick={openModal}
                 className="px-4 py-2 font-bold text-white rounded bg-primary hover:bg-primary-700"
               >
                 Make Inquiry
               </button>
-              {showInquiryForm && (
-                <form onSubmit={handleSubmit}>
-                  <div className="mb-4">
-                    <label
-                      htmlFor="name"
-                      className="block mb-2 font-semibold text-gray-700"
-                    >
-                      Your Name
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-3 py-2 border rounded"
-                      placeholder="Enter your name"
-                    />
+              {showModal && (
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+                  <div className="w-full max-w-md p-8 bg-white rounded-lg">
+                    {/* <h2 className="mb-4 text-lg font-semibold">Product Inquiry</h2> */}
+                    <form onSubmit={handleSubmit}>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label
+                            htmlFor="name"
+                            className="block mb-2 font-semibold text-gray-700"
+                          >
+                            Your Name
+                          </label>
+                          <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            required
+                            className="w-full px-3 py-2 border rounded"
+                            placeholder="Enter your name"
+                          />
+                        </div>
+                        <div>
+                          <label
+                            htmlFor="email"
+                            className="block mb-2 font-semibold text-gray-700"
+                          >
+                            Your Email
+                          </label>
+                          <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2 border rounded"
+                            placeholder="Enter your email"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label
+                          htmlFor="phone"
+                          className="block mb-2 font-semibold text-gray-700"
+                        >
+                          Your Phone
+                        </label>
+                        <input
+                          type="tel"
+                          id="phone"
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleChange}
+                          className="w-full px-3 py-2 border rounded"
+                          placeholder="Enter your phone number"
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <label
+                          htmlFor="message"
+                          className="block mb-2 font-semibold text-gray-700"
+                        >
+                          Message
+                        </label>
+                        <textarea
+                          id="message"
+                          name="message"
+                          rows="4"
+                          value={formData.message}
+                          onChange={handleChange}
+                          className="w-full px-3 py-2 border rounded"
+                          placeholder="Enter your message"
+                        ></textarea>
+                      </div>
+                      <div className="flex justify-end col-span-2 mt-4">
+                        <button
+                          type="button"
+                          onClick={closeModal}
+                          className="px-4 py-2 mr-2 font-semibold text-gray-700 border border-gray-700 rounded hover:bg-gray-100"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="px-4 py-2 font-bold text-white rounded bg-primary hover:bg-primary"
+                        >
+                          {loadingProduct ? (
+                            <Loader
+                              type="spinner-circle"
+                              bgColor={"#fff"}
+                              size={20}
+                            />
+                          ) : (
+                            "Send Inquiry"
+                          )}
+                        </button>
+                      </div>
+                    </form>
                   </div>
-                  <div className="mb-4">
-                    <label
-                      htmlFor="email"
-                      className="block mb-2 font-semibold text-gray-700"
-                    >
-                      Your Email
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 border rounded"
-                      placeholder="Enter your email"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label
-                      htmlFor="email"
-                      className="block mb-2 font-semibold text-gray-700"
-                    >
-                      Your Phone
-                    </label>
-                    <input
-                      type="phone"
-                      id="phone"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 border rounded"
-                      placeholder="Enter your phone number"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label
-                      htmlFor="message"
-                      className="block mb-2 font-semibold text-gray-700"
-                    >
-                      Message
-                    </label>
-                    <textarea
-                      id="message"
-                      name="message"
-                      rows="4"
-                      value={formData.message}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 border rounded"
-                      placeholder="Enter your message"
-                    ></textarea>
-                  </div>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 font-bold text-white rounded bg-primary hover:bg-primary"
-                  >
-                    {loadingProduct ? (
-                      <Loader
-                        type="spinner-circle"
-                        bgColor={"#fff"}
-                        size={20}
-                      />
-                    ) : (
-                      "Send Inquiry"
-                    )}
-                  </button>
-                </form>
+                </div>
               )}
             </div>
           </div>
