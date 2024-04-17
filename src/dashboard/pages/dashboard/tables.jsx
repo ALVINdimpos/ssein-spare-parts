@@ -307,6 +307,20 @@ export function Tables() {
     setCurrentPage(1); // Reset pagination to first page when filter changes
   }, [isSoldFilter, searchQuery, productTableData]);
 
+  // Separate useEffect for handling search query
+  useEffect(() => {
+    const filteredData = productTableData.filter((product) => {
+      const numMatchesSearch = product.num
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const descriptionMatchesSearch = product.description
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      return numMatchesSearch || descriptionMatchesSearch;
+    });
+    setFilteredProducts(filteredData);
+  }, [searchQuery, productTableData]);
+
   const handlePagination = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
@@ -426,6 +440,7 @@ export function Tables() {
                 value={searchQuery}
                 onChange={handleSearchChange}
               />
+
               <select
                 value={isSoldFilter}
                 onChange={handleSoldFilterChange}
