@@ -65,7 +65,7 @@ export function Tables() {
       setUserRole(decodedToken.role);
     }
   }, []);
-
+  console.log("productTableData", productTableData);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -511,6 +511,7 @@ export function Tables() {
                       "Status",
                       "Action",
                       "Action owner",
+                      "Action date",
                     ].map((el) => (
                       <th
                         key={el}
@@ -662,6 +663,29 @@ export function Tables() {
                                         {action.action_type}
                                       </span>{" "}
                                       by {action.user_name}
+                                    </div>
+                                  ))}
+                                </>
+                              )}
+                            </Typography>
+                          </td>
+                          <td className={className}>
+                            <Typography className="text-xs font-semibold text-blue-gray-600">
+                              {actions.length > 0 && (
+                                <>
+                                  {actions.map((action, index) => (
+                                    <div key={index}>
+                                      <span className="text-blue-500">
+                                        {new Date(
+                                          action.creates_at,
+                                        ).toLocaleString("default", {
+                                          year: "numeric",
+                                          month: "2-digit",
+                                          day: "2-digit",
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                        })}
+                                      </span>{" "}
                                     </div>
                                   ))}
                                 </>
