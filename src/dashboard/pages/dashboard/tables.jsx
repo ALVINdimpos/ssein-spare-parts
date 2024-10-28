@@ -499,8 +499,8 @@ export function Tables() {
                 <thead>
                   <tr>
                     {[
-                      "Id",
                       "Product Number",
+                      "Status",
                       "Description",
                       "Selling Price",
                       "Purchase Price",
@@ -508,7 +508,6 @@ export function Tables() {
                       "Other Expenses",
                       "Discount",
                       "Context",
-                      "Status",
                       "Action",
                       "Action owner",
                       "Action date",
@@ -563,23 +562,19 @@ export function Tables() {
                                   color="blue-gray"
                                   className="font-semibold"
                                 >
-                                  {id}
+                                  {num}
                                 </Typography>
                               </div>
                             </div>
                           </td>
                           <td className={className}>
-                            <div className="flex items-center gap-4">
-                              <div>
-                                <Typography
-                                  variant="small"
-                                  color="blue-gray"
-                                  className="font-semibold"
-                                >
-                                  {num}
-                                </Typography>
-                              </div>
-                            </div>
+                            <Typography className="text-xs font-semibold text-blue-gray-600">
+                              {is_sold ? (
+                                <span className="text-red-500">Sold</span>
+                              ) : (
+                                <span className="text-green-500">In Stock</span>
+                              )}
+                            </Typography>
                           </td>
                           <td className={className}>
                             <Typography className="text-xs font-semibold text-blue-gray-600">
@@ -616,21 +611,12 @@ export function Tables() {
                               {context}
                             </Typography>
                           </td>
-                          <td className={className}>
-                            <Typography className="text-xs font-semibold text-blue-gray-600">
-                              {is_sold ? (
-                                <span className="text-red-500">Sold</span>
-                              ) : (
-                                <span className="text-green-500">In Stock</span>
-                              )}
-                            </Typography>
-                          </td>
 
                           <td className={className}>
                             <div className="flex justify-between gap-1">
-                              {!isAgent && (
+                              {!isAgent && !is_sold && (
                                 <FaEdit
-                                  className="text-blue-500 cursor-pointer material-icons"
+                                  className="text-blue-500 cursor-pointer"
                                   onClick={() => handleViewEditProduct(id)}
                                 />
                               )}
@@ -784,7 +770,10 @@ export function Tables() {
                 <label className="block mb-1 text-sm text-gray-600">
                   Description
                 </label>
-                <input
+                <label className="block mb-1 text-sm text-gray-600">
+                  Eg: Product_name - Product_type - year - side
+                </label>
+                <textarea
                   type="text"
                   placeholder="Description"
                   required
