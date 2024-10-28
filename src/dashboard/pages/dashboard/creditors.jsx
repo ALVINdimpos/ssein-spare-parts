@@ -88,7 +88,7 @@ export function CreditorTable() {
         const { data } = response.data;
         if (data && data.records) {
           setCreditorData(data?.records);
-          setFilteredCreditors(data?.records); // Initialize filtered creditors with all creditors
+          setFilteredCreditors(data?.records);
           setLoading(false);
         }
       } catch (error) {
@@ -213,7 +213,7 @@ export function CreditorTable() {
   );
   const handleStatusFilterChange = (e) => {
     setIsStatusFilter(e.target.value);
-    setCurrentPage(1); // Reset pagination to first page when filter changes
+    setCurrentPage(1);
   };
   // Helper function to get payment status
   const getPaymentStatus = (status) => {
