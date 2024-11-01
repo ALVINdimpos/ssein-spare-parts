@@ -492,10 +492,10 @@ export function UserTables() {
             <Button
               color="blue"
               onClick={handleAddUser}
-              className="w-full"
+              className="w-full text-gray-600"
               disabled={loading}
             >
-              {loading ? <Loader /> : "Add User"}
+              {loading ? <Loader /> : "Add Role"}
             </Button>
           </div>
         </div>
