@@ -36,7 +36,7 @@ const Corolla = () => {
   };
   useEffect(() => {
     fetch(
-      `https://parts.kagaba.tech/categories/?model=${model}&make=Toyota&year=${year}&trim=${trim}&engine=${engineWithTrim}&scope=parts`,
+      `https://parts.husseinking.com/categories/?model=${model}&make=Toyota&year=${year}&trim=${trim}&engine=${engineWithTrim}&scope=parts`,
       {
         method: "GET",
       },

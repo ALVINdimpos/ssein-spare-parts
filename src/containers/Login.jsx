@@ -22,7 +22,7 @@ const Login = () => {
     setLoading(true); // Set loading to true when form is submitted
     try {
       const response = await axios.post(
-        "https://parts.kagaba.tech/users/login",
+        "https://parts.husseinking.com/users/login",
         `grant_type=&username=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&scope=&client_id=&client_secret=`,
         {
           headers: {

@@ -15,7 +15,7 @@ const PartDetail = () => {
   const [showModal, setShowModal] = useState(false); // Step 1
 
   useEffect(() => {
-    fetch(`https://parts.kagaba.tech/parts/${id}?scope=parts`, {
+    fetch(`https://parts.husseinking.com/parts/${id}?scope=parts`, {
       method: "GET",
     })
       .then((response) => response.json())

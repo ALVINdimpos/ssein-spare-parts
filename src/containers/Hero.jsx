@@ -32,7 +32,7 @@ const HeroSection = () => {
     }
   }, [selectedInputs, navigate]);
   useEffect(() => {
-    fetch("https://parts.kagaba.tech/cars/", {
+    fetch("https://parts.husseinking.com/cars/", {
       method: "GET",
     })
       .then((response) => response.json())
@@ -42,7 +42,7 @@ const HeroSection = () => {
       .catch((error) => console.log(error));
   }, []);
   useEffect(() => {
-    fetch(`https://parts.kagaba.tech/cars/?model=${selectedInputs.model}`, {
+    fetch(`https://parts.husseinking.com/cars/?model=${selectedInputs.model}`, {
       method: "GET",
     })
       .then((response) => response.json())
@@ -54,7 +54,7 @@ const HeroSection = () => {
 
   useEffect(() => {
     fetch(
-      `https://parts.kagaba.tech/cars/?model=${selectedInputs.model}&year=${selectedInputs.year}`,
+      `https://parts.husseinking.com/cars/?model=${selectedInputs.model}&year=${selectedInputs.year}`,
       {
         method: "GET",
       },
