@@ -379,7 +379,7 @@ export function UserTables() {
                     Edit Permission
                   </Typography>
                   <Typography variant="small" color="gray">
-                    Allow user to edit other users
+                    Allow user to edit product
                   </Typography>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
