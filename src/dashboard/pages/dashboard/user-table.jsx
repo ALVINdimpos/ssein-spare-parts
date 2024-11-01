@@ -232,10 +232,12 @@ export function UserTables() {
               <Button
                 onClick={() => setShowAddForm(true)}
                 color="white"
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 text-blue-gray-600"
               >
                 <IoMdAddCircle className="text-xl" />
-                <span className="text-base font-medium">Add New User</span>
+                <span className="text-base font-medium text-blue-gray-600">
+                  Add New User
+                </span>
               </Button>
             </div>
           </div>
