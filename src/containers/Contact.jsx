@@ -23,7 +23,7 @@ const Contact = () => {
     e.preventDefault();
     setLoading(true); // Set loading to true when form is submitted
     try {
-      const response = await fetch("https://test.kagaba.tech/inquiry/", {
+      const response = await fetch("https://test.husseinking.com/inquiry/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

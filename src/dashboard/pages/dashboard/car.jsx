@@ -60,7 +60,7 @@ export const CarsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [carsPerPage] = useState(15); // Number of cars to display per page
 
-  const API_URL = "https://test.kagaba.tech";
+  const API_URL = "https://test.husseinking.com";
 
   const handleAddCar = () => {
     setShowAddForm(!showAddForm);
@@ -735,7 +735,7 @@ export const CarsPage = () => {
                             <div className="flex items-center gap-4">
                               <div>
                                 <img
-                                  src={`https://test.kagaba.tech/files/download?path=${image ? image[0] : ""}`}
+                                  src={`https://test.husseinking.com/files/download?path=${image ? image[0] : ""}`}
                                   alt="Car image"
                                 />
                               </div>
@@ -750,7 +750,7 @@ export const CarsPage = () => {
                                   className="font-semibold"
                                 >
                                   <a
-                                    href={`https://test.kagaba.tech/files/download?path=${dmc}`}
+                                    href={`https://test.husseinking.com/files/download?path=${dmc}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     download
@@ -771,7 +771,7 @@ export const CarsPage = () => {
                                   Name="font-semibold"
                                 >
                                   <a
-                                    href={`https://test.kagaba.tech/files/download?path=${assessment_doc}`}
+                                    href={`https://test.husseinking.com/files/download?path=${assessment_doc}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     download
@@ -791,7 +791,7 @@ export const CarsPage = () => {
                                   className="font-semibold"
                                 >
                                   <a
-                                    href={`https://test.kagaba.tech/files/download?path=${tax_doc}`}
+                                    href={`https://test.husseinking.com/files/download?path=${tax_doc}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     download
@@ -878,7 +878,7 @@ export const CarsPage = () => {
                                   className="font-semibold"
                                 >
                                   <a
-                                    href={`https://test.kagaba.tech/files/download?path=${proof_of_payment}`}
+                                    href={`https://test.husseinking.com/files/download?path=${proof_of_payment}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                   >
@@ -897,7 +897,7 @@ export const CarsPage = () => {
                                   className="font-semibold"
                                 >
                                   <a
-                                    href={`https://test.kagaba.tech/files/download?path=${ebm_receipt}`}
+                                    href={`https://test.husseinking.com/files/download?path=${ebm_receipt}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                   >

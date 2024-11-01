@@ -54,7 +54,7 @@ export function Tables() {
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(15); // Number of products to display per page
 
-  const API_URL = "https://test.kagaba.tech";
+  const API_URL = "https://test.husseinking.com";
   const handleAddProduct = () => {
     setShowAddForm(!showAddForm);
   };

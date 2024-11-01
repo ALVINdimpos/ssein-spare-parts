@@ -23,7 +23,7 @@ export function ClientTables() {
   const [productsPerPage] = useState(15); // Number of products to display per page
   const [selectedProducts, setSelectedProducts] = useState([]);
 
-  const API_URL = "https://test.kagaba.tech";
+  const API_URL = "https://test.husseinking.com";
 
   useEffect(() => {
     const fetchData = async () => {

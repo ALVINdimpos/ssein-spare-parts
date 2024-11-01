@@ -36,7 +36,7 @@ export function CashBookTable() {
     context: "",
     proof: null,
   });
-  const API_URL = "https://test.kagaba.tech";
+  const API_URL = "https://test.husseinking.com";
 
   // Event handler to update the new entry data as the user types
   const handleEntryInputChange = (e) => {
@@ -341,7 +341,7 @@ export function CashBookTable() {
                                 className="font-semibold"
                               >
                                 <a
-                                  href={`https://test.kagaba.tech/files/download?path=${proof}`}
+                                  href={`https://test.husseinking.com/files/download?path=${proof}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   download

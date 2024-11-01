@@ -17,7 +17,7 @@ export function Profile() {
   });
   const [showPassword, setShowPassword] = useState(false); // State to manage password visibility
   const [error, setError] = useState(null);
-  const API_URL = "https://test.kagaba.tech";
+  const API_URL = "https://test.husseinking.com";
 
   useEffect(() => {
     fetchUserData();

@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
-import { useState } from "react";
+/* eslint-disable react/no-unescaped-entities */
+import { useState, useEffect } from "react";
 import {
   Card,
   CardHeader,
@@ -7,16 +8,17 @@ import {
   Typography,
   Button,
 } from "@material-tailwind/react";
-import { useEffect } from "react";
 import axios from "axios";
 import { FaEdit } from "react-icons/fa";
 import { MdAutoDelete } from "react-icons/md";
 import { IoMdAddCircle } from "react-icons/io";
 import { IoIosCloseCircle } from "react-icons/io";
+import { MdSecurity } from "react-icons/md"; // Added for permission icon
 import Loader from "react-js-loader";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { jwtDecode } from "jwt-decode";
+
 export function UserTables() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [userTableData, setUserTableData] = useState([]);
@@ -26,6 +28,8 @@ export function UserTables() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [showPermissionModal, setShowPermissionModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [newUserData, setNewUserData] = useState({
     name: "",
     email: "",
@@ -35,7 +39,7 @@ export function UserTables() {
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(5);
 
-  const API_URL = "https://test.kagaba.tech";
+  const API_URL = "https://test.husseinking.com";
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -46,6 +50,7 @@ export function UserTables() {
     setEditUserData(true);
     setEditUserId(id);
   };
+
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
@@ -53,6 +58,39 @@ export function UserTables() {
       setUserRole(decodedToken.role);
     }
   }, []);
+
+  // Mock permission management functions
+  const handlePermissionClick = (user) => {
+    setSelectedUser(user);
+    setShowPermissionModal(true);
+  };
+
+  const handlePermissionSave = () => {
+    // Mock saving permissions
+    const updatedUsers = userTableData.map((user) => {
+      if (user.id === selectedUser.id) {
+        return {
+          ...user,
+          permissions: selectedUser.permissions,
+        };
+      }
+      return user;
+    });
+    setUserTableData(updatedUsers);
+    toast.success("Permissions updated successfully!");
+    setShowPermissionModal(false);
+  };
+
+  const handlePermissionChange = (permission) => {
+    setSelectedUser((prev) => ({
+      ...prev,
+      permissions: {
+        ...prev.permissions,
+        [permission]: !prev.permissions[permission],
+      },
+    }));
+  };
+
   const handleEditUserSubmit = async () => {
     setLoading(true);
     try {
@@ -77,23 +115,29 @@ export function UserTables() {
       setLoading(false);
     }
   };
+
   const isAdmin = userRole === "admin";
-  const handleViewUser = (id) => {
-    // Handle view User
-    console.log(id);
-  };
+  const isSuperAdmin = userRole === "superadmin";
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem("accessToken");
-
         const response = await axios.get(`${API_URL}/users/`, {
           headers: {
             Accept: "application/json",
             Authorization: `Bearer ${token}`,
           },
         });
-        setUserTableData(response.data?.data?.users);
+        const usersWithPermissions = response.data?.data?.users.map((user) => ({
+          ...user,
+          permissions: {
+            canEdit: false,
+            canDelete: false,
+            canView: true,
+          },
+        }));
+        setUserTableData(usersWithPermissions);
         setLoading(false);
       } catch (error) {
         console.error("Fetching user table data failed:", error);
@@ -118,20 +162,19 @@ export function UserTables() {
 
       toast.success("User added successfully");
       window.location.reload();
-      // Reset the newUserData state to clear the form fields
       setNewUserData({
         name: "",
         email: "",
         role: "",
         password: "",
       });
-      // Hide the add user form
       setShowAddForm(false);
     } catch (error) {
       setErrorMessage("Error adding user. Please try again.");
       setLoading(false);
     }
   };
+
   const handleDeleteUser = async (id) => {
     try {
       const token = localStorage.getItem("accessToken");
@@ -150,7 +193,7 @@ export function UserTables() {
       toast.error("Error deleting user");
     }
   };
-  // Filter the user table data based on the search query
+
   const filteredUserData = userTableData?.filter((user) => {
     if (user && user.name && user.email && user.role) {
       return (
@@ -159,9 +202,8 @@ export function UserTables() {
         user.role.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
-    return false; // Return false for undefined or missing properties
+    return false;
   });
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
@@ -169,14 +211,15 @@ export function UserTables() {
     indexOfFirstUser,
     indexOfLastUser,
   );
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div className="flex flex-col gap-12 mt-12 mb-8">
       <Card>
-        <CardHeader variant="black" color="gray" className="p-4 mb-8 md:p-6">
+        <CardHeader variant="gradient" color="gray" className="p-4 mb-8 md:p-6">
           <div className="flex flex-col items-center justify-between md:flex-row">
             <Typography variant="h6" color="white" className="mb-4 md:mb-0">
-              Users
+              Users Management
             </Typography>
             <div className="flex flex-col items-center gap-2 md:flex-row">
               <input
@@ -188,13 +231,7 @@ export function UserTables() {
               />
               <Button
                 onClick={() => setShowAddForm(true)}
-                color="indigo"
-                buttonType="filled"
-                size="regular"
-                rounded={false}
-                block={false}
-                iconOnly={false}
-                ripple="light"
+                color="white"
                 className="flex items-center gap-2"
               >
                 <IoMdAddCircle className="text-xl" />
@@ -205,13 +242,11 @@ export function UserTables() {
         </CardHeader>
 
         <CardBody className="px-0 pt-0 pb-2 overflow-x-scroll">
-          {filteredUserData.length === 0 ? (
-            <div className="py-4 text-center">No results found.</div>
-          ) : (
-            <table className="w-full min-w-[640px] table-auto">
-              <thead>
-                <tr>
-                  {["Id", "Name", "Email", "Role", "Action"].map((el) => (
+          <table className="w-full min-w-[640px] table-auto">
+            <thead>
+              <tr>
+                {["Id", "Name", "Email", "Role", "Permissions", "Actions"].map(
+                  (el) => (
                     <th
                       key={el}
                       className="px-5 py-3 text-left border-b border-blue-gray-50"
@@ -223,85 +258,97 @@ export function UserTables() {
                         {el}
                       </Typography>
                     </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {currentUsers?.map(({ id, name, email, role }, key) => {
-                  const className = `py-3 px-5 ${
-                    key === currentUsers?.length - 1
-                      ? ""
-                      : "border-b border-blue-gray-50"
-                  }`;
+                  ),
+                )}
+              </tr>
+            </thead>
+            <tbody>
+              {currentUsers?.map((user, key) => {
+                const className = `py-3 px-5 ${
+                  key === currentUsers?.length - 1
+                    ? ""
+                    : "border-b border-blue-gray-50"
+                }`;
 
-                  return (
-                    <tr key={id}>
-                      <td className={className}>
-                        <div className="flex items-center gap-4">
-                          <div>
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-semibold"
-                            >
-                              {id}
-                            </Typography>
-                          </div>
-                        </div>
-                      </td>
-                      <td className={className}>
-                        <div className="flex items-center gap-4">
-                          <div>
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-semibold"
-                            >
-                              {name}
-                            </Typography>
-                          </div>
-                        </div>
-                      </td>
-                      <td className={className}>
-                        <Typography className="text-xs font-semibold text-blue-gray-600">
-                          {email}
-                        </Typography>
-                      </td>
-                      <td className={className}>
-                        <Typography className="text-xs font-semibold text-blue-gray-600">
-                          {role}
-                        </Typography>
-                      </td>
-                      <td className={className}>
-                        <div className="flex">
+                return (
+                  <tr key={user.id}>
+                    <td className={className}>
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-semibold"
+                      >
+                        {user.id}
+                      </Typography>
+                    </td>
+                    <td className={className}>
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-semibold"
+                      >
+                        {user.name}
+                      </Typography>
+                    </td>
+                    <td className={className}>
+                      <Typography className="text-xs font-semibold text-blue-gray-600">
+                        {user.email}
+                      </Typography>
+                    </td>
+                    <td className={className}>
+                      <Typography className="text-xs font-semibold text-blue-gray-600">
+                        {user.role}
+                      </Typography>
+                    </td>
+                    <td className={className}>
+                      {isSuperAdmin && (
+                        <Button
+                          color="blue"
+                          size="sm"
+                          className="flex items-center gap-2"
+                          onClick={() => handlePermissionClick(user)}
+                        >
+                          <MdSecurity />
+                          Permissions
+                        </Button>
+                      )}
+                    </td>
+                    <td className={className}>
+                      <div className="flex gap-2">
+                        {(isSuperAdmin || user.permissions?.canEdit) && (
                           <FaEdit
-                            className="text-blue-500 cursor-pointer material-icons"
-                            onClick={() => handleEditUser(id)}
+                            className="text-blue-500 cursor-pointer"
+                            onClick={() => handleEditUser(user.id)}
                           />
-                          {!isAdmin && (
+                        )}
+                        {(isSuperAdmin || user.permissions?.canDelete) &&
+                          !isAdmin && (
                             <MdAutoDelete
-                              className="ml-2 text-red-500 cursor-pointer material-icons"
-                              onClick={() => handleDeleteUser(id)}
+                              className="text-red-500 cursor-pointer"
+                              onClick={() => handleDeleteUser(user.id)}
                             />
                           )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </CardBody>
       </Card>
+
+      {/* Pagination */}
       <div className="flex justify-center mt-4">
         <ul className="flex flex-wrap space-x-2">
           {Array.from(
-            { length: Math.ceil(userTableData.length / usersPerPage) },
+            { length: Math.ceil(filteredUserData.length / usersPerPage) },
             (_, i) => (
               <li key={i}>
                 <Button
-                  className={`px-3 py-1 rounded-md ${currentPage === i + 1 ? "bg-black" : "bg-gray-200"} focus:outline-none`}
+                  className={`px-3 py-1 rounded-md ${
+                    currentPage === i + 1 ? "bg-black" : "bg-gray-200"
+                  } focus:outline-none`}
                   onClick={() => paginate(i + 1)}
                 >
                   {i + 1}
@@ -312,9 +359,114 @@ export function UserTables() {
         </ul>
       </div>
 
+      {/* Permission Modal */}
+      {showPermissionModal && selectedUser && (
+        <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full bg-black bg-opacity-60">
+          <div className="p-8 bg-white rounded-md shadow-lg w-96">
+            <div className="flex items-center justify-between mb-6">
+              <Typography variant="h6" color="blue-gray">
+                Manage Permissions: {selectedUser.name}
+              </Typography>
+              <button onClick={() => setShowPermissionModal(false)}>
+                <IoIosCloseCircle className="text-xl text-gray-500 hover:text-gray-700" />
+              </button>
+            </div>
+
+            <div className="mb-6 space-y-4">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50">
+                <div>
+                  <Typography className="font-medium">
+                    Edit Permission
+                  </Typography>
+                  <Typography variant="small" color="gray">
+                    Allow user to edit other users
+                  </Typography>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedUser.permissions?.canEdit}
+                    onChange={() => handlePermissionChange("canEdit")}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+              </div>
+
+              <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50">
+                <div>
+                  <Typography className="font-medium">
+                    Delete Permission
+                  </Typography>
+                  <Typography variant="small" color="gray">
+                    Allow user to delete other users
+                  </Typography>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedUser.permissions?.canDelete}
+                    onChange={() => handlePermissionChange("canDelete")}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+              </div>
+
+              <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50">
+                <div>
+                  <Typography className="font-medium">
+                    View Permission
+                  </Typography>
+                  <Typography variant="small" color="gray">
+                    Allow user to view other users' details
+                  </Typography>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedUser.permissions?.canView}
+                    onChange={() => handlePermissionChange("canView")}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+              </div>
+            </div>
+
+            {errorMessage && (
+              <div
+                className="px-4 py-3 mb-4 text-red-700 bg-red-100 border-l-4 border-red-500"
+                role="alert"
+              >
+                <p className="font-bold">{errorMessage}</p>
+              </div>
+            )}
+
+            <div className="flex gap-4">
+              <Button
+                color="gray"
+                onClick={() => setShowPermissionModal(false)}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                color="blue"
+                onClick={handlePermissionSave}
+                className="flex-1"
+                disabled={loading}
+              >
+                {loading ? <Loader /> : "Save Changes"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add User Form Modal */}
       {showAddForm && (
         <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full bg-black bg-opacity-60">
-          {/* Add User Form */}
           <div className="p-8 bg-white rounded-md shadow-lg">
             <div className="flex items-center justify-between mb-4">
               <Typography variant="h6" color="gray">
@@ -324,7 +476,6 @@ export function UserTables() {
                 <IoIosCloseCircle className="text-xl text-gray-500 hover:text-gray-700" />
               </button>
             </div>
-            {/* Add User form */}
             <div className="mb-4">
               <label className="block mb-1 text-sm text-gray-600">Name</label>
               <input
@@ -362,16 +513,11 @@ export function UserTables() {
                 />
               </div>
               <div>
-                <label className="block mb-1 text-sm text-gray-600">
-                  {" "}
-                  Role
-                </label>
-                {/* select user role user and admin */}
+                <label className="block mb-1 text-sm text-gray-600">Role</label>
                 <select
                   name="role"
                   value={newUserData.role}
                   onChange={handleInputChange}
-                  defaultValue="agent"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
                 >
                   <option value="">Select role</option>
@@ -381,53 +527,36 @@ export function UserTables() {
                 </select>
               </div>
             </div>
-            {errorMessage && (
-              <div
-                className="px-4 py-3 text-red-700 bg-red-100 border-l-4 border-red-500"
-                role="alert"
-              >
-                <p className="font-bold">{errorMessage}</p>
-              </div>
-            )}
             <Button
-              color="black"
+              color="blue"
               onClick={handleAddUser}
               className="w-full"
               disabled={loading}
-              type="submit"
-              buttonType="filled"
-              size="regular"
-              rounded={true}
-              block={false}
-              iconOnly={false}
-              ripple="light"
             >
               {loading ? <Loader /> : "Add User"}
             </Button>
           </div>
         </div>
       )}
+
+      {/* Edit User Form Modal */}
       {editUserData && (
         <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full bg-black bg-opacity-60">
-          {/* Edit Creditor Form */}
           <div className="p-8 bg-white rounded-md shadow-lg">
-            <div className="flex items-center justify-between gap-4 mb-4">
+            <div className="flex items-center justify-between mb-4">
               <Typography variant="h6" color="gray">
-                Change User Status
+                Edit User Role
               </Typography>
               <button onClick={() => setEditUserData(false)}>
                 <IoIosCloseCircle className="text-xl text-gray-500 hover:text-gray-700" />
               </button>
             </div>
-            {/* Form fields and submit button */}
             <div className="mb-4">
-              <label className="block mb-1 text-sm text-gray-600"> Role</label>
-              {/* select user role user and admin */}
+              <label className="block mb-1 text-sm text-gray-600">Role</label>
               <select
-                name="role" // Make sure the name attribute matches the state variable
+                name="role"
                 value={newUserData.role}
                 onChange={handleInputChange}
-                defaultValue="agent"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
               >
                 <option value="">Select role</option>
@@ -436,33 +565,18 @@ export function UserTables() {
                 <option value="client">Client</option>
               </select>
             </div>
-
-            {errorMessage && (
-              <div
-                className="px-4 py-3 text-red-700 bg-red-100 border-l-4 border-red-500"
-                role="alert"
-              >
-                <p className="font-bold">{errorMessage}</p>
-              </div>
-            )}
             <Button
-              color="black"
+              color="blue"
               onClick={handleEditUserSubmit}
               className="w-full"
               disabled={loading}
-              type="submit"
-              buttonType="filled"
-              size="regular"
-              rounded={true}
-              block={false}
-              iconOnly={false}
-              ripple="light"
             >
-              {loading ? <Loader /> : "Update Status"}
+              {loading ? <Loader /> : "Update Role"}
             </Button>
           </div>
         </div>
       )}
+
       <ToastContainer />
     </div>
   );
