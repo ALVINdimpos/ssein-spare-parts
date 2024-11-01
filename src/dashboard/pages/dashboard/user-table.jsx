@@ -305,7 +305,7 @@ export function UserTables() {
                         <Button
                           color="blue"
                           size="sm"
-                          className="flex items-center gap-2"
+                          className="flex items-center gap-2 text-blue-gray-600"
                           onClick={() => handlePermissionClick(user)}
                         >
                           <MdSecurity />
@@ -392,46 +392,6 @@ export function UserTables() {
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                 </label>
               </div>
-
-              <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50">
-                <div>
-                  <Typography className="font-medium">
-                    Delete Permission
-                  </Typography>
-                  <Typography variant="small" color="gray">
-                    Allow user to delete other users
-                  </Typography>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={selectedUser.permissions?.canDelete}
-                    onChange={() => handlePermissionChange("canDelete")}
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                </label>
-              </div>
-
-              <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50">
-                <div>
-                  <Typography className="font-medium">
-                    View Permission
-                  </Typography>
-                  <Typography variant="small" color="gray">
-                    Allow user to view other users' details
-                  </Typography>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={selectedUser.permissions?.canView}
-                    onChange={() => handlePermissionChange("canView")}
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                </label>
-              </div>
             </div>
 
             {errorMessage && (
@@ -454,7 +414,7 @@ export function UserTables() {
               <Button
                 color="blue"
                 onClick={handlePermissionSave}
-                className="flex-1"
+                className="flex-1 text-blue-gray-600"
                 disabled={loading}
               >
                 {loading ? <Loader /> : "Save Changes"}
