@@ -18,6 +18,7 @@ not_found = HTTPException(
 
 class DismantleBattery(BaseModel):
     image_url : str
+    selling_price: float
     cell_nos : List[str]
 
 @router.post("/dismantle/{battery_id}", response_model=Res)
@@ -64,7 +65,9 @@ async def dismantle_battery(
         cell = Cell(
             battery_id=battery.id,
             image_url=cells_info.image_url,
-            cell_no=cells_info.cell_nos[i]
+            cell_no=cells_info.cell_nos[i],
+            purchase_price=float(battery.purchase_price/battery.cells_count),
+            selling_price=float(cells_info.selling_price)
         )
 
         action2 = Action(
@@ -92,6 +95,7 @@ class UpdateCell(BaseModel):
     cell_no: int | None = None
     is_sold: bool | None = None
     selling_price: float | None = None
+    purchase_price: float | None = None
     other_expenses: float | None = None
     tax: float | None = None
     discount: float | None = None
@@ -104,6 +108,7 @@ class UpdateCell(BaseModel):
             'image_url',
             'cell_no',
             'selling_price',
+            'purchase_price',
             'is_sold',
             'other_expenses',
             'tax',
@@ -136,6 +141,8 @@ async def update_cell(
         cell.is_sold = update.is_sold
     if update.selling_price:
         cell.selling_price = update.selling_price
+    if update.purchase_price:
+        cell.purchase_price = update.purchase_price
     if update.other_expenses:
         cell.other_expenses = update.other_expenses
     if update.tax:

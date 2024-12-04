@@ -114,7 +114,7 @@ class ProductModel(BaseModel):
     num: str
     description: str
     selling_price: float
-    purchase_price: float
+    purchase_price: float = 0
     tax: float
     other_expenses: float
     discount: float = 0
@@ -156,7 +156,6 @@ def make_product_client(product: Product) -> ProductResModel:
         id=product.id,
         description=product.description,
         selling_price=product.selling_price,
-        purchase_price=product.purchase_price,
         num=product.num,
         tax=product.tax,
         other_expenses=product.other_expenses,
@@ -228,7 +227,6 @@ def make_car_product_client(car_product: CarProduct):
         'selling_price': car_product.selling_price,
         'sold_date': car_product.sold_date,
         'transport_fees': car_product.transport_fees,
-        'purchase_price': car_product.purchase_price,
         'other_expenses': car_product.other_expenses,
         'discount': car_product.discount,
         'is_sold': car_product.is_sold,
@@ -350,6 +348,7 @@ def make_cell(cell: Cell) -> dict:
         'is_sold': cell.is_sold,
         'cell_no': cell.cell_no,
         'selling_price': cell.selling_price,
+        'purchase_price': cell.purchase_price,
         'other_expenses': cell.other_expenses,
         'tax': cell.tax,
         'discount': cell.discount,

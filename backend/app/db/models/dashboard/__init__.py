@@ -1,5 +1,5 @@
 from .file import File
-from .user import User
+from .user import User, create_super_admin
 from .product import Product, Action
 from .debt_mgt import DebtManagement
 from .inquiry import Inquiry

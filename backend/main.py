@@ -1,16 +1,16 @@
+# from app.db.models.dashboard import create_super_admin
 import logging.config
-from app.db import init_db
 from app import app
 from dotenv import load_dotenv
 import os
 
 load_dotenv(override=True)
 
-# Initialize database
-init_db()
 
 if __name__ == '__main__':
     logging.config.fileConfig('logging.conf')
+    # Create Super Admin
+    # create_super_admin()
 
     # Define logger
     logger = logging.getLogger('app')
