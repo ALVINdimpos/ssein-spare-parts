@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Numeric, ForeignKey
 from sqlalchemy.orm import relationship
 from app.db import Base
@@ -33,5 +33,9 @@ class Action(Base):
     cashbook = relationship('CashBook', back_populates='actions')
     user_id = Column(Integer, ForeignKey("users.id"))
     user = relationship('User', back_populates='actions')
+    battery_id = Column(Integer, ForeignKey("batteries.id"))
     action_type = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    battery = relationship('Battery', back_populates='actions')
+    created_at = Column(DateTime, default=datetime.datetime.now(datetime.UTC))
+    cell_id = Column(Integer, ForeignKey("cells.id"))
+    cell = relationship('Cell', back_populates='actions')

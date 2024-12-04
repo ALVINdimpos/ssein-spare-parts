@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import Enum
 import requests
 from pydantic import BaseModel, EmailStr
-from app.db.models import Product, CarProduct, CashBook
+from app.db.models import Product, CarProduct, CashBook, Battery, Cell
 from typing import Union, List
 import uuid
 from dotenv import load_dotenv
@@ -54,6 +54,7 @@ class Roles(Enum):
     ADMIN = 'admin'
     AGENT = 'agent'
     CLIENT = 'client'
+    EDITOR = 'editor'
 
 
 class InquiryTypes(Enum):
@@ -113,7 +114,7 @@ class ProductModel(BaseModel):
     num: str
     description: str
     selling_price: float
-    purchase_price: float
+    purchase_price: float = 0
     tax: float
     other_expenses: float
     discount: float = 0
@@ -145,7 +146,7 @@ def make_product(product: Product) -> ProductResModel:
             'user_name': action.user.name,
             'user_id': action.user_id,
             'action_type': action.action_type,
-            'creates_at': action.created_at,
+            'created_at': action.created_at,
         } for action in product.actions]
     )
 
@@ -155,7 +156,6 @@ def make_product_client(product: Product) -> ProductResModel:
         id=product.id,
         description=product.description,
         selling_price=product.selling_price,
-        purchase_price=product.purchase_price,
         num=product.num,
         tax=product.tax,
         other_expenses=product.other_expenses,
@@ -175,7 +175,6 @@ def send_email(subject: str, text: str, to: List[EmailStr]):
                                    'subject': subject,
                                    'text': text})
 
-    print(response.__dict__)
 
 
 def make_car_product(car_product: CarProduct):
@@ -207,7 +206,7 @@ def make_car_product(car_product: CarProduct):
             'user_name': action.user.name,
             'user_id': action.user_id,
             'action_type': action.action_type,
-            'creates_at': action.created_at,
+            'created_at': action.created_at,
         } for action in car_product.actions]
     }
 
@@ -228,7 +227,6 @@ def make_car_product_client(car_product: CarProduct):
         'selling_price': car_product.selling_price,
         'sold_date': car_product.sold_date,
         'transport_fees': car_product.transport_fees,
-        'purchase_price': car_product.purchase_price,
         'other_expenses': car_product.other_expenses,
         'discount': car_product.discount,
         'is_sold': car_product.is_sold,
@@ -263,6 +261,113 @@ def make_cashbook(cashbook: CashBook):
             'user_name': action.user.name,
             'user_id': action.user_id,
             'action_type': action.action_type,
-            'creates_at': action.created_at,
+            'created_at': action.created_at,
         } for action in cashbook.actions]
+    }
+
+
+class CellModel(BaseModel):
+    battery_id: int
+    image_url: Union[str, None]  # Image URL can be nullable
+    cell_no: str
+    selling_price: float
+    is_sold: bool
+    other_expenses: float
+    tax: float
+    discount: float
+    context: str
+
+    model_config = {
+        "from_attributes": True  # Enables reading attributes from ORM objects
+    }
+
+class ActionModel(BaseModel):
+    id: int
+    user_id: int
+    action_type: str
+    created_at: datetime
+
+    model_config = {
+        "from_attributes": True
+    }
+
+class BatteryModel(BaseModel):
+    cells_count: int
+    is_sold: bool
+    purchase_price: float
+    selling_price: float
+    other_expenses: float
+    tax: float
+    discount: float
+    context: str
+
+
+    model_config = {
+        "from_attributes": True  # Enables reading attributes from ORM objects
+    }
+
+BatteryModel.model_rebuild()
+
+def make_battery(battery: Battery) -> dict:
+    return {
+        'id': battery.id,
+        'cells_count': battery.cells_count,
+        'sold_fully': battery.sold_fully,
+        'is_sold': battery.is_sold,
+        'purchase_price': battery.purchase_price,
+        'selling_price': battery.selling_price,
+        'sold_date': battery.sold_date,
+        'other_expenses': battery.other_expenses,
+        'tax': battery.tax,
+        'discount': battery.discount,
+        'context': battery.context,
+        'actions': [{
+            'id': action.id,
+            'user_name': action.user.name,
+            'user_id': action.user_id,
+            'action_type': action.action_type,
+            'created_at': action.created_at,
+        } for action in battery.actions]
+    }
+
+
+def make_battery_client(battery: Battery) -> dict:
+    return {
+        'id': battery.id,
+        'cells_count': battery.cells_count,
+        'is_sold': battery.is_sold,
+        'selling_price': battery.selling_price,
+    }
+
+
+def make_cell(cell: Cell) -> dict:
+    return {
+        'id': cell.id,
+        'battery_id': cell.battery_id,
+        'image_url': cell.image_url,
+        'is_sold': cell.is_sold,
+        'cell_no': cell.cell_no,
+        'selling_price': cell.selling_price,
+        'purchase_price': cell.purchase_price,
+        'other_expenses': cell.other_expenses,
+        'tax': cell.tax,
+        'discount': cell.discount,
+        'context': cell.context,
+        'actions': [{
+            'id': action.id,
+            'user_name': action.user.name,
+            'user_id': action.user_id,
+            'action_type': action.action_type,
+            'created_at': action.created_at,
+        } for action in cell.actions]
+    }
+
+def make_cell_client(cell: Cell) -> dict:
+    return {
+        'id': cell.id,
+        'battery_id': cell.battery_id,
+        'image_url': cell.image_url,
+        'is_sold': cell.is_sold,
+        'cell_no': cell.cell_no,
+        'selling_price': cell.selling_price
     }
