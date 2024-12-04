@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Numeric, ForeignKey
 from sqlalchemy.orm import relationship
 from app.db import Base
@@ -36,6 +36,6 @@ class Action(Base):
     battery_id = Column(Integer, ForeignKey("batteries.id"))
     action_type = Column(String)
     battery = relationship('Battery', back_populates='actions')
-    created_at = Column(DateTime, default=datetime.datetime.now(datetime.UTC))
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     cell_id = Column(Integer, ForeignKey("cells.id"))
     cell = relationship('Cell', back_populates='actions')
