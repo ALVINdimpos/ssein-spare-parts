@@ -4,7 +4,7 @@ from app import app
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
+load_dotenv(override=True)
 
 # Initialize database
 init_db()

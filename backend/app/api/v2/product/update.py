@@ -89,9 +89,9 @@ async def update_product(
     db.commit()
     res = Res(
         status=status.HTTP_200_OK,
-        message="Profile retrieved successfully!",
+        message="Product updated successfully!",
         data={
-            "product": make_product(product).dict()
+            "product": make_product(product).model_dump()
         }
     )
     return res
