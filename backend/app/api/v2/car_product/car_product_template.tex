@@ -1,0 +1,24 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx}
+\usepackage{lmodern}
+\usepackage{amsmath}
+
+\begin{document}
+
+\title{Car Details}
+\author{}
+\date{}
+\maketitle
+
+\section*{Car Information}
+
+\begin{itemize}
+    \item \textbf{\large VIN Number:} {{ product.vinnumber|safe }}
+    \item \textbf{\large Description:} {{ product.description|safe }}
+    \item \textbf{\large Make:} {{ product.make|safe }}
+    \item \textbf{\large Model:} {{ product.model|safe }}
+    \item \textbf{\large Year:} {{ product.year|safe }}
+    \item \textbf{\large Engine:} {{ product.engine|safe }}
+\end{itemize}
+
+\end{document}
