@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Numeric
 from sqlalchemy.orm import relationship
 from app.db import Base
-import datetime
+from datetime import datetime, timezone
 
 
 class Battery(Base):
@@ -17,7 +17,7 @@ class Battery(Base):
     tax = Column(Numeric, default=0)
     discount = Column(Numeric, default=0)
     context = Column(String)
-    sold_date = Column(DateTime, default=datetime.datetime.now(datetime.UTC))
+    sold_date = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     cells = relationship("Cell", back_populates="battery")
     actions = relationship("Action", back_populates="battery")
 
@@ -33,7 +33,7 @@ class Cell(Base):
     is_sold = Column(Boolean, nullable=False, default=False)
     other_expenses = Column(Numeric, default=0)
     tax = Column(Numeric, default=0)
-    sold_date = Column(DateTime, default=datetime.datetime.now(datetime.UTC))
+    sold_date = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     discount = Column(Numeric, default=0)
     context = Column(String)
     battery = relationship("Battery", back_populates="cells")
