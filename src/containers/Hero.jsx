@@ -32,7 +32,7 @@ const HeroSection = () => {
     }
   }, [selectedInputs, navigate]);
   useEffect(() => {
-    fetch("https://parts.husseinking.com/cars/", {
+    fetch("https://test.husseinking.com/cars/", {
       method: "GET",
     })
       .then((response) => response.json())

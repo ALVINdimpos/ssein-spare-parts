@@ -11,3 +11,5 @@ export { Profile as Profile } from "./profile.jsx";
 export { CarsPage as CarsPage } from "./car.jsx";
 export { CashBookTable as CashBookTable } from "./cashBook.jsx";
 export { ClientTables as ClientTables } from "./client-product.jsx";
+export { Battery as Batteries } from "./battery.jsx";
+export { Cells as Cells } from "./cell.jsx";

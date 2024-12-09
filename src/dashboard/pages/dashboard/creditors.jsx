@@ -43,7 +43,7 @@ export function CreditorTable() {
     payment_status: "Pending",
     scope: "creditors",
   });
-  const API_URL = "https://parts.husseinking.com";
+  const API_URL = "https://test.husseinking.com";
   // Event handler to update the new creditor data as the user types
   const handleInputChange = (e) => {
     const { name, value } = e.target;

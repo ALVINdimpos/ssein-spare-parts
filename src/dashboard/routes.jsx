@@ -13,6 +13,8 @@ import {
   CarsPage,
   CashBookTable,
   ClientTables,
+  Batteries,
+  Cells,
 } from "./pages/dashboard";
 import { AiOutlineShopping } from "react-icons/ai";
 import { BiSolidReport } from "react-icons/bi";
@@ -23,7 +25,8 @@ import { LuMailQuestion } from "react-icons/lu";
 import { ImProfile } from "react-icons/im";
 import { PiCarFill } from "react-icons/pi";
 import { IoCash } from "react-icons/io5";
-
+import { GiCarBattery } from "react-icons/gi";
+import { AiOutlineMergeCells } from "react-icons/ai";
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -94,6 +97,19 @@ export const routes = (userRole) => {
           element: <CarsPage />,
         },
         {
+          icon: <GiCarBattery {...icon} />,
+          name: "Battery",
+          path: "/battery",
+          element: <Batteries />,
+        },
+        {
+          icon: <AiOutlineMergeCells {...icon} />,
+          name: "Cells",
+          path: "/cell",
+          element: <Cells />,
+        },
+
+        {
           icon: <ImProfile {...icon} />,
           name: "Profile",
           path: "/profile",
@@ -117,7 +133,8 @@ export const routes = (userRole) => {
           page.name === "dashboard" ||
           page.name === "products" ||
           page.name === "Debtors" ||
-          page.name === "Profile",
+          page.name === "Profile" ||
+          page.name === "Battery",
       ),
     }));
 
