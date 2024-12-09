@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import {
   Card,
@@ -81,7 +82,6 @@ export function Battery() {
     };
     fetchData();
   }, []);
-  console.log("BatteryTableData", BatteryTableData);
   // Update the calculation of indexOfFirstBattery and indexOfLastBattery to use filteredBatteries
   const indexOfLastBattery = currentPage * BatteriesPerPage;
   const indexOfFirstBattery = indexOfLastBattery - BatteriesPerPage;
@@ -184,12 +184,16 @@ export function Battery() {
         tax,
         other_expenses,
       };
-      await axios.patch(`${API_URL}/battery/full/${id}`, requestData, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      await axios.patch(
+        `${API_URL}/battery/full/${editingBatteryId}`,
+        requestData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
         },
-      });
+      );
       setEditBattery(false);
       setBatteryData({
         cells_count: "",
@@ -203,6 +207,7 @@ export function Battery() {
     } catch (error) {
       console.error("Error updating Battery:", error);
       toast.error("Error updating Battery");
+      setLoading(false);
     }
   };
   const handleSellBattery = async () => {
@@ -232,7 +237,7 @@ export function Battery() {
       window.location.reload();
       setEditingBatteryId(null);
     } catch (error) {
-      setErrorMessage("Failed to sell Battery. Please try again.");
+      toast.error("Failed to sell Battery");
     } finally {
       setLoading(false);
     }
@@ -272,7 +277,6 @@ export function Battery() {
     const { value } = e.target;
     setIsSoldFilter(value);
   };
-  console.log("singleBattery", BatteryTableData);
   useEffect(() => {
     if (isSoldFilter === "all") {
       // Show all Batteries without any additional filtering
