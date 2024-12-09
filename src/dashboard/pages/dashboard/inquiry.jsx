@@ -16,7 +16,7 @@ import { Tooltip } from "react-tooltip";
 import { format } from "date-fns";
 export function InquiriesTable() {
   const [queryData, setQueryData] = useState([]);
-  const API_URL = "https://parts.husseinking.com";
+  const API_URL = "https://test.husseinking.com";
   useEffect(() => {
     const fetchData = async () => {
       try {

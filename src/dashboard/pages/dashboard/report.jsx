@@ -18,7 +18,7 @@ import { useState, useEffect } from "react";
 
 const Reports = () => {
   const [reportData, setReportData] = useState(null);
-  const API_URL = "https://parts.husseinking.com";
+  const API_URL = "https://test.husseinking.com";
   useEffect(() => {
     const fetchData = async () => {
       try {

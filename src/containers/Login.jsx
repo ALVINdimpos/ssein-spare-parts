@@ -22,8 +22,8 @@ const Login = () => {
     setLoading(true); // Set loading to true when form is submitted
     try {
       const response = await axios.post(
-        "https://parts.husseinking.com/users/login",
-        `grant_type=&username=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&scope=&client_id=&client_secret=`,
+        "https://test.husseinking.com/users/login",
+        `grant_type=password&username=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&scope=&client_id=&client_secret=`,
         {
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
