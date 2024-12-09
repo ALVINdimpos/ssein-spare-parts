@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import {
   Card,
@@ -116,12 +117,16 @@ export function Cells() {
         other_expenses,
         is_sold: false,
       };
-      await axios.post(`${API_URL}/battery/cell/${id}`, requestData, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      await axios.patch(
+        `${API_URL}/battery/cell/${editingCellId}`,
+        requestData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
         },
-      });
+      );
       setEditCell(false);
       setCellData({
         cell_no: "",
@@ -135,6 +140,7 @@ export function Cells() {
     } catch (error) {
       console.error("Error updating Cell:", error);
       toast.error("Error updating Cell");
+      setLoading(false);
     }
   };
   const handleSellCell = async () => {

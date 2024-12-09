@@ -49,6 +49,24 @@ export const routes = (userRole) => {
           element: userRole !== "client" ? <Tables /> : <ClientTables />,
         },
         {
+          icon: <PiCarFill {...icon} />,
+          name: "Cars",
+          path: "/cars",
+          element: <CarsPage />,
+        },
+        {
+          icon: <GiCarBattery {...icon} />,
+          name: "Hybrid Battery",
+          path: "/battery",
+          element: <Batteries />,
+        },
+        {
+          icon: <AiOutlineMergeCells {...icon} />,
+          name: "Cells",
+          path: "/cell",
+          element: <Cells />,
+        },
+        {
           icon: <IoIosPeople {...icon} />,
           name: "Users",
           path: "/users",
@@ -89,24 +107,6 @@ export const routes = (userRole) => {
           name: "Cash Book",
           path: "/cash-book",
           element: <CashBookTable />,
-        },
-        {
-          icon: <PiCarFill {...icon} />,
-          name: "Cars",
-          path: "/cars",
-          element: <CarsPage />,
-        },
-        {
-          icon: <GiCarBattery {...icon} />,
-          name: "Battery",
-          path: "/battery",
-          element: <Batteries />,
-        },
-        {
-          icon: <AiOutlineMergeCells {...icon} />,
-          name: "Cells",
-          path: "/cell",
-          element: <Cells />,
         },
 
         {
