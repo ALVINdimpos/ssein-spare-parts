@@ -115,7 +115,7 @@ const BatteryDismantleModal = ({ isOpen, onClose, batteryId, cellCount }) => {
           {/* Selling Price */}
           <div className="mb-4">
             <label className="block mb-2 text-sm text-gray-600">
-              Selling Price
+              Selling Price of single cell
             </label>
             <input
               type="number"

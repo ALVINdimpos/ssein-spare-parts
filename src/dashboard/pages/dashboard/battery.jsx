@@ -44,6 +44,7 @@ export function Battery() {
     context: "",
     sold_date: "",
     is_sold: false,
+    sold_fully: false,
   });
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -128,6 +129,7 @@ export function Battery() {
         tax,
         discount: 0,
         is_sold: false,
+        sold_fully: false,
         sold_date: Date.now(),
         context: "",
         other_expenses,
@@ -291,9 +293,9 @@ export function Battery() {
         } else if (isSoldFilter === "sold") {
           return battery.is_sold;
         } else if (isSoldFilter === "inStock") {
-          return !Battery.is_sold;
+          return !battery.is_sold && !battery.sold_fully;
         } else if (isSoldFilter === "dismantled") {
-          return Battery.sold_fully;
+          return battery.sold_fully; // This will show dismantled batteries
         }
 
         return false;
@@ -302,7 +304,6 @@ export function Battery() {
     }
     setCurrentPage(1); // Reset pagination to first page when filter changes
   }, [isSoldFilter, searchQuery, BatteryTableData]);
-
   const handlePagination = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
@@ -349,7 +350,6 @@ export function Battery() {
     });
     doc.save("Batteries.pdf");
   };
-
   return (
     <div className="flex flex-col mt-12 mb-8 overflow-x-auto">
       <Card>
@@ -469,6 +469,7 @@ export function Battery() {
                         discount,
                         context,
                         is_sold,
+                        sold_fully,
                         actions,
                       },
                       key,
@@ -499,6 +500,10 @@ export function Battery() {
                             <Typography className="text-xs font-semibold text-blue-gray-600">
                               {is_sold ? (
                                 <span className="text-red-500">Sold</span>
+                              ) : !sold_fully ? (
+                                <span className="text-purple-500">
+                                  Dismantled
+                                </span>
                               ) : (
                                 <span className="text-green-500">In Stock</span>
                               )}
@@ -537,28 +542,33 @@ export function Battery() {
 
                           <td className={className}>
                             <div className="flex justify-between gap-1">
-                              {!isAgent && !is_sold && (
+                              {!isAgent && !is_sold && sold_fully && (
                                 <FaEdit
                                   className="text-blue-500 cursor-pointer"
                                   onClick={() => handleViewEditBattery(id)}
                                 />
                               )}
-                              {!is_sold && ( // Conditionally render the edit button
-                                <AiOutlineTransaction
-                                  className="text-blue-500 cursor-pointer material-icons"
-                                  onClick={() => handleSellBatteries(id)}
-                                />
-                              )}
+                              {!is_sold &&
+                                sold_fully && ( // Conditionally render the edit button
+                                  <AiOutlineTransaction
+                                    className="text-blue-500 cursor-pointer material-icons"
+                                    onClick={() => handleSellBatteries(id)}
+                                  />
+                                )}
                               {(!isAgent || !isAdmin) && (
                                 <MdAutoDelete
                                   className="ml-2 text-red-500 cursor-pointer material-icons"
                                   onClick={() => handleDeleteBattery(id)}
                                 />
                               )}
-                              <RiPageSeparator
-                                className="ml-2 text-green-500 cursor-pointer material-icons"
-                                onClick={() => handleDismantle(id, cells_count)}
-                              />
+                              {isAgent && !is_sold && !sold_fully && (
+                                <RiPageSeparator
+                                  className="ml-2 text-green-500 cursor-pointer material-icons"
+                                  onClick={() =>
+                                    handleDismantle(id, cells_count)
+                                  }
+                                />
+                              )}
                             </div>
                           </td>
                           {/* Action Type and Action Owner */}
