@@ -92,7 +92,7 @@ async def dismantle_battery(
 
 class UpdateCell(BaseModel):
     image_url: str | None = None
-    cell_no: int | None = None
+    cell_no: str | None = None
     is_sold: bool | None = None
     selling_price: float | None = None
     purchase_price: float | None = None
