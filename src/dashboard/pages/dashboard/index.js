@@ -13,3 +13,4 @@ export { CashBookTable as CashBookTable } from "./cashBook.jsx";
 export { ClientTables as ClientTables } from "./client-product.jsx";
 export { Battery as Batteries } from "./battery.jsx";
 export { Cells as Cells } from "./cell.jsx";
+export { ReminderTable as ReminderTable } from "./reminder.jsx";
