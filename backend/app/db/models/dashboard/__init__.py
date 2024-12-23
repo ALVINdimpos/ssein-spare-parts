@@ -6,3 +6,4 @@ from .inquiry import Inquiry
 from .cashbook import CashBook
 from .car_product import CarProduct
 from .battery import Battery, Cell
+from .reminder import Reminder

@@ -23,7 +23,7 @@ class CarProduct(Base):
     purchase_price = Column(Numeric, default=0)
     discount = Column(Numeric, default=0)
     is_sold = Column(Boolean, default=False)
-    sold_date = Column(DateTime, default=datetime.datetime.utcnow())
+    sold_date = Column(DateTime, default=datetime.datetime.now(datetime.UTC))
     tax = Column(Numeric, default=0)
     other_expenses = Column(Numeric, default=0)
     proof_of_payment = Column(String)

@@ -18,7 +18,8 @@ class User(Base):
     email = Column(String, unique=True)
     password = Column(String)
     actions = relationship('Action', back_populates='user')
-
+    assigned_reminders = relationship('Reminder', secondary='user_reminders', back_populates='assignees')
+    created_reminders = relationship('Reminder', back_populates='assignor')
 
 def create_super_admin():
     # Retrieve environment variables
