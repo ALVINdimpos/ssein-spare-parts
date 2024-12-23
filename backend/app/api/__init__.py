@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from app.api.v2.middlewares import get_current_user, get_internal_user
 from .endpoints import cars, categories, parts
-from .v2 import user, file, product, metrics, debtmanagement, inquiry, car_product, cashbook, client, battery
+from .v2 import user, file, product, metrics, debtmanagement, inquiry, car_product, cashbook, client, battery, reminder
 
 
 api_router = APIRouter()
@@ -21,3 +21,4 @@ api_router.include_router(cashbook.router, prefix='/cashbook',
                           tags=['Cashbook'], dependencies=[Depends(get_internal_user)])
 api_router.include_router(client.router, prefix='/client', tags=['Clients'])
 api_router.include_router(battery.router, prefix='/battery', tags=['Battery'])
+api_router.include_router(reminder.router, prefix='/reminder', tags=['Reminder'])

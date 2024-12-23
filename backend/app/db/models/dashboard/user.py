@@ -20,6 +20,7 @@ class User(Base):
     actions = relationship('Action', back_populates='user')
     assigned_reminders = relationship('Reminder', secondary='user_reminders', back_populates='assignees')
     created_reminders = relationship('Reminder', back_populates='assignor')
+    acknowledgements = relationship('Acknowledgement', back_populates='assignee')
 
 def create_super_admin():
     # Retrieve environment variables

@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Text, Table
 from sqlalchemy.orm import relationship
 from app.db import Base
+import datetime
 
 
 user_reminders = Table(
@@ -27,7 +28,7 @@ class Reminder(Base):
     recurring = Column(Boolean, default=False)
     recurrence_type = Column(String(50), nullable=True)
     recurrence_end = Column(DateTime, nullable=True)
-    status = Column(String(50), default="Pending")
+    status = Column(String(50), default="active")
 
 
 class Acknowledgement(Base):
@@ -37,3 +38,5 @@ class Acknowledgement(Base):
     reminder_id = Column(Integer, ForeignKey("reminders.id"))
     reminder = relationship("Reminder", back_populates="acknowledgements")
     assignee_id = Column(Integer, ForeignKey("users.id"))
+    assignee = relationship("User", back_populates="acknowledgements")
+    acknowledged_at = Column(DateTime, default=datetime.datetime.now(datetime.UTC))

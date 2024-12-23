@@ -2,8 +2,8 @@ from datetime import datetime
 from enum import Enum
 import requests
 from pydantic import BaseModel, EmailStr
-from app.db.models import Product, CarProduct, CashBook, Battery, Cell
-from typing import Union, List
+from app.db.models import Product, CarProduct, CashBook, Battery, Cell, Reminder
+from typing import Union, List, Optional
 import uuid
 from dotenv import load_dotenv
 import os
@@ -303,7 +303,7 @@ class BatteryModel(BaseModel):
 
 
     model_config = {
-        "from_attributes": True  # Enables reading attributes from ORM objects
+        "from_attributes": True
     }
 
 BatteryModel.model_rebuild()
@@ -371,3 +371,89 @@ def make_cell_client(cell: Cell) -> dict:
         'cell_no': cell.cell_no,
         'selling_price': cell.selling_price
     }
+
+
+class RecurrenceTypes(Enum):
+    DAILY = 'daily'
+    WEEKLY = 'weekly'
+    MONTHLY = 'monthly'
+    ANNUALLY = 'annually'
+
+class ReminderStatus(Enum):
+    ACTIVE = 'active'
+    INACTIVE = 'inactive'
+
+class ReminderModel(BaseModel):
+    assignees: List[int]
+    title: str
+    description: Optional[str] = None
+    start_date: datetime
+    due_date: datetime
+    priority: Optional[int] = None
+    recurring: bool = False
+    recurrence_type: Optional[RecurrenceTypes] = None
+    recurrence_end: Optional[datetime] = None
+    status: ReminderStatus = "active"
+
+    model_config = {
+        "from_attributes": True
+    }
+
+ReminderModel.model_rebuild()
+
+def make_reminder(reminder: Reminder) -> dict:
+    return {
+        'id': reminder.id,
+        'title': reminder.title,
+        'description': reminder.description,
+        'assignor': {'id': reminder.assignor.id, 'name': reminder.assignor.name},
+        'assignees': [{'id': user.id, 'name': user.name} for user in reminder.assignees],
+        'start_date': reminder.start_date,
+        'due_date': reminder.due_date,
+        'priority': reminder.priority,
+        'recurring': reminder.recurring,
+        'recurrence_type': reminder.recurrence_type,
+        'recurrence_end': reminder.recurrence_end,
+        'status': reminder.status,
+        'actions': [{
+            'id': action.id,
+            'user_name': action.user.name,
+            'user_id': action.user_id,
+            'action_type': action.action_type,
+            'created_at': action.created_at,
+        } for action in reminder.actions],
+        'acknowledgements': [{
+            'id': ack.id,
+            'user_name': ack.assignee.name,
+            'user_id': ack.assignee_id,
+            'acknowledged_at': ack.acknowledged_at,
+        } for ack in reminder.acknowledgements]
+    }
+
+def generate_reminder_message(reminder):
+    assignees = ', '.join([assignee.name for assignee in reminder.assignees])
+    message = f"""
+    Reminder Notification
+
+    Title: {reminder.title}
+    Description: {reminder.description or "No description provided."}
+    Assigned by: {reminder.assignor.name}
+    Assigned to: {assignees}
+    Start Date: {reminder.start_date.strftime('%Y-%m-%d %H:%M:%S')}
+    Due Date: {reminder.due_date.strftime('%Y-%m-%d %H:%M:%S')}
+    Priority: {get_priority_label(reminder.priority).capitalize()}
+
+    Please make sure to complete the assigned actions by the due date.
+
+    This is an automated notification. Please do not reply to this email.
+    """
+    return message
+
+def get_priority_label(priority):
+    if priority == 1:
+        return 'high'
+    elif priority == 2:
+        return 'medium'
+    elif priority == 3:
+        return 'low'
+    return 'low'
