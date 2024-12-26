@@ -15,12 +15,14 @@ import {
   ClientTables,
   Batteries,
   Cells,
+  ReminderTable,
 } from "./pages/dashboard";
 import { AiOutlineShopping } from "react-icons/ai";
 import { BiSolidReport } from "react-icons/bi";
 import { FaMoneyCheckAlt } from "react-icons/fa";
 import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import { MdOutlineQuestionAnswer } from "react-icons/md";
+import { FcAlarmClock } from "react-icons/fc";
 import { LuMailQuestion } from "react-icons/lu";
 import { ImProfile } from "react-icons/im";
 import { PiCarFill } from "react-icons/pi";
@@ -115,6 +117,12 @@ export const routes = (userRole) => {
           path: "/profile",
           element: <Profile />,
         },
+        {
+          icon: <FcAlarmClock {...icon} />,
+          name: "Reminders",
+          path: "/reminders",
+          element: <ReminderTable />,
+        },
       ],
     },
   ];
@@ -134,7 +142,8 @@ export const routes = (userRole) => {
           page.name === "products" ||
           page.name === "Debtors" ||
           page.name === "Profile" ||
-          page.name === "Battery",
+          page.name === "Battery" ||
+          page.name === "reminders",
       ),
     }));
 
