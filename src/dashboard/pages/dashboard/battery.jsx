@@ -351,10 +351,10 @@ export function Battery() {
     doc.save("Batteries.pdf");
   };
   return (
-    <div className="flex flex-col mt-12 mb-8 overflow-x-auto">
+    <div className="flex overflow-x-auto flex-col mt-12 mb-8">
       <Card>
         <CardHeader variant="black" color="gray" className="p-4 mb-8 md:p-6">
-          <div className="flex flex-col items-center justify-between md:flex-row">
+          <div className="flex flex-col justify-between items-center md:flex-row">
             <Typography
               variant="h6"
               color="white"
@@ -362,11 +362,11 @@ export function Battery() {
             >
               Batteries
             </Typography>
-            <div className="flex flex-col items-center gap-2 md:flex-row">
+            <div className="flex flex-col gap-2 items-center md:flex-row">
               <input
                 type="text"
                 placeholder="Search Battery..."
-                className="px-3 py-2 text-black border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                className="px-3 py-2 text-black rounded-md border border-gray-300 focus:outline-none focus:border-indigo-500"
                 value={searchQuery}
                 onChange={handleSearchChange}
               />
@@ -374,7 +374,7 @@ export function Battery() {
               <select
                 value={isSoldFilter}
                 onChange={handleSoldFilterChange}
-                className="px-3 py-2 text-black border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                className="px-3 py-2 text-black rounded-md border border-gray-300 focus:outline-none focus:border-indigo-500"
                 style={{
                   appearance: "none",
                   backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M7.293 11.293a1 1 0 011.414 0L10 12.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414zM7 7a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1z' clip-rule='evenodd' /%3E%3C/svg%3E")`,
@@ -397,7 +397,7 @@ export function Battery() {
                 block={false}
                 iconOnly={false}
                 ripple="light"
-                className="flex items-center gap-2 mt-2 md:mt-0"
+                className="flex gap-2 items-center mt-2 md:mt-0"
               >
                 <IoMdAddCircle className="text-xl" />
                 <span className="text-base font-medium">Add New Battery</span>
@@ -484,7 +484,7 @@ export function Battery() {
                         <tr key={id}>
                           {/* Table data */}
                           <td className={className}>
-                            <div className="flex items-center gap-4">
+                            <div className="flex gap-4 items-center">
                               <div>
                                 <Typography
                                   variant="small"
@@ -541,7 +541,7 @@ export function Battery() {
                           </td>
 
                           <td className={className}>
-                            <div className="flex justify-between gap-1">
+                            <div className="flex gap-1 justify-between">
                               {!isAgent && !is_sold && sold_fully && (
                                 <FaEdit
                                   className="text-blue-500 cursor-pointer"
@@ -561,14 +561,11 @@ export function Battery() {
                                   onClick={() => handleDeleteBattery(id)}
                                 />
                               )}
-                              {isAgent && !is_sold && !sold_fully && (
-                                <RiPageSeparator
-                                  className="ml-2 text-green-500 cursor-pointer material-icons"
-                                  onClick={() =>
-                                    handleDismantle(id, cells_count)
-                                  }
-                                />
-                              )}
+
+                              <RiPageSeparator
+                                className="ml-2 text-green-500 cursor-pointer material-icons"
+                                onClick={() => handleDismantle(id, cells_count)}
+                              />
                             </div>
                           </td>
                           {/* Action Type and Action Owner */}
@@ -621,7 +618,7 @@ export function Battery() {
           )}
         </CardBody>
       </Card>
-      <div className="flex items-center justify-between mt-6">
+      <div className="flex justify-between items-center mt-6">
         {/* Total Batteries */}
         <div>
           <Typography
@@ -634,7 +631,7 @@ export function Battery() {
         </div>
 
         {/* Batteries count */}
-        <div className="flex items-center gap-4">
+        <div className="flex gap-4 items-center">
           <div>
             <Typography
               variant="small"
@@ -671,15 +668,15 @@ export function Battery() {
 
       {showAddForm && (
         <form>
-          <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full overflow-y-auto bg-black bg-opacity-60">
-            <div className="w-full max-w-md p-8 bg-white rounded-md shadow-lg">
-              <div className="flex items-center justify-between px-4 py-2 mb-6 bg-gray-100 rounded-lg">
+          <div className="flex overflow-y-auto fixed top-0 left-0 justify-center items-center w-full h-full bg-black bg-opacity-60">
+            <div className="p-8 w-full max-w-md bg-white rounded-md shadow-lg">
+              <div className="flex justify-between items-center px-4 py-2 mb-6 bg-gray-100 rounded-lg">
                 <h2 className="text-lg font-semibold text-gray-800">
                   Add New Battery
                 </h2>
                 <button
                   onClick={handleAddBattery}
-                  className="flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full hover:bg-gray-300 focus:outline-none"
+                  className="flex justify-center items-center w-8 h-8 bg-gray-200 rounded-full hover:bg-gray-300 focus:outline-none"
                 >
                   <IoIosCloseCircle className="text-gray-600" />
                 </button>
@@ -699,7 +696,7 @@ export function Battery() {
                       cells_count: e.target.value,
                     })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                  className="px-3 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:border-indigo-500"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4 mb-4">
@@ -718,7 +715,7 @@ export function Battery() {
                         selling_price: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    className="px-3 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div>
@@ -736,7 +733,7 @@ export function Battery() {
                         purchase_price: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    className="px-3 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
@@ -753,7 +750,7 @@ export function Battery() {
                     onChange={(e) =>
                       setBatteryData({ ...BatteryData, tax: e.target.value })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    className="px-3 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div>
@@ -771,7 +768,7 @@ export function Battery() {
                         other_expenses: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    className="px-3 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
@@ -805,10 +802,10 @@ export function Battery() {
         </form>
       )}
       {viewBattery && (
-        <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full bg-black bg-opacity-60">
+        <div className="flex fixed top-0 left-0 justify-center items-center w-full h-full bg-black bg-opacity-60">
           <div className="p-8 bg-white rounded-md shadow-lg">
-            <div className="flex flex-col items-center gap-4">
-              <div className="flex items-center justify-between w-full ">
+            <div className="flex flex-col gap-4 items-center">
+              <div className="flex justify-between items-center w-full">
                 <Typography variant="h6" color="gray">
                   QR Code
                 </Typography>
@@ -839,15 +836,15 @@ export function Battery() {
 
       {sellBattery && (
         <form>
-          <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full overflow-y-auto bg-black bg-opacity-60">
-            <div className="w-full max-w-md p-8 bg-white rounded-md shadow-lg">
-              <div className="flex items-center justify-between px-4 py-2 mb-6 bg-gray-100 rounded-lg">
+          <div className="flex overflow-y-auto fixed top-0 left-0 justify-center items-center w-full h-full bg-black bg-opacity-60">
+            <div className="p-8 w-full max-w-md bg-white rounded-md shadow-lg">
+              <div className="flex justify-between items-center px-4 py-2 mb-6 bg-gray-100 rounded-lg">
                 <h2 className="text-lg font-semibold text-gray-800">
                   Sell Battery
                 </h2>
                 <button
                   onClick={() => setSellBattery(false)}
-                  className="flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full hover:bg-gray-300 focus:outline-none"
+                  className="flex justify-center items-center w-8 h-8 bg-gray-200 rounded-full hover:bg-gray-300 focus:outline-none"
                 >
                   <IoIosCloseCircle className="text-gray-600" />
                 </button>
@@ -870,7 +867,7 @@ export function Battery() {
                           discount: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                      className="px-3 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                   <div>
@@ -887,7 +884,7 @@ export function Battery() {
                           selling_price: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                      className="px-3 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                 </div>
@@ -918,7 +915,7 @@ export function Battery() {
                 block={false}
                 iconOnly={false}
                 ripple="light"
-                className="w-full mt-3"
+                className="mt-3 w-full"
                 onClick={handleSellBattery}
               >
                 {loading ? (
@@ -934,15 +931,15 @@ export function Battery() {
       {/* EDIT Battery */}
       {editBattery && (
         <form>
-          <div className="fixed top-0 left-0 flex items-center justify-center w-full h-full overflow-y-auto bg-black bg-opacity-60">
-            <div className="w-full max-w-md p-8 bg-white rounded-md shadow-lg">
-              <div className="flex items-center justify-between px-4 py-2 mb-6 bg-gray-100 rounded-lg">
+          <div className="flex overflow-y-auto fixed top-0 left-0 justify-center items-center w-full h-full bg-black bg-opacity-60">
+            <div className="p-8 w-full max-w-md bg-white rounded-md shadow-lg">
+              <div className="flex justify-between items-center px-4 py-2 mb-6 bg-gray-100 rounded-lg">
                 <h2 className="text-lg font-semibold text-gray-800">
                   Edit Battery
                 </h2>
                 <button
                   onClick={() => setEditBattery(false)}
-                  className="flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full hover:bg-gray-300 focus:outline-none"
+                  className="flex justify-center items-center w-8 h-8 bg-gray-200 rounded-full hover:bg-gray-300 focus:outline-none"
                 >
                   <IoIosCloseCircle className="text-gray-600" />
                 </button>
@@ -964,7 +961,7 @@ export function Battery() {
                         selling_price: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    className="px-3 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div>
@@ -982,7 +979,7 @@ export function Battery() {
                         purchase_price: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    className="px-3 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div>
@@ -997,7 +994,7 @@ export function Battery() {
                     onChange={(e) =>
                       setBatteryData({ ...BatteryData, tax: e.target.value })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    className="px-3 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div>
@@ -1015,7 +1012,7 @@ export function Battery() {
                         other_expenses: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    className="px-3 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div>
@@ -1033,7 +1030,7 @@ export function Battery() {
                         cells_count: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500"
+                    className="px-3 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div className="flex justify-center">
