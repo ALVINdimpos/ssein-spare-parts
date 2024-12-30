@@ -561,11 +561,14 @@ export function Battery() {
                                   onClick={() => handleDeleteBattery(id)}
                                 />
                               )}
-
-                              <RiPageSeparator
-                                className="ml-2 text-green-500 cursor-pointer material-icons"
-                                onClick={() => handleDismantle(id, cells_count)}
-                              />
+                              {!is_sold && sold_fully && (
+                                <RiPageSeparator
+                                  className="ml-2 text-green-500 cursor-pointer material-icons"
+                                  onClick={() =>
+                                    handleDismantle(id, cells_count)
+                                  }
+                                />
+                              )}
                             </div>
                           </td>
                           {/* Action Type and Action Owner */}
