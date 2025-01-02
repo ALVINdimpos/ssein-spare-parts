@@ -6,6 +6,7 @@ import {
   CardBody,
   Typography,
   Button,
+  Spinner,
 } from "@material-tailwind/react";
 import jsPDF from "jspdf";
 import { CSVLink } from "react-csv";
@@ -53,7 +54,10 @@ export function Tables() {
   const [editingProductId, setEditingProductId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(15); // Number of products to display per page
-
+  const [dateRange, setDateRange] = useState({
+    startDate: "",
+    endDate: "",
+  });
   const API_URL = "https://test.husseinking.com";
   const handleAddProduct = () => {
     setShowAddForm(!showAddForm);
@@ -67,6 +71,7 @@ export function Tables() {
   }, []);
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(` ${API_URL}/products/`, {
           headers: {
@@ -75,7 +80,9 @@ export function Tables() {
           },
         });
         setProductTableData(response.data?.data?.products);
+        setLoading(false);
       } catch (error) {
+        setLoading(false);
         console.log(error);
       }
     };
@@ -254,7 +261,7 @@ export function Tables() {
       if (!confirmed) {
         return; // If user cancels, do not proceed with deletion
       }
-      const response = await axios.delete(`${API_URL}/products/${id}`, {
+      await axios.delete(`${API_URL}/products/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
@@ -276,35 +283,49 @@ export function Tables() {
   };
 
   useEffect(() => {
-    if (isSoldFilter === "all") {
-      // Show all products without any additional filtering
-      setFilteredProducts(productTableData);
-    } else {
-      // Apply filtering based on the selected filter value
-      const filteredData = productTableData.filter((product) => {
+    let filteredData = productTableData;
+
+    // Apply search filter
+    if (searchQuery) {
+      filteredData = filteredData.filter((product) => {
         const numMatchesSearch = product.num
           .toLowerCase()
           .includes(searchQuery.toLowerCase());
         const descriptionMatchesSearch = product.description
           .toLowerCase()
           .includes(searchQuery.toLowerCase());
-        let matchesSearch = numMatchesSearch || descriptionMatchesSearch;
-
-        if (isSoldFilter === "selected") {
-          return product.actions.some(
-            (action) => action.action_type === "intent",
-          );
-        } else if (isSoldFilter === "sold") {
-          return matchesSearch && product.is_sold;
-        } else if (isSoldFilter === "inStock") {
-          return matchesSearch && !product.is_sold;
-        }
-        return false;
+        return numMatchesSearch || descriptionMatchesSearch;
       });
-      setFilteredProducts(filteredData);
     }
-    setCurrentPage(1); // Reset pagination to first page when filter changes
-  }, [isSoldFilter, searchQuery, productTableData]);
+
+    // Apply status and date filters
+    if (isSoldFilter === "sold") {
+      filteredData = filteredData.filter((product) => {
+        const isProductSold = product.is_sold;
+
+        // Apply date range filter if dates are selected
+        if (dateRange.startDate && dateRange.endDate) {
+          const soldDate = new Date(product.sold_date);
+          const startDate = new Date(dateRange.startDate);
+          const endDate = new Date(dateRange.endDate);
+          endDate.setHours(23, 59, 59); // Include the entire end date
+
+          return isProductSold && soldDate >= startDate && soldDate <= endDate;
+        }
+
+        return isProductSold;
+      });
+    } else if (isSoldFilter === "inStock") {
+      filteredData = filteredData.filter((product) => !product.is_sold);
+    } else if (isSoldFilter === "selected") {
+      filteredData = filteredData.filter((product) =>
+        product.actions.some((action) => action.action_type === "intent"),
+      );
+    }
+
+    setFilteredProducts(filteredData);
+    setCurrentPage(1);
+  }, [isSoldFilter, searchQuery, productTableData, dateRange]);
 
   // Separate useEffect for handling search query
   useEffect(() => {
@@ -323,6 +344,7 @@ export function Tables() {
   const handlePagination = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+  console.log(filteredProducts);
   // Function to download data as PDF
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
@@ -444,19 +466,42 @@ export function Tables() {
                 value={isSoldFilter}
                 onChange={handleSoldFilterChange}
                 className="px-3 py-2 text-black rounded-md border border-gray-300 focus:outline-none focus:border-indigo-500"
-                style={{
-                  appearance: "none",
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M7.293 11.293a1 1 0 011.414 0L10 12.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414zM7 7a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1z' clip-rule='evenodd' /%3E%3C/svg%3E")`,
-                  backgroundRepeat: "no-repeat",
-                  backgroundPosition: "right 0.5rem center",
-                  paddingRight: "2.5rem",
-                }}
               >
                 <option value="all">All</option>
                 <option value="sold">Sold</option>
                 <option value="inStock">In Stock</option>
                 <option value="selected">Selected</option>
               </select>
+
+              {/* Date range filters - only show when "sold" is selected */}
+              {isSoldFilter === "sold" && (
+                <div className="flex gap-2">
+                  <input
+                    type="date"
+                    value={dateRange.startDate}
+                    onChange={(e) =>
+                      setDateRange((prev) => ({
+                        ...prev,
+                        startDate: e.target.value,
+                      }))
+                    }
+                    className="px-3 py-2 text-black rounded-md border border-gray-300 focus:outline-none focus:border-indigo-500"
+                  />
+                  <input
+                    type="date"
+                    value={dateRange.endDate}
+                    onChange={(e) =>
+                      setDateRange((prev) => ({
+                        ...prev,
+                        endDate: e.target.value,
+                      }))
+                    }
+                    className="px-3 py-2 text-black rounded-md border border-gray-300 focus:outline-none focus:border-indigo-500"
+                  />
+                </div>
+              )}
+
+              {/* Rest of the buttons */}
               <Button
                 onClick={handleAddProduct}
                 color="indigo"
@@ -489,7 +534,11 @@ export function Tables() {
         </CardHeader>
 
         <CardBody className="px-0 pt-0 pb-2">
-          {filteredProducts.length === 0 ? (
+          {loading ? (
+            <div className="flex justify-center items-center h-full">
+              <Spinner />
+            </div>
+          ) : filteredProducts.length === 0 ? (
             <div className="py-4 text-center">No results found.</div>
           ) : (
             <div className="overflow-x-auto">
