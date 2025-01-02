@@ -344,7 +344,6 @@ export function Tables() {
   const handlePagination = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
-  console.log(filteredProducts);
   // Function to download data as PDF
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
